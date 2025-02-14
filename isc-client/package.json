@@ -1,0 +1,39 @@
+{
+  "name": "isc-client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/isc-client.cjs",
+  "module": "./dist/isc-client.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/isc-client.js",
+      "require": "./dist/isc-client.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "dependencies": {
+    "@iota/bcs": "^0.2.1",
+    "@iota/dapp-kit": "0.3.3",
+    "@iota/iota-sdk": "0.4.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.18.0",
+    "vite": "^5.3.3",
+    "vite-plugin-dts": "^4.5.0",
+    "@types/node": "^22.13.4"
+  }
+}
