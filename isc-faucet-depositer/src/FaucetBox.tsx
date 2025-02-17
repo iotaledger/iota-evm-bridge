@@ -1,4 +1,4 @@
-// Copyright (c) 2024 IOTA Stiftung
+// Copyright (c) 2025 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
 import {
@@ -46,12 +46,14 @@ export function FaucetBox() {
             recipient: currentAccount?.address!,
         });
 
-        const amount = faucetResult.transferredGasObjects[0].amount - 10000000; // MARC: is this - 10000000 needed?
+        const GAS_BUDGET = 10000000;
+        const amount = faucetResult.transferredGasObjects[0].amount - GAS_BUDGET;
 
-        const tx = IscTransaction.create()
-            .withGasBudget(1000000)
-            .withAmount(amount)
-            .build(address, variables.chain);
+        const iscTx = new IscTransaction(variables.chain);
+        const bag = iscTx.newBag();
+        iscTx.placeCoinsInBag({ amount, bag });
+        iscTx.createAndSend({ bag, address, amount });
+        const tx = iscTx.build();
 
         signAndExecute(
             {
