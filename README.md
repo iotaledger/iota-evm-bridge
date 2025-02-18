@@ -1,11 +1,17 @@
 # evm-toolkit-rebased
 
-dev:
+
+Build the Client:
+```sh
+pnpm isc-client build
+```
+
+Run the Depositer:
 ```sh
 pnpm isc-faucet-depositer dev
 ```
 
-format:
+Format the code:
 ```sh
 pnpm turbo format
 ```
