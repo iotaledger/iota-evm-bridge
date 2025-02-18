@@ -1,0 +1,21 @@
+{
+    "ui": "tui",
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "lint": {},
+        "format": {
+            "cache": false
+        },
+        "dev": {
+            "dependsOn": ["^build"],
+            "cache": false,
+            "persistent": true
+        },
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": [
+                "dist/**"
+            ]
+        }
+    }
+}
