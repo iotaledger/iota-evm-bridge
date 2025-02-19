@@ -11,7 +11,14 @@ Run the Depositer:
 pnpm isc-faucet-depositer dev
 ```
 
-Format the code:
+Check eslint and formatting:
+
 ```sh
-pnpm turbo format
+pnpm run lint
+```
+
+Fix eslint and formatting:
+
+```sh
+pnpm run lint:fix
 ```

@@ -16,8 +16,13 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "lint": "eslint .",
-        "format": "prettier -w ."
+        "typecheck": "tsc --noEmit",
+        "eslint:check": "eslint --max-warnings=0 \"./src/**/*.{js,ts}\"",
+        "eslint:fix": "pnpm eslint:check --fix",
+        "prettier:check": "prettier -c --ignore-unknown --ignore-path=.prettierignore .",
+        "prettier:fix": "prettier -w --ignore-unknown --ignore-path=.prettierignore .",
+        "lint": "pnpm run typecheck && pnpm eslint:check && pnpm prettier:check",
+        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix"
     },
     "dependencies": {
         "@iota/bcs": "^0.2.1",
@@ -35,5 +40,9 @@
         "vite": "^5.3.3",
         "vite-plugin-dts": "^4.5.0",
         "@types/node": "^22.13.4"
+    },
+    "lint-staged": {
+        "src/**/*.{ts,js,mjs}": "eslint --fix",
+        "src/**/*.{ts,js,mjs}": "prettier --write"
     }
 }
