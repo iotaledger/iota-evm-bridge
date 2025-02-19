@@ -16,7 +16,7 @@ export function FaucetBox() {
             return;
         }
 
-        const faucetResult = await requestIotaFromFaucetV0({
+        await requestIotaFromFaucetV0({
             host: variables.faucet,
             recipient: currentAccount?.address,
         });
