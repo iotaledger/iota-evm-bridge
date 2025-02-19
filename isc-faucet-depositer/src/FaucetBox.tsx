@@ -11,6 +11,11 @@ export function FaucetBox() {
     const variables = useNetworkVariables();
 
     const requestFaucet = async () => {
+        if (!currentAccount?.address) {
+            console.error('No account address');
+            return;
+        }
+
         const faucetResult = await requestIotaFromFaucetV0({
             host: variables.faucet,
             recipient: currentAccount?.address,
