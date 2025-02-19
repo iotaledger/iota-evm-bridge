@@ -85,7 +85,7 @@ export function SendBox() {
 export function parseAmount(amount: number, coinDecimals: number) {
     try {
         return BigInt(new BigNumber(amount).shiftedBy(coinDecimals).integerValue().toString());
-    } catch (e) {
+    } catch {
         return BigInt(0);
     }
 }
