@@ -42,7 +42,9 @@
         "@types/node": "^22.13.4"
     },
     "lint-staged": {
-        "src/**/*.{ts,js,mjs}": "eslint --fix",
-        "src/**/*.{ts,js,mjs}": "prettier --write"
+        "src/**/*.{ts,js,mjs}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
     }
 }
