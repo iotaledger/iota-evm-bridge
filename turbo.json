@@ -3,9 +3,11 @@
     "$schema": "https://turbo.build/schema.json",
     "tasks": {
         "lint": {},
-        "lint:fix": {},
-        "format": {
+        "lint:fix": {
             "cache": false
+        },
+        "typecheck": {
+            "dependsOn": ["^build"]
         },
         "dev": {
             "dependsOn": ["^build"],
