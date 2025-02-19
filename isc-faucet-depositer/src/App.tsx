@@ -4,6 +4,7 @@
 import { ConnectButton, useCurrentAccount } from '@iota/dapp-kit';
 import { Box, Container, Flex, Heading } from '@radix-ui/themes';
 import { FaucetBox } from './FaucetBox';
+import { SendBox } from './SendBox';
 
 function App() {
     const currentAccount = useCurrentAccount();
@@ -34,7 +35,14 @@ function App() {
                     px="4"
                     style={{ background: 'var(--gray-a2)', minHeight: 500 }}
                 >
-                    {currentAccount ? <FaucetBox /> : <Heading>Please connect your wallet</Heading>}
+                    {currentAccount ? (
+                        <>
+                            <FaucetBox />
+                            <SendBox />
+                        </>
+                    ) : (
+                        <Heading>Please connect your wallet</Heading>
+                    )}
                 </Container>
             </Container>
         </>

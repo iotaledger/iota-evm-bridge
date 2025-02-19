@@ -16,9 +16,10 @@
         "@iota/iota-sdk": "0.4.1",
         "@radix-ui/themes": "^3.1.1",
         "@tanstack/react-query": "^5.50.1",
+        "bignumber.js": "^9.1.2",
+        "isc-client": "workspace:*",
         "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "isc-client": "workspace:*"
+        "react-dom": "^18.3.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",

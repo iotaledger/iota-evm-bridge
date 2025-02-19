@@ -21,7 +21,7 @@ export class IscTransaction {
     /**
      * Place some coins in a bag.
      */
-    placeCoinsInBag({ bag, amount }: { amount: number; bag: TransactionResult }) {
+    placeCoinsInBag({ bag, amount }: { amount: number | bigint; bag: TransactionResult }) {
         isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, amount);
     }
 
@@ -35,8 +35,8 @@ export class IscTransaction {
         gasBudget,
     }: {
         address: string;
-        amount: number;
-        gasBudget?: number;
+        amount: number | bigint;
+        gasBudget?: number | bigint;
         bag: TransactionResult;
     }) {
         isc.createAndSend(this.#transaction, this.#chainData, bag, amount, address, gasBudget);

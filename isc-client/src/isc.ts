@@ -18,7 +18,7 @@ export function placeCoinsInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionResult,
-    amount: number,
+    amount: number | bigint,
 ) {
     // Split the senders Gas coin so we have a coin to transfer
     const [splitCoin] = tx.splitCoins(tx.gas, [tx.pure(bcs.U64.serialize(amount))]);
@@ -34,10 +34,11 @@ export function createAndSend(
     tx: Transaction,
     { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
     assetsBag: TransactionResult,
-    amount: number,
+    amount: number | bigint,
     address: string,
-    gasBudget: number = 10000000,
+    _gasBudget?: number | bigint,
 ) {
+    const gasBudget = _gasBudget ?? 1000000;
     const agentID = IscAgentID.serialize({
         EthereumAddressAgentID: {
             chainID: bcs.fixedArray(32, bcs.u8()).fromHex(chainId),
@@ -45,7 +46,7 @@ export function createAndSend(
         },
     }).toBytes();
 
-    const allowance = amount + gasBudget;
+    const allowance = Number(amount) + Number(gasBudget);
 
     /* Execute iscmove::requests::create_and_send_request. 
        This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID) 
