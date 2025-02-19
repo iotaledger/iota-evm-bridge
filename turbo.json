@@ -3,8 +3,11 @@
     "$schema": "https://turbo.build/schema.json",
     "tasks": {
         "lint": {},
-        "format": {
+        "lint:fix": {
             "cache": false
+        },
+        "typecheck": {
+            "dependsOn": ["^build"]
         },
         "dev": {
             "dependsOn": ["^build"],
@@ -13,9 +16,7 @@
         },
         "build": {
             "dependsOn": ["^build"],
-            "outputs": [
-                "dist/**"
-            ]
+            "outputs": ["dist/**"]
         }
     }
 }

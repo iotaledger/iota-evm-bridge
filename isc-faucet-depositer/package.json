@@ -6,9 +6,14 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "lint": "eslint .",
         "preview": "vite preview",
-        "format": "prettier -w ."
+        "typecheck": "tsc --noEmit",
+        "eslint:check": "eslint --max-warnings=0 \"./src/**/*.{js,jsx,ts,tsx}\"",
+        "eslint:fix": "pnpm eslint:check --fix",
+        "prettier:check": "prettier -c --ignore-unknown --ignore-path=.prettierignore .",
+        "prettier:fix": "prettier -w --ignore-unknown --ignore-path=.prettierignore .",
+        "lint": "pnpm run typecheck && pnpm eslint:check && pnpm prettier:check",
+        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix"
     },
     "dependencies": {
         "@iota/bcs": "^0.2.1",
@@ -36,5 +41,9 @@
         "typescript": "^5.7.3",
         "typescript-eslint": "^8.18.0",
         "vite": "^5.3.3"
+    },
+    "lint-staged": {
+        "src/**/*.{ts,js,mjs,tsx}": "eslint --fix",
+        "src/**/*.{ts,js,mjs,tsx,scss,css}": "prettier --write"
     }
 }
