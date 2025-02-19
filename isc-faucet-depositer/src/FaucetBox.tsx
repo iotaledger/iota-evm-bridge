@@ -20,7 +20,6 @@ export function FaucetBox() {
             host: variables.faucet,
             recipient: currentAccount?.address,
         });
-        console.log(faucetResult);
     };
 
     return (
