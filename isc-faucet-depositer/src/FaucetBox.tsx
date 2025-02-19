@@ -41,9 +41,14 @@ export function FaucetBox() {
     });
 
     const sendFunds = async () => {
+        if (!currentAccount?.address) {
+            console.error('No account address');
+            return;
+        }
+
         const faucetResult = await requestIotaFromFaucetV0({
             host: variables.faucet,
-            recipient: currentAccount?.address!,
+            recipient: currentAccount?.address,
         });
 
         const GAS_BUDGET = 10000000;

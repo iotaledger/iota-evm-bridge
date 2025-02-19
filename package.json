@@ -5,7 +5,8 @@
     "scripts": {
         "isc-faucet-depositer": "turbo --filter ./isc-faucet-depositer",
         "isc-client": "turbo --filter ./isc-client",
-        "format": "turbo run format",
+        "lint": "turbo run lint",
+        "lint:fix": "turbo run lint:fix",
         "prepare": "husky"
     },
     "engines": {

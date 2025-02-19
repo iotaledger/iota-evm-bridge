@@ -6,9 +6,13 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "lint": "eslint .",
         "preview": "vite preview",
-        "format": "prettier -w ."
+        "eslint:check": "eslint --max-warnings=0 \"./src/**/*.{js,jsx,ts,tsx}\"",
+        "eslint:fix": "pnpm eslint:check --fix",
+        "prettier:check": "prettier -c --ignore-unknown --ignore-path=.prettierignore .",
+        "prettier:fix": "prettier -w --ignore-unknown --ignore-path=.prettierignore .",
+        "lint": "pnpm eslint:check && pnpm prettier:check",
+        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix"
     },
     "dependencies": {
         "@iota/bcs": "^0.2.1",
