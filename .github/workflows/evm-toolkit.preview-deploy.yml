@@ -1,0 +1,20 @@
+name: Preview Deploy for the EVM Toolkit Rebased
+
+on:
+    workflow_dispatch:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+        paths:
+            - 'isc-faucet-depositer/**'
+            - 'isc-client/**'
+
+jobs:
+    deploy-preview:
+        uses: ./.github/workflows/app-vercel-deploy.yml
+        with:
+            PRODUCTION: false
+        secrets:
+            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+            VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+            VERCEL_PROJECT_ID: ${{ secrets.IOTA_NETWORK_VERCEL_PROJECT_ID }}
+            VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
