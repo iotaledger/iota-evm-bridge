@@ -18,5 +18,8 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         }
-    }
+    },
+    "globalEnv": [
+        "VITE_WALLET_CONNECT_L2_PROJECT_ID"
+    ]
 }
