@@ -1,0 +1,3 @@
+{
+  "buildCommand": "cd ../ && pnpm isc-faucet-depositer build"
+}
