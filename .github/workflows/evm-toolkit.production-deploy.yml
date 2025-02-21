@@ -5,6 +5,7 @@ on:
         branches:
             - main
         paths:
+            - '.github/workflows/**'
             - 'isc-faucet-depositer/**'
             - 'isc-client/**'
 
@@ -16,5 +17,5 @@ jobs:
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-            VERCEL_PROJECT_ID: ${{ secrets.IOTA_NETWORK_VERCEL_PROJECT_ID }}
+            VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
             VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
