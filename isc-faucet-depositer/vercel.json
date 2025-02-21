@@ -1,0 +1,3 @@
+{
+    "buildCommand": "pnpm turbo --filter isc-faucet-depositer build"
+}
