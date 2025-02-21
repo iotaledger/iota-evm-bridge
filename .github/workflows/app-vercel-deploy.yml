@@ -15,9 +15,20 @@ on:
                 required: true
             VERCEL_SCOPE:
                 required: true
+            NETWORK_NAME:
+                required: true
+            NETWORK_RPC_L2:
+                required: true
+            WALLET_CONNECT_L2_PROJECT_ID:
+                required: true
 
 env:
+    VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
     VERCEL_ENVIRONMENT: ${{ inputs.PRODUCTION && 'production' || 'preview' }}
+    VITE_NETWORK_NAME: ${{ secrets.NETWORK_NAME }}
+    VITE_NETWORK_RPC_L2: ${{ secrets.NETWORK_RPC_L2 }}
+    VITE_WALLET_CONNECT_L2_PROJECT_ID: ${{ secrets.WALLET_CONNECT_L2_PROJECT_ID }}
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
