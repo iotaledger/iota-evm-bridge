@@ -19,3 +19,7 @@ jobs:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
             VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
+            VITE_NETWORK_NAME: ${{ secrets.NETWORK_NAME }}
+            VITE_NETWORK_RPC_L2: ${{ secrets.NETWORK_RPC_L2 }}
+            VITE_WALLET_CONNECT_L2_PROJECT_ID: ${{ secrets.WALLET_CONNECT_L2_PROJECT_ID }}
+
