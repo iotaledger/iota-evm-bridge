@@ -8,7 +8,7 @@ import { IscTransaction } from 'isc-client';
 import { parseAmount } from '../../../lib/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../../../networkConfig';
-import { useForm } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
@@ -36,7 +36,7 @@ export function DepositLayer1() {
     const client = useIotaClient();
     const { mutateAsync: signAndExecuteTransaction } = useSignAndExecuteTransaction();
     const variables = useNetworkVariables();
-    const { watch } = useForm<DepositFormData>();
+    const { watch } = useFormContext<DepositFormData>();
     const account = useCurrentAccount();
     const { depositAmount, receivingAddress } = watch();
     const { data: balance } = useBalance(account?.address || '');
