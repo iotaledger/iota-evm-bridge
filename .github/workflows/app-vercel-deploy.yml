@@ -15,6 +15,12 @@ on:
                 required: true
             VERCEL_SCOPE:
                 required: true
+            NETWORK_NAME:
+                required: true
+            NETWORK_RPC_L2:
+                required: true
+            WALLET_CONNECT_L2_PROJECT_ID:
+                required: true
 
 env:
     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
