@@ -75,7 +75,7 @@ export function DepositLayer1() {
         if (!transaction) {
             throw Error('Transaction is missing');
         }
-        signAndExecuteTransaction(
+        await signAndExecuteTransaction(
             {
                 transaction,
                 options: {

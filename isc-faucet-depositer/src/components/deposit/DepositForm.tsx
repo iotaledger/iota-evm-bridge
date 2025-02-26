@@ -21,7 +21,7 @@ import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
 
 interface DepositFormProps {
-    send: () => void;
+    send: () => Promise<void>;
     gasEstimation: number | null;
     isPayingAllBalance: boolean;
 }
@@ -53,8 +53,9 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
     }, [isLoadingBalance, trigger, getValues]);
 
     const onSubmit: SubmitHandler<DepositFormData> = useCallback(() => {
-        send();
-        setValue('depositAmount', '');
+        send().then(() => {
+            setValue('depositAmount', '');
+        });
     }, [send, setValue]);
 
     function handleMaxAmountClick() {
