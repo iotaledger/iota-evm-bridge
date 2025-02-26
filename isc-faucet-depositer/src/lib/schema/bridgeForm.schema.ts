@@ -20,8 +20,7 @@ export function createBridgeFormSchema(totalAccountBalance: bigint, coinDecimals
                 .refine(
                     (value) => {
                         const amount = parseAmount(value, coinDecimals);
-
-                        return amount <= totalAccountBalance;
+                        return amount ? amount <= totalAccountBalance : false;
                     },
                     {
                         message: 'Insufficient balance',

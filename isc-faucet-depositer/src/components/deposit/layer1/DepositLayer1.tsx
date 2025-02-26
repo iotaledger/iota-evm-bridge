@@ -24,7 +24,11 @@ async function buildTransaction(
     client: IotaClient,
 ) {
     const GAS_BUDGET = BigInt(10000000);
-    const amountToSend = parseAmount(amount, IOTA_DECIMALS) - GAS_BUDGET;
+    const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
+    if (!requestedAmount) {
+        throw Error('Amount is too high');
+    }
+    const amountToSend = requestedAmount - GAS_BUDGET;
 
     const iscTx = new IscTransaction(variables.chain);
     const bag = iscTx.newBag();
