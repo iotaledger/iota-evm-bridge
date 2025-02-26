@@ -14,11 +14,14 @@ import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useBalance } from '../../../hooks/useBalance';
 import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { IotaClient } from '@iota/iota-sdk/client';
 
-function buildTransaction(
-    address: string,
+async function buildTransaction(
+    senderAddress: string,
+    recipientAddress: string,
     amount: string,
     variables: ReturnType<typeof useNetworkVariables>,
+    client: IotaClient,
 ) {
     const GAS_BUDGET = BigInt(10000000);
     const amountToSend = parseAmount(amount, IOTA_DECIMALS) - GAS_BUDGET;
@@ -26,8 +29,11 @@ function buildTransaction(
     const iscTx = new IscTransaction(variables.chain);
     const bag = iscTx.newBag();
     iscTx.placeCoinsInBag({ amount: amountToSend, bag });
-    iscTx.createAndSend({ bag, address, amount: amountToSend });
+    iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
     const transaction = iscTx.build();
+
+    transaction.setSender(senderAddress);
+    await transaction.build({ client });
 
     return transaction;
 }
@@ -42,10 +48,20 @@ export function DepositLayer1() {
     const { data: balance } = useBalance(account?.address || '');
 
     const { data: transaction } = useQuery({
-        queryKey: [depositAmount, receivingAddress, variables.chain],
-        queryFn() {
-            return buildTransaction(receivingAddress, depositAmount, variables);
+        queryKey: [account?.address, depositAmount, receivingAddress, variables.chain],
+        async queryFn() {
+            if (!account?.address) {
+                throw Error('Missing sender address');
+            }
+            return await buildTransaction(
+                account?.address,
+                receivingAddress,
+                depositAmount,
+                variables,
+                client,
+            );
         },
+        enabled: !!client && !!account?.address,
     });
 
     const gasBudget = transaction?.getData().gasData.budget;
