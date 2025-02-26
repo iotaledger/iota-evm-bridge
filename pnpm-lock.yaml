@@ -66,6 +66,12 @@ importers:
       '@hookform/resolvers':
         specifier: ^4.1.0
         version: 4.1.0(react-hook-form@7.54.2(react@18.3.1))
+      '@iota/apps-ui-icons':
+        specifier: ^0.2.1
+        version: 0.2.1
+      '@iota/apps-ui-kit':
+        specifier: ^0.2.1
+        version: 0.2.1(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)
       '@iota/bcs':
         specifier: ^0.2.1
         version: 0.2.1
@@ -118,12 +124,6 @@ importers:
       '@eslint/js':
         specifier: ^9.17.0
         version: 9.20.0
-      '@iota/apps-ui-icons':
-        specifier: ^0.2.1
-        version: 0.2.1
-      '@iota/apps-ui-kit':
-        specifier: ^0.2.1
-        version: 0.2.1(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.18

@@ -31,12 +31,12 @@
         "react-hot-toast": "^2.5.2",
         "viem": "^2.23.3",
         "wagmi": "^2.14.11",
-        "zod": "^3.24.2"
+        "zod": "^3.24.2",
+        "@iota/apps-ui-icons": "^0.2.1",
+        "@iota/apps-ui-kit": "^0.2.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
-        "@iota/apps-ui-icons": "^0.2.1",
-        "@iota/apps-ui-kit": "^0.2.1",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
         "@typescript-eslint/eslint-plugin": "^8.18.0",
