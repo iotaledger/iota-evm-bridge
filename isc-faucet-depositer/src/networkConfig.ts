@@ -9,8 +9,8 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
         variables: {
             faucet: 'https://faucet.iota-rebased-alphanet.iota.cafe/gas',
             chain: {
-                chainId: '0x36574ba3886c4fbb4b6523f3ce23a34c81ac2aa54dfa68a5f35b8410fceae8e6',
-                packageId: '0x7b2fd27e09ad438c914fe2199cc78c174da92208384ac4341f61d2a15a588463',
+                chainId: '0x2edd9b83931b8fde8b210c21ab5444b9c456e20935c855a6e8319e685a1b1014',
+                packageId: '0xbdf426ba9f2df0fb84d28ea87395f0d353a3138ca72e37df51f15ac0d9a0325b',
                 coreContractAccounts: 0x3c4b5e02,
                 accountsTransferAllowanceTo: 0x23f4e3a1,
             },
