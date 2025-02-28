@@ -86,6 +86,8 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
         }
     })();
 
+    const gasEstimationDisplay = gasEstimation ? formatIOTAFromNanos(BigInt(gasEstimation)) : null;
+
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
@@ -143,7 +145,7 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
                     fullwidth
                     keyText="Est. Gas Fees"
                     supportingLabel="IOTA"
-                    value={gasEstimation ?? '--'}
+                    value={gasEstimationDisplay ?? '--'}
                 />
                 <KeyValueInfo
                     fullwidth
