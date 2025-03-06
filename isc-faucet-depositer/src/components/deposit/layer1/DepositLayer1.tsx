@@ -51,21 +51,8 @@ export function DepositLayer1() {
     const account = useCurrentAccount();
     const { depositAmount, receivingAddress } = watch();
     const { data: balance } = useBalance(account?.address || '');
+    const { writeContract } = useWriteContract( { mutation: { onError: (a,b) => { console.log("ERROR", a, b); } } });
 
-    const { writeContract } = useWriteContract();
-
-    // test: read send function from contract
-    const params = withdrawParameters(
-        account?.address ?? '0xadafe7af204550ab15d0e080a3af2212e697074c74698e70c3a9351606ef3d64',
-        Number(depositAmount),
-    );
-    const contract = useReadContract({
-        abi: iscAbi,
-        address: iscContractAddress,
-        functionName: 'send',
-        args: params,
-    });
-    console.log('contract send', contract);
     const { data: transaction } = useQuery({
         queryKey: [account?.address, depositAmount, receivingAddress, variables.chain],
         async queryFn() {
@@ -134,16 +121,21 @@ export function DepositLayer1() {
         if (!account?.address) {
             throw Error('Transaction is missing');
         }
-        console.log('withdraw');
+
         const address = account?.address;
         const params = await withdrawParameters(address, Number(depositAmount));
+
+        console.log(params);
 
         writeContract({
             abi: iscAbi,
             address: iscContractAddress,
             functionName: 'send',
             args: params,
-        });
+            // Added during testing, remove or change to your liking
+            maxFeePerGas: 9999999n,
+            chainId: 1074
+        });       
     };
 
     return (

@@ -11,48 +11,59 @@ export function withdrawParameters(
     // nativeTokens?: CoinStruct[],
     // nftID?: string,
 ) {
-    const agentID = IscAgentID.serialize({
-        AddressAgentID: {
-            a: bcs.fixedArray(32, bcs.u8()).fromHex(receiverAddress),
-        },
-    }).toBytes();
+    // You need to decide for yourself if you want to use the lowest base token value like we did in the past evm-toolkit back then (1i instead of 1Mi)
+    // Or if you want to use 1Mi equivalent. Then you have to multiply instead of divide.
+
+    // This works for now based on the number in the text field. 1 IOTA in the field == 1 IOTA out to L1
+    const convertedBaseToken = BigInt(baseTokensToWithdraw) * 10n ** 9n;
+
+    // Use this if you use the lowest possible coin value (like 1i)
+    // const convertedBaseToken = (BigInt(baseTokensToWithdraw) / (10n**9n));
+
+    // The decmials were lowered from 12 to 9
+    // I think that should do it.
+
     const parameters = [
+        // No need to bcs serialize anything, it can take the address as is
+        receiverAddress,
         {
-            // Receiver
-            data: agentID,
+            coins: [
+                {
+                    coinType: '0x2::iota::IOTA',
+                    amount: convertedBaseToken,
+                },
+                // Put additional native tokens here with the proper coin type and value
+            ],
+            objects: [
+                // Place any objects in here you want to withdraw
+            ],
         },
         {
-            // Fungible Tokens
-            // convert to 6 decimals as ISCMagic contract's send() function accepts only uint64
-            baseTokens: [{ '0x2::iota::IOTA': parseInt(String(baseTokensToWithdraw / 10 ** 12)) }], // baseTokensToWithdraw,
-            nativeTokens: [],
-            nfts: [],
-        },
-        {
-            // Metadata
-            targetContract: 0,
-            entrypoint: 0,
-            gasBudget: 0,
-            params: {
-                items: [],
+            message: {
+                target: {
+                    contractHname: 0,
+                    entryPoint: 0,
+                },
+                params: [],
             },
             allowance: {
-                baseTokens: 0,
-                nativeTokens: [],
-                nfts: [],
+                coins: [],
+                objects: [],
             },
+            // Magic number, experiment with it. Maybe try setting it to 0 too and see what happens.
+            gasBudget: 1000000000n,
         },
         {
-            // Options
-            timelock: 0,
+            timelock: 0n,
             expiration: {
                 time: 0,
-                returnAddress: {
-                    data: [],
-                },
+                // This is bad, it should be possible to make it undefined instead of passing a zero'd address.
+                // That's an ABI issue I guess. Keep it like this for now.
+                returnAddress: '0x0000000000000000000000000000000000000000000000000000000000000000',
             },
         },
     ];
+
     return parameters;
 }
 
