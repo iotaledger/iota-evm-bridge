@@ -5,7 +5,7 @@ import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { IscTransaction } from 'isc-client';
-import { parseAmount } from '../../../lib/utils';
+import { parseAmount, withdrawParameters } from '../../../lib/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../../../networkConfig';
 import { useFormContext } from 'react-hook-form';
@@ -13,8 +13,9 @@ import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useBalance } from '../../../hooks/useBalance';
-import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { iscAbi, iscContractAddress, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { IotaClient } from '@iota/iota-sdk/client';
+import { useReadContract, useWriteContract } from 'wagmi';
 
 async function buildTransaction(
     senderAddress: string,
@@ -51,6 +52,20 @@ export function DepositLayer1() {
     const { depositAmount, receivingAddress } = watch();
     const { data: balance } = useBalance(account?.address || '');
 
+    const { writeContract } = useWriteContract();
+
+    // test: read send function from contract
+    const params = withdrawParameters(
+        account?.address ?? '0xadafe7af204550ab15d0e080a3af2212e697074c74698e70c3a9351606ef3d64',
+        Number(depositAmount),
+    );
+    const contract = useReadContract({
+        abi: iscAbi,
+        address: iscContractAddress,
+        functionName: 'send',
+        args: params,
+    });
+    console.log('contract send', contract);
     const { data: transaction } = useQuery({
         queryKey: [account?.address, depositAmount, receivingAddress, variables.chain],
         async queryFn() {
@@ -115,10 +130,26 @@ export function DepositLayer1() {
             },
         );
     };
+    const withdraw = async () => {
+        if (!account?.address) {
+            throw Error('Transaction is missing');
+        }
+        console.log('withdraw');
+        const address = account?.address;
+        const params = await withdrawParameters(address, Number(depositAmount));
+
+        writeContract({
+            abi: iscAbi,
+            address: iscContractAddress,
+            functionName: 'send',
+            args: params,
+        });
+    };
 
     return (
         <DepositForm
             send={send}
+            withdraw={withdraw}
             gasEstimation={gasEstimation}
             isPayingAllBalance={isPayingAllBalance}
         />
