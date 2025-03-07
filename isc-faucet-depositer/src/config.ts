@@ -1,54 +1,114 @@
 // Copyright (c) 2025 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-export const NETWORK_NAME = import.meta.env.VITE_NETWORK_NAME;
-export const NETWORK_RPC_L2 = import.meta.env.VITE_NETWORK_RPC_L2;
-export const WALLET_CONNECT_L2_PROJECT_ID = import.meta.env.VITE_WALLET_CONNECT_L2_PROJECT_ID;
+import { createNetworkConfig } from '@iota/dapp-kit';
+import { Chain } from '@rainbow-me/rainbowkit';
+import { z } from 'zod';
 
-export const L2_TESTNET = {
-    id: 1075,
-    name: 'IOTA EVM Testnet',
+const VITE_PREFIX = 'VITE_';
+const HEX_REGEX = /^0x[0-9a-fA-F]+$/;
+
+const envSchema = z.object({
+    L1_NETWORK_NAME: z.string(),
+    L1_RPC_URL: z.string().url(),
+    L1_FAUCET_URL: z.string().url(),
+    L1_CHAIN_ID: z.string(),
+    L1_PACKAGE_ID: z.string(),
+    L1_CORE_CONTRACT_ACCOUNTS: z
+        .string()
+        .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+    L1_ACCOUNTS_TRANSFER_ALLOWANCE_TO: z
+        .string()
+        .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+    L2_RPC_URL: z.string().url(),
+    L2_CHAIN_ID: z.preprocess(
+        (val) => (val !== undefined ? Number(val) : undefined),
+        z.number().int().positive(),
+    ),
+    L2_CHAIN_NAME: z.string(),
+    L2_CHAIN_CURRENCY: z.string(),
+    L2_CHAIN_DECIMALS: z.preprocess(
+        (val) => (val !== undefined ? Number(val) : undefined),
+        z.number().int().positive().optional().default(3000),
+    ),
+    L2_CHAIN_EXPLORER_NAME: z.string(),
+    L2_CHAIN_EXPLORER_URL: z.string(),
+    L2_WAGMI_APP_NAME: z.string(),
+    L2_WALLET_CONNECT_PROJECT_ID: z.string(),
+});
+
+type EnvConfig = z.infer<typeof envSchema>;
+
+function loadEnv(): EnvConfig {
+    const rawEnv = import.meta.env;
+
+    const processedEnv: Record<string, unknown> = {};
+
+    Object.entries(rawEnv).forEach(([key, value]) => {
+        if (key.startsWith(VITE_PREFIX)) {
+            const unprefixedKey = key.slice(VITE_PREFIX.length);
+            processedEnv[unprefixedKey] = value;
+        }
+    });
+
+    try {
+        return envSchema.parse(processedEnv);
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            const missingVars = error.issues
+                .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+                .join('\n');
+            throw new Error(`Missing required configuration:\n${missingVars}`);
+        }
+
+        throw error;
+    }
+}
+
+export const CONFIG = loadEnv();
+
+export type Config = typeof CONFIG;
+
+export const L2_CHAIN_CONFIG: Chain = {
+    id: CONFIG.L2_CHAIN_ID,
+    name: CONFIG.L2_CHAIN_NAME,
     nativeCurrency: {
-        name: 'IOTA',
-        symbol: 'IOTA',
-        decimals: 18,
+        name: CONFIG.L2_CHAIN_CURRENCY,
+        symbol: CONFIG.L2_CHAIN_CURRENCY,
+        decimals: CONFIG.L2_CHAIN_DECIMALS,
     },
     rpcUrls: {
         default: {
-            http: [NETWORK_RPC_L2],
+            http: [CONFIG.L2_RPC_URL],
         },
     },
     blockExplorers: {
         default: {
-            name: 'IOTA EVM Testnet explorer',
-            url: 'https://explorer.evm.testnet.iotaledger.net',
+            name: CONFIG.L2_CHAIN_EXPLORER_NAME,
+            url: CONFIG.L2_CHAIN_EXPLORER_URL,
         },
     },
 };
-export const L2_MAINNET = {
-    id: 1072,
-    name: 'IOTA EVM',
-    nativeCurrency: {
-        name: 'IOTA',
-        symbol: 'IOTA',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: [NETWORK_RPC_L2],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'IOTA EVM explorer',
-            url: 'https://explorer.evm.iota.org',
-        },
-    },
-};
-export const L2_DEFAULT_NETWORK = NETWORK_NAME === 'mainnet' ? L2_MAINNET : L2_TESTNET;
 
-export const WAGMI_L2_CONFIG = {
-    appName: 'IOTA Bridge',
-    projectId: WALLET_CONNECT_L2_PROJECT_ID,
+export const L2_WAGMI_CONFIG = {
+    appName: CONFIG.L2_WAGMI_APP_NAME,
+    projectId: CONFIG.L2_WALLET_CONNECT_PROJECT_ID,
     ssr: true,
 };
+
+const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetworkConfig({
+    [CONFIG.L1_NETWORK_NAME]: {
+        url: CONFIG.L1_RPC_URL,
+        variables: {
+            faucet: CONFIG.L1_FAUCET_URL,
+            chain: {
+                chainId: CONFIG.L1_CHAIN_ID,
+                packageId: CONFIG.L1_PACKAGE_ID,
+                coreContractAccounts: parseInt(CONFIG.L1_CORE_CONTRACT_ACCOUNTS, 16),
+                accountsTransferAllowanceTo: parseInt(CONFIG.L1_ACCOUNTS_TRANSFER_ALLOWANCE_TO, 16),
+            },
+        },
+    },
+});
+
+export { useNetworkVariable, useNetworkVariables, networkConfig };

@@ -14,10 +14,10 @@ import {
 import { IotaClientProvider, WalletProvider } from '@iota/dapp-kit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
-import { networkConfig } from './networkConfig.ts';
+import { networkConfig } from './config.ts';
 import { ThemeProvider } from './providers/ThemeProvider.tsx';
 import { WagmiProvider } from 'wagmi';
-import { L2_DEFAULT_NETWORK, WAGMI_L2_CONFIG } from './config.ts';
+import { L2_CHAIN_CONFIG, L2_WAGMI_CONFIG } from './config.ts';
 import { useTheme } from './hooks/useTheme.ts';
 import { Theme } from './lib/enums';
 import { Toaster } from 'react-hot-toast';
@@ -28,8 +28,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <WagmiProvider
             config={getDefaultConfig({
-                ...WAGMI_L2_CONFIG,
-                chains: [L2_DEFAULT_NETWORK as Chain],
+                ...L2_WAGMI_CONFIG,
+                chains: [L2_CHAIN_CONFIG as Chain],
             })}
         >
             <QueryClientProvider client={queryClient}>
