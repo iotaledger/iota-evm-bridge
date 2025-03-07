@@ -69,6 +69,91 @@ export function createAndSend(
             tx.pure(bcs.U64.serialize(gasBudget.toString())),
         ],
     });
+}
 
-    return tx;
+export function takeCoinsBalanceFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+    amount: number | bigint,
+): TransactionResult {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, tx.pure(bcs.U64.serialize(amount))],
+    });
+}
+
+export function takeAllCoinsBalanceFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+): TransactionResult {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_all_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag],
+    });
+}
+
+export function placeCoinsBalanceInBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+    balance: TransactionResult,
+) {
+    tx.moveCall({
+        target: `${packageId}::assets_bag::place_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, balance],
+    });
+}
+
+export function placeAssetInBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+    asset: TransactionResult,
+) {
+    tx.moveCall({
+        target: `${packageId}::assets_bag::place_asset`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, asset],
+    });
+}
+
+export function takeAssetFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+) {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_asset`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, assetsBag], // TODO: USE ID!
+    });
+}
+
+export function getSizeOfBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+): TransactionResult {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::get_size`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag],
+    });
+}
+
+export function destroyBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionResult,
+): TransactionResult {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::destroy_empty`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag],
+    });
 }

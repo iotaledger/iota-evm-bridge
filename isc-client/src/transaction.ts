@@ -43,6 +43,61 @@ export class IscTransaction {
     }
 
     /**
+     * Take out the specied amount of coins from the bag.
+     */
+    takeCoinsBalanceFromBag({ bag, amount }: { amount: number | bigint; bag: TransactionResult }) {
+        return isc.takeCoinsBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
+    }
+
+    /**
+     * Take out all the coins from the bag.
+     */
+    takeAllCoinsBalanceFromBag({ bag }: { bag: TransactionResult }) {
+        return isc.takeAllCoinsBalanceFromBag(this.#transaction, this.#chainData, bag);
+    }
+
+    /**
+     * Place a coins balance in the bag.
+     */
+    placeCoinsBalanceInBag({
+        bag,
+        balance,
+    }: {
+        balance: TransactionResult;
+        bag: TransactionResult;
+    }) {
+        isc.placeCoinsBalanceInBag(this.#transaction, this.#chainData, bag, balance);
+    }
+
+    /**
+     * Place an asset in the bag.
+     */
+    placeAssetInBag({ bag, asset }: { asset: TransactionResult; bag: TransactionResult }) {
+        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, asset);
+    }
+
+    /**
+     * Take an asset from a bag.
+     */
+    takeAssetFromBag({ bag }: { bag: TransactionResult }) {
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag);
+    }
+
+    /**
+     * Get the size of the bag.
+     */
+    getSizeOfBag({ bag }: { bag: TransactionResult }) {
+        return isc.getSizeOfBag(this.#transaction, this.#chainData, bag);
+    }
+
+    /**
+     * Destroy the bag.
+     */
+    destroyBag({ bag }: { bag: TransactionResult }) {
+        return isc.destroyBag(this.#transaction, this.#chainData, bag);
+    }
+
+    /**
      * Return the IOTA Transaction.
      * @returns IOTA Transaction.
      */
