@@ -15,7 +15,7 @@ import BigNumber from 'bignumber.js';
 import { useBalance } from '../../../hooks/useBalance';
 import { iscAbi, iscContractAddress, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { IotaClient } from '@iota/iota-sdk/client';
-import { useReadContract, useWriteContract } from 'wagmi';
+import { useChainId, useWriteContract } from 'wagmi';
 
 async function buildTransaction(
     senderAddress: string,
@@ -51,7 +51,14 @@ export function DepositLayer1() {
     const account = useCurrentAccount();
     const { depositAmount, receivingAddress } = watch();
     const { data: balance } = useBalance(account?.address || '');
-    const { writeContract } = useWriteContract( { mutation: { onError: (a,b) => { console.log("ERROR", a, b); } } });
+    const { writeContract } = useWriteContract({
+        mutation: {
+            onError: (a, b) => {
+                console.log('ERROR', a, b);
+            },
+        },
+    });
+    const chainId = useChainId();
 
     const { data: transaction } = useQuery({
         queryKey: [account?.address, depositAmount, receivingAddress, variables.chain],
@@ -121,9 +128,7 @@ export function DepositLayer1() {
         if (!account?.address) {
             throw Error('Transaction is missing');
         }
-
-        const address = account?.address;
-        const params = await withdrawParameters(address, Number(depositAmount));
+        const params = await withdrawParameters(account.address, Number(depositAmount));
 
         console.log(params);
 
@@ -134,8 +139,8 @@ export function DepositLayer1() {
             args: params,
             // Added during testing, remove or change to your liking
             maxFeePerGas: 9999999n,
-            chainId: 1074
-        });       
+            chainId: chainId,
+        });
     };
 
     return (
