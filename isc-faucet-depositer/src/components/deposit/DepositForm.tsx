@@ -22,16 +22,10 @@ import { useAccount } from 'wagmi';
 
 interface DepositFormProps {
     send: () => Promise<void>;
-    withdraw: () => Promise<void>;
     gasEstimation: number | null;
     isPayingAllBalance: boolean;
 }
-export function DepositForm({
-    send,
-    gasEstimation,
-    isPayingAllBalance,
-    withdraw,
-}: DepositFormProps) {
+export function DepositForm({ send, gasEstimation, isPayingAllBalance }: DepositFormProps) {
     const { isConnected } = useCurrentWallet();
     const account = useCurrentAccount();
     const { data: balance, isLoading: isLoadingBalance } = useBalance(account?.address || '');
@@ -170,7 +164,6 @@ export function DepositForm({
                     !!Object.values(values).some((value) => value === '')
                 }
             />
-            <Button text="Withdraw Assets" htmlType={ButtonHtmlType.Button} onClick={withdraw} />
         </form>
     );
 }

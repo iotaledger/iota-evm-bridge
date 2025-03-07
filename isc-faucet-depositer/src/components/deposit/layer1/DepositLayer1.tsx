@@ -4,13 +4,11 @@
 import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
-import { withdrawParameters } from '../../../lib/utils';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import BigNumber from 'bignumber.js';
 import { useBalance } from '../../../hooks/useBalance';
-import { iscAbi, iscContractAddress, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { useChainId, useWriteContract } from 'wagmi';
+import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useBridgeStore } from '../../../lib/stores';
 import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
 
@@ -22,14 +20,6 @@ export function DepositLayer1() {
     const account = useCurrentAccount();
     const { depositAmount, receivingAddress } = watch();
     const { data: balance } = useBalance(account?.address || '');
-    const { writeContract } = useWriteContract({
-        mutation: {
-            onError: (a, b) => {
-                console.log('ERROR', a, b);
-            },
-        },
-    });
-    const chainId = useChainId();
 
     const { data: transactionData } = useBuildL1DepositTransaction({
         receivingAddress,
@@ -86,29 +76,10 @@ export function DepositLayer1() {
             },
         );
     };
-    const withdraw = async () => {
-        if (!account?.address) {
-            throw Error('Transaction is missing');
-        }
-        const params = await withdrawParameters(account.address, Number(depositAmount));
-
-        console.log(params);
-
-        writeContract({
-            abi: iscAbi,
-            address: iscContractAddress,
-            functionName: 'send',
-            args: params,
-            // Added during testing, remove or change to your liking
-            maxFeePerGas: 9999999n,
-            chainId: chainId,
-        });
-    };
 
     return (
         <DepositForm
             send={send}
-            withdraw={withdraw}
             gasEstimation={gasEstimation}
             isPayingAllBalance={isPayingAllBalance}
         />
