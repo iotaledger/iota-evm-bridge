@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { IscTransaction } from 'isc-client';
 import { parseAmount } from '../../../lib/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
-import { useNetworkVariables } from '../../../config';
+import { useNetworkVariables } from '../../../config/l1config';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useQuery } from '@tanstack/react-query';

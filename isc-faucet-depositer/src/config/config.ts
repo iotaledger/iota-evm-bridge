@@ -1,8 +1,6 @@
 // Copyright (c) 2025 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { createNetworkConfig } from '@iota/dapp-kit';
-import { Chain } from '@rainbow-me/rainbowkit';
 import { z } from 'zod';
 
 const VITE_PREFIX = 'VITE_';
@@ -68,47 +66,3 @@ function loadEnv(): EnvConfig {
 export const CONFIG = loadEnv();
 
 export type Config = typeof CONFIG;
-
-export const L2_CHAIN_CONFIG: Chain = {
-    id: CONFIG.L2_CHAIN_ID,
-    name: CONFIG.L2_CHAIN_NAME,
-    nativeCurrency: {
-        name: CONFIG.L2_CHAIN_CURRENCY,
-        symbol: CONFIG.L2_CHAIN_CURRENCY,
-        decimals: CONFIG.L2_CHAIN_DECIMALS,
-    },
-    rpcUrls: {
-        default: {
-            http: [CONFIG.L2_RPC_URL],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: CONFIG.L2_CHAIN_EXPLORER_NAME,
-            url: CONFIG.L2_CHAIN_EXPLORER_URL,
-        },
-    },
-};
-
-export const L2_WAGMI_CONFIG = {
-    appName: CONFIG.L2_WAGMI_APP_NAME,
-    projectId: CONFIG.L2_WALLET_CONNECT_PROJECT_ID,
-    ssr: true,
-};
-
-const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetworkConfig({
-    [CONFIG.L1_NETWORK_NAME]: {
-        url: CONFIG.L1_RPC_URL,
-        variables: {
-            faucet: CONFIG.L1_FAUCET_URL,
-            chain: {
-                chainId: CONFIG.L1_CHAIN_ID,
-                packageId: CONFIG.L1_PACKAGE_ID,
-                coreContractAccounts: parseInt(CONFIG.L1_CORE_CONTRACT_ACCOUNTS, 16),
-                accountsTransferAllowanceTo: parseInt(CONFIG.L1_ACCOUNTS_TRANSFER_ALLOWANCE_TO, 16),
-            },
-        },
-    },
-});
-
-export { useNetworkVariable, useNetworkVariables, networkConfig };
