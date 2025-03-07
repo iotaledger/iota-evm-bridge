@@ -7,8 +7,10 @@ import { createBridgeFormSchema, DepositFormData } from '../../lib/schema/bridge
 import { useCurrentAccount } from '@iota/dapp-kit';
 import { useBalance } from '../../hooks/useBalance';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useBridgeStore } from '../../lib/stores';
 
 export function Bridge() {
+    const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
     const account = useCurrentAccount();
     const { data: balance } = useBalance(account?.address || '');
 
@@ -33,7 +35,8 @@ export function Bridge() {
                     </div>
 
                     <div className="p-md--rs">
-                        <DepositLayer1 />
+                        {!!isFromLayer1 && <DepositLayer1 />}
+                        {/* {!isFromLayer1 && <DepositLayer2 />} */}
                     </div>
                 </div>
             </div>

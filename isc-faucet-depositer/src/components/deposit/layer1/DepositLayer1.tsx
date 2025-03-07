@@ -4,49 +4,20 @@
 import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
-import { IscTransaction } from 'isc-client';
-import { parseAmount, withdrawParameters } from '../../../lib/utils';
-import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
-import { useNetworkVariables } from '../../../networkConfig';
+import { withdrawParameters } from '../../../lib/utils';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useBalance } from '../../../hooks/useBalance';
 import { iscAbi, iscContractAddress, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { IotaClient } from '@iota/iota-sdk/client';
 import { useChainId, useWriteContract } from 'wagmi';
-
-async function buildTransaction(
-    senderAddress: string,
-    recipientAddress: string,
-    amount: string,
-    variables: ReturnType<typeof useNetworkVariables>,
-    client: IotaClient,
-) {
-    const GAS_BUDGET = BigInt(10000000);
-    const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
-    if (!requestedAmount) {
-        throw Error('Amount is too high');
-    }
-    const amountToSend = requestedAmount - GAS_BUDGET;
-
-    const iscTx = new IscTransaction(variables.chain);
-    const bag = iscTx.newBag();
-    iscTx.placeCoinsInBag({ amount: amountToSend, bag });
-    iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
-    const transaction = iscTx.build();
-
-    transaction.setSender(senderAddress);
-    await transaction.build({ client });
-
-    return transaction;
-}
+import { useBridgeStore } from '../../../lib/stores';
+import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
 
 export function DepositLayer1() {
+    const setIsTransactionLoading = useBridgeStore((state) => state.setIsTransactionLoading);
     const client = useIotaClient();
     const { mutateAsync: signAndExecuteTransaction } = useSignAndExecuteTransaction();
-    const variables = useNetworkVariables();
     const { watch } = useFormContext<DepositFormData>();
     const account = useCurrentAccount();
     const { depositAmount, receivingAddress } = watch();
@@ -60,24 +31,11 @@ export function DepositLayer1() {
     });
     const chainId = useChainId();
 
-    const { data: transaction } = useQuery({
-        queryKey: [account?.address, depositAmount, receivingAddress, variables.chain],
-        async queryFn() {
-            if (!account?.address) {
-                throw Error('Missing sender address');
-            }
-            return await buildTransaction(
-                account?.address,
-                receivingAddress,
-                depositAmount,
-                variables,
-                client,
-            );
-        },
-        enabled: !!client && !!account?.address,
+    const { data: transactionData } = useBuildL1DepositTransaction({
+        receivingAddress,
+        amount: depositAmount,
     });
-
-    const gasBudget = transaction?.getData().gasData.budget;
+    const gasBudget = transactionData?.gasSummary?.totalGas;
     const gasEstimation = gasBudget ? Number(gasBudget) : null;
 
     const isPayingAllBalance = new BigNumber(depositAmount).isGreaterThan(
@@ -85,12 +43,13 @@ export function DepositLayer1() {
     );
 
     const send = async () => {
-        if (!transaction) {
+        if (!transactionData?.transaction) {
             throw Error('Transaction is missing');
         }
+        setIsTransactionLoading(true);
         await signAndExecuteTransaction(
             {
-                transaction,
+                transaction: transactionData.transaction,
                 options: {
                     showEffects: true,
                     showEvents: true,
@@ -120,6 +79,9 @@ export function DepositLayer1() {
                     } else {
                         toast.error('Something went wrong while submitting deposit.');
                     }
+                },
+                onSettled: () => {
+                    setIsTransactionLoading(false);
                 },
             },
         );
