@@ -5,15 +5,15 @@ import { createNetworkConfig } from '@iota/dapp-kit';
 import { CONFIG } from './config';
 
 const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetworkConfig({
-    [CONFIG.L1_NETWORK_NAME]: {
-        url: CONFIG.L1_RPC_URL,
+    [CONFIG.L1.networkName]: {
+        url: CONFIG.L1.rpcUrl,
         variables: {
-            faucet: CONFIG.L1_FAUCET_URL,
+            faucet: CONFIG.L1.faucetUrl,
             chain: {
-                chainId: CONFIG.L1_CHAIN_ID,
-                packageId: CONFIG.L1_PACKAGE_ID,
-                coreContractAccounts: parseInt(CONFIG.L1_CORE_CONTRACT_ACCOUNTS, 16),
-                accountsTransferAllowanceTo: parseInt(CONFIG.L1_ACCOUNTS_TRANSFER_ALLOWANCE_TO, 16),
+                chainId: CONFIG.L1.chainId,
+                packageId: CONFIG.L1.packageId,
+                coreContractAccounts: parseInt(CONFIG.L1.coreContractAccounts, 16),
+                accountsTransferAllowanceTo: parseInt(CONFIG.L1.accountsTransferAllowanceTo, 16),
             },
         },
     },

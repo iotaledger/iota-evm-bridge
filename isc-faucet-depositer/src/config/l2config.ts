@@ -5,28 +5,28 @@ import { Chain } from '@rainbow-me/rainbowkit';
 import { CONFIG } from './config';
 
 export const L2_CHAIN_CONFIG: Chain = {
-    id: CONFIG.L2_CHAIN_ID,
-    name: CONFIG.L2_CHAIN_NAME,
+    id: CONFIG.L2.chainId,
+    name: CONFIG.L2.chainName,
     nativeCurrency: {
-        name: CONFIG.L2_CHAIN_CURRENCY,
-        symbol: CONFIG.L2_CHAIN_CURRENCY,
-        decimals: CONFIG.L2_CHAIN_DECIMALS,
+        name: CONFIG.L2.chainCurrency,
+        symbol: CONFIG.L2.chainCurrency,
+        decimals: CONFIG.L2.chainDecimals,
     },
     rpcUrls: {
         default: {
-            http: [CONFIG.L2_RPC_URL],
+            http: [CONFIG.L2.rpcUrl],
         },
     },
     blockExplorers: {
         default: {
-            name: CONFIG.L2_CHAIN_EXPLORER_NAME,
-            url: CONFIG.L2_CHAIN_EXPLORER_URL,
+            name: CONFIG.L2.chainExplorerName,
+            url: CONFIG.L2.chainExplorerUrl,
         },
     },
 };
 
 export const L2_WAGMI_CONFIG = {
-    appName: CONFIG.L2_WAGMI_APP_NAME,
-    projectId: CONFIG.L2_WALLET_CONNECT_PROJECT_ID,
+    appName: CONFIG.L2.wagmiAppName,
+    projectId: CONFIG.L2.walletConnectProjectId,
     ssr: true,
 };

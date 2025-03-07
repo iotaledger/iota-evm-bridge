@@ -3,54 +3,58 @@
 
 import { z } from 'zod';
 
-const VITE_PREFIX = 'VITE_';
 const HEX_REGEX = /^0x[0-9a-fA-F]+$/;
 
 const envSchema = z.object({
-    L1_NETWORK_NAME: z.string(),
-    L1_RPC_URL: z.string().url(),
-    L1_FAUCET_URL: z.string().url(),
-    L1_CHAIN_ID: z.string(),
-    L1_PACKAGE_ID: z.string(),
-    L1_CORE_CONTRACT_ACCOUNTS: z
-        .string()
-        .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
-    L1_ACCOUNTS_TRANSFER_ALLOWANCE_TO: z
-        .string()
-        .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
-    L2_RPC_URL: z.string().url(),
-    L2_CHAIN_ID: z.preprocess(
-        (val) => (val !== undefined ? Number(val) : undefined),
-        z.number().int().positive(),
-    ),
-    L2_CHAIN_NAME: z.string(),
-    L2_CHAIN_CURRENCY: z.string(),
-    L2_CHAIN_DECIMALS: z.preprocess(
-        (val) => (val !== undefined ? Number(val) : undefined),
-        z.number().int().positive().optional().default(3000),
-    ),
-    L2_CHAIN_EXPLORER_NAME: z.string(),
-    L2_CHAIN_EXPLORER_URL: z.string(),
-    L2_WAGMI_APP_NAME: z.string(),
-    L2_WALLET_CONNECT_PROJECT_ID: z.string(),
+    L1: z.object({
+        networkName: z.string(),
+        rpcUrl: z.string().url(),
+        faucetUrl: z.string().url(),
+        chainId: z.string(),
+        packageId: z.string(),
+        coreContractAccounts: z
+            .string()
+            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+        accountsTransferAllowanceTo: z
+            .string()
+            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+    }),
+    L2: z.object({
+        chainName: z.string(),
+        chainCurrency: z.string(),
+        rpcUrl: z.string().url(),
+        chainId: z.preprocess(
+            (val) => (val !== undefined ? Number(val) : undefined),
+            z.number().int().positive(),
+        ),
+        chainDecimals: z.preprocess(
+            (val) => (val !== undefined ? Number(val) : undefined),
+            z.number().int().positive(),
+        ),
+        chainExplorerName: z.string(),
+        chainExplorerUrl: z.string(),
+        wagmiAppName: z.string(),
+        walletConnectProjectId: z.string(),
+    }),
 });
 
 type EnvConfig = z.infer<typeof envSchema>;
 
 function loadEnv(): EnvConfig {
-    const rawEnv = import.meta.env;
+    const rawEvmToolkitConfig = import.meta.env.VITE_EVM_TOOLKIT_CONFIG;
 
-    const processedEnv: Record<string, unknown> = {};
-
-    Object.entries(rawEnv).forEach(([key, value]) => {
-        if (key.startsWith(VITE_PREFIX)) {
-            const unprefixedKey = key.slice(VITE_PREFIX.length);
-            processedEnv[unprefixedKey] = value;
-        }
-    });
+    let evmToolkitConfig: Record<string, unknown> = {};
 
     try {
-        return envSchema.parse(processedEnv);
+        evmToolkitConfig = JSON.parse(rawEvmToolkitConfig);
+    } catch (error) {
+        throw new Error(
+            `Failed to parse EVM Toolkit config JSON env var! ${(error as Error)?.message}`,
+        );
+    }
+
+    try {
+        return envSchema.parse(evmToolkitConfig);
     } catch (error) {
         if (error instanceof z.ZodError) {
             const missingVars = error.issues
