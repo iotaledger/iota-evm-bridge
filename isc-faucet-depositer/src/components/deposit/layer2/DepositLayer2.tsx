@@ -1,7 +1,7 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useWriteContract } from 'wagmi';
+import { useChainId, useWriteContract } from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
@@ -17,7 +17,7 @@ export function DepositLayer2() {
     const account = useCurrentAccount();
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount } = watch();
-
+    const chainId = useChainId();
     const {
         data: hash,
         writeContract,
@@ -76,7 +76,7 @@ export function DepositLayer2() {
             args: params,
             // Added during testing, remove or change to your liking
             maxFeePerGas: 9999999n,
-            chainId: 1074,
+            chainId: chainId,
         });
     };
 

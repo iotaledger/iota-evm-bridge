@@ -25,6 +25,28 @@ export const L2_TESTNET = {
         },
     },
 };
+
+export const L2_ALPHANET = {
+    id: 1074,
+    name: 'IOTA EVM Alphanet',
+    nativeCurrency: {
+        name: 'IOTA',
+        symbol: 'IOTA',
+        decimals: 18,
+    },
+    rpcUrls: {
+        default: {
+            http: [NETWORK_RPC_L2],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: 'IOTA EVM Alphanet explorer',
+            url: 'http://168.119.254.240',
+        },
+    },
+};
+
 export const L2_MAINNET = {
     id: 1072,
     name: 'IOTA EVM',
@@ -45,7 +67,12 @@ export const L2_MAINNET = {
         },
     },
 };
-export const L2_DEFAULT_NETWORK = NETWORK_NAME === 'mainnet' ? L2_MAINNET : L2_TESTNET;
+export const L2_DEFAULT_NETWORK =
+    NETWORK_NAME === 'alphanet'
+        ? L2_ALPHANET
+        : NETWORK_NAME === 'mainnet'
+          ? L2_MAINNET
+          : L2_TESTNET;
 
 export const WAGMI_L2_CONFIG = {
     appName: 'IOTA Bridge',
