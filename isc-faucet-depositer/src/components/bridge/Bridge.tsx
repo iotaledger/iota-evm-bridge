@@ -4,19 +4,17 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useMemo } from 'react';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { createBridgeFormSchema, DepositFormData } from '../../lib/schema/bridgeForm.schema';
-import { useCurrentAccount } from '@iota/dapp-kit';
-import { useBalance } from '../../hooks/useBalance';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBridgeStore } from '../../lib/stores';
+import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 
 export function Bridge() {
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const account = useCurrentAccount();
-    const { data: balance } = useBalance(account?.address || '');
+    const { availableBalance } = useGetCurrentAvailableBalance();
 
     const formSchema = useMemo(
-        () => createBridgeFormSchema(BigInt(balance?.totalBalance ?? 0), IOTA_DECIMALS),
-        [balance],
+        () => createBridgeFormSchema(availableBalance, IOTA_DECIMALS, isFromLayer1),
+        [availableBalance, isFromLayer1],
     );
 
     const formMethods = useForm<DepositFormData>({

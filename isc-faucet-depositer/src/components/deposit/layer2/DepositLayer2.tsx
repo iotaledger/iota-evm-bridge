@@ -1,41 +1,34 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useChainId, useWriteContract } from 'wagmi';
+import { useAccount, useChainId, useGasPrice, usePublicClient, useWriteContract } from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { useBridgeStore } from '../../../lib/stores';
 import { withdrawParameters } from '../../../lib/utils';
 import { iscAbi, iscContractAddress, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { useFormContext } from 'react-hook-form';
-import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useCurrentAccount } from '@iota/dapp-kit';
+import { formatEther } from 'viem';
+import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
 
 export function DepositLayer2() {
     const setIsTransactionLoading = useBridgeStore((state) => state.setIsTransactionLoading);
-    const account = useCurrentAccount();
-    const { watch } = useFormContext<DepositFormData>();
-    const { depositAmount } = watch();
+    const setGasEstimation = useBridgeStore((state) => state.setGasEstimation);
+    const layer2Account = useAccount();
+    const client = usePublicClient();
     const chainId = useChainId();
-    const {
-        data: hash,
-        writeContract,
-        isSuccess,
-        isError,
-        error,
-    } = useWriteContract({
-        mutation: {
-            onError: (a, b) => {
-                console.log('ERROR', a, b);
-            },
-        },
-    });
+    const gasPrice = useGasPrice();
 
-    const GAS_BUDGET = BigInt(10000000);
-    const gasBudget = GAS_BUDGET;
-    const gasEstimation = gasBudget ? Number(gasBudget) : null;
-    const isPayingAllBalance = false;
+    const account = useCurrentAccount();
+    const address = account?.address;
+    const { depositAmount } = useBridgeFormValues();
+
+    const { data: hash, writeContract, isSuccess, isError, error } = useWriteContract();
+
+    useEffect(() => {
+        estimateL2DepositTransactionGas();
+    }, [address, depositAmount]);
 
     useEffect(() => {
         if (isSuccess && hash) {
@@ -60,14 +53,30 @@ export function DepositLayer2() {
         }
     }, [isError, error, setIsTransactionLoading]);
 
-    const send = async () => {
-        if (!account?.address) {
+    const estimateL2DepositTransactionGas = async () => {
+        if (address && depositAmount) {
+            const params = withdrawParameters(address, depositAmount);
+            const gas = await client?.estimateContractGas({
+                address: iscContractAddress,
+                abi: iscAbi,
+                functionName: 'send',
+                args: params,
+                account: layer2Account.address,
+            });
+            if (gas && gasPrice.data) {
+                setGasEstimation(formatEther(gas * gasPrice.data));
+            }
+        } else {
+            setGasEstimation(null);
+        }
+    };
+
+    const deposit = async () => {
+        if (!address || !depositAmount) {
             throw Error('Transaction is missing');
         }
         setIsTransactionLoading(true);
-        const params = await withdrawParameters(account.address, Number(depositAmount));
-
-        console.log(params);
+        const params = withdrawParameters(address, depositAmount);
 
         writeContract({
             abi: iscAbi,
@@ -80,11 +89,5 @@ export function DepositLayer2() {
         });
     };
 
-    return (
-        <DepositForm
-            send={send}
-            gasEstimation={gasEstimation}
-            isPayingAllBalance={isPayingAllBalance}
-        />
-    );
+    return <DepositForm deposit={deposit} />;
 }

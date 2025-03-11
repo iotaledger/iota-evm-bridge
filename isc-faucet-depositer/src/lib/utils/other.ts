@@ -1,10 +1,13 @@
+import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
+import { parseAmount } from './parseAmount';
+
 export const shortenHash = (txHash: string) => {
     return `${txHash.slice(0, 6)}...${txHash.slice(-4)}`;
 };
 
 export function withdrawParameters(
     receiverAddress: string,
-    baseTokensToWithdraw: number,
+    baseTokensToWithdraw: string,
     // nativeTokens?: CoinStruct[],
     // nftID?: string,
 ) {
@@ -12,7 +15,7 @@ export function withdrawParameters(
     // Or if you want to use 1Mi equivalent. Then you have to multiply instead of divide.
 
     // This works for now based on the number in the text field. 1 IOTA in the field == 1 IOTA out to L1
-    const convertedBaseToken = BigInt(baseTokensToWithdraw) * 10n ** 9n;
+    const convertedBaseToken = Number(parseAmount(baseTokensToWithdraw, IOTA_DECIMALS));
 
     // Use this if you use the lowest possible coin value (like 1i)
     // const convertedBaseToken = (BigInt(baseTokensToWithdraw) / (10n**9n));

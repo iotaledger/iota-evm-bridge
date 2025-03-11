@@ -1,15 +1,15 @@
+// Copyright (c) 2025 IOTA Stiftung
+// SPDX-License-Identifier: Apache-2.0
+
 import { create } from 'zustand';
-import type { Transaction } from '@iota/iota-sdk/transactions';
 
 interface BridgeState {
     isFromLayer1: boolean;
     toggleBridgeDirection: () => void;
     isDepositAddressManualInput: boolean;
     toggleIsDepositAddressManualInput: () => void;
-    layer1BridgeTransaction: Transaction | null;
-    setLayer1BridgeTransaction: (value: Transaction) => void;
     gasEstimation: string | null;
-    setGasEstimation: (gasEstimation: string) => void;
+    setGasEstimation: (gasEstimation: string | null) => void;
     isTransactionLoading: boolean;
     setIsTransactionLoading: (value: boolean) => void;
 }
@@ -27,11 +27,6 @@ export const useBridgeStore = create<BridgeState>((set, get) => {
         isDepositAddressManualInput: false,
         toggleIsDepositAddressManualInput: () => {
             set({ isDepositAddressManualInput: !get().isDepositAddressManualInput });
-        },
-
-        layer1BridgeTransaction: null,
-        setLayer1BridgeTransaction: (value: Transaction) => {
-            set({ layer1BridgeTransaction: value });
         },
 
         gasEstimation: null,

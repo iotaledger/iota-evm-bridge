@@ -1,12 +1,18 @@
 import { z } from 'zod';
+import { BridgeFormInputName } from '../enums';
 import { parseAmount } from '../utils';
+import { isAddress, parseEther } from 'viem';
+import { isValidIotaAddress } from '@iota/iota-sdk/utils';
 import BigNumber from 'bignumber.js';
-import { isAddress } from 'viem';
 
-export function createBridgeFormSchema(totalAccountBalance: bigint, coinDecimals: number) {
+export function createBridgeFormSchema(
+    totalAccountBalance: bigint,
+    coinDecimals: number,
+    isFromLayer1: boolean,
+) {
     return z
         .object({
-            depositAmount: z
+            [BridgeFormInputName.DepositAmount]: z
                 .string()
                 .trim()
                 .refine(
@@ -19,19 +25,24 @@ export function createBridgeFormSchema(totalAccountBalance: bigint, coinDecimals
                 )
                 .refine(
                     (value) => {
-                        const amount = parseAmount(value, coinDecimals);
+                        const amount = isFromLayer1
+                            ? parseAmount(value, coinDecimals)
+                            : parseEther(value);
                         return amount ? amount <= totalAccountBalance : false;
                     },
                     {
                         message: 'Insufficient balance',
                     },
                 ),
-            receivingAddress: z
+            [BridgeFormInputName.ReceivingAddress]: z
                 .string()
                 .trim()
-                .refine((address) => isAddress(address) as boolean, {
-                    message: 'Invalid address',
-                }),
+                .refine(
+                    (address) => (isFromLayer1 ? isAddress(address) : isValidIotaAddress(address)),
+                    {
+                        message: 'Invalid address',
+                    },
+                ),
         })
         .required();
 }

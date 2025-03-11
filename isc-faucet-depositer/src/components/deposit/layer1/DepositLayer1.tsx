@@ -1,38 +1,39 @@
 // Copyright (c) 2025 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
+import { useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
-import { useFormContext } from 'react-hook-form';
-import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import BigNumber from 'bignumber.js';
-import { useBalance } from '../../../hooks/useBalance';
+
 import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useBridgeStore } from '../../../lib/stores';
 import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
+import { useEffect } from 'react';
+import { formatIOTAFromNanos } from '../../../lib/utils';
+import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
 
 export function DepositLayer1() {
     const setIsTransactionLoading = useBridgeStore((state) => state.setIsTransactionLoading);
+    const setGasEstimation = useBridgeStore((state) => state.setGasEstimation);
+
     const client = useIotaClient();
     const { mutateAsync: signAndExecuteTransaction } = useSignAndExecuteTransaction();
-    const { watch } = useFormContext<DepositFormData>();
-    const account = useCurrentAccount();
-    const { depositAmount, receivingAddress } = watch();
-    const { data: balance } = useBalance(account?.address || '');
+    const { depositAmount, receivingAddress } = useBridgeFormValues();
 
     const { data: transactionData } = useBuildL1DepositTransaction({
         receivingAddress,
         amount: depositAmount,
     });
-    const gasBudget = transactionData?.gasSummary?.totalGas;
-    const gasEstimation = gasBudget ? Number(gasBudget) : null;
 
-    const isPayingAllBalance = new BigNumber(depositAmount).isGreaterThan(
-        new BigNumber(balance?.totalBalance ?? 0).minus(gasEstimation ?? 0),
-    );
+    useEffect(() => {
+        if (transactionData?.gasSummary?.totalGas) {
+            setGasEstimation(
+                formatIOTAFromNanos(BigInt(transactionData.gasSummary.totalGas)) ?? null,
+            );
+        }
+    }, [transactionData, setGasEstimation]);
 
-    const send = async () => {
+    const deposit = async () => {
         if (!transactionData?.transaction) {
             throw Error('Transaction is missing');
         }
@@ -77,11 +78,5 @@ export function DepositLayer1() {
         );
     };
 
-    return (
-        <DepositForm
-            send={send}
-            gasEstimation={gasEstimation}
-            isPayingAllBalance={isPayingAllBalance}
-        />
-    );
+    return <DepositForm deposit={deposit} />;
 }
