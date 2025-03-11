@@ -27,9 +27,7 @@ export function DepositLayer1() {
 
     useEffect(() => {
         if (transactionData?.gasSummary?.totalGas) {
-            setGasEstimation(
-                formatIOTAFromNanos(BigInt(transactionData.gasSummary.totalGas)) ?? null,
-            );
+            setGasEstimation(formatIOTAFromNanos(BigInt(transactionData.gasSummary.totalGas)));
         }
     }, [transactionData, setGasEstimation]);
 

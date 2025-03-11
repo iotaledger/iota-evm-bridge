@@ -1,7 +1,7 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useAccount, useChainId, useGasPrice, usePublicClient, useWriteContract } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWriteContract } from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
@@ -9,16 +9,20 @@ import { useBridgeStore } from '../../../lib/stores';
 import { withdrawParameters } from '../../../lib/utils';
 import { iscAbi, iscContractAddress, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useCurrentAccount } from '@iota/dapp-kit';
-import { formatEther } from 'viem';
+import { formatGwei } from 'viem';
 import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
+import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
+import BigNumber from 'bignumber.js';
 
 export function DepositLayer2() {
     const setIsTransactionLoading = useBridgeStore((state) => state.setIsTransactionLoading);
     const setGasEstimation = useBridgeStore((state) => state.setGasEstimation);
+    const gasEstimation = useBridgeStore((state) => state.gasEstimation);
+
     const layer2Account = useAccount();
     const client = usePublicClient();
     const chainId = useChainId();
-    const gasPrice = useGasPrice();
+    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const account = useCurrentAccount();
     const address = account?.address;
@@ -63,9 +67,7 @@ export function DepositLayer2() {
                 args: params,
                 account: layer2Account.address,
             });
-            if (gas && gasPrice.data) {
-                setGasEstimation(formatEther(gas * gasPrice.data));
-            }
+            setGasEstimation(gas ? formatGwei(gas) : null);
         } else {
             setGasEstimation(null);
         }
@@ -76,8 +78,11 @@ export function DepositLayer2() {
             throw Error('Transaction is missing');
         }
         setIsTransactionLoading(true);
-        const params = withdrawParameters(address, depositAmount);
-
+        const depositTotal =
+            isPayingAllBalance && gasEstimation
+                ? new BigNumber(depositAmount).minus(gasEstimation).toString()
+                : depositAmount;
+        const params = withdrawParameters(address, depositTotal);
         writeContract({
             abi: iscAbi,
             address: iscContractAddress,
