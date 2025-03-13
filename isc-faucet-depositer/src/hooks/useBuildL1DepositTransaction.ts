@@ -5,11 +5,14 @@ import { getGasSummary, parseAmount } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config/l1config';
+import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
+import { useBridgeStore } from '../lib/stores';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
     amount: string;
 }
+const GAS_BUDGET = 10000000n;
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
@@ -19,18 +22,30 @@ export function useBuildL1DepositTransaction({
     const client = useIotaClient();
     const variables = useNetworkVariables();
     const senderAddress = currentAccount?.address as string;
-    // const isBridgingAllBalance = useIsBridgingAllBalance();
-    // const gasEstimation = useBridgeStore((state) => state.gasEstimation);
+    const isBridgingAllBalance = useIsBridgingAllBalance();
+    const gasEstimation = useBridgeStore((state) => state.gasEstimation);
 
     return useQuery({
-        queryKey: ['l1-deposit-transaction', receivingAddress, amount, senderAddress],
+        queryKey: [
+            'l1-deposit-transaction',
+            receivingAddress,
+            amount,
+            senderAddress,
+            gasEstimation,
+            isBridgingAllBalance,
+        ],
         queryFn: async () => {
-            const GAS_BUDGET = BigInt(10000000);
             const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
             if (!requestedAmount) {
                 throw Error('Amount is too high');
             }
-            const amountToSend = requestedAmount - GAS_BUDGET;
+            const gasFormated = gasEstimation
+                ? parseAmount(gasEstimation, IOTA_DECIMALS)
+                : GAS_BUDGET;
+            const amountToSend =
+                isBridgingAllBalance && gasFormated
+                    ? requestedAmount - gasFormated
+                    : requestedAmount;
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
