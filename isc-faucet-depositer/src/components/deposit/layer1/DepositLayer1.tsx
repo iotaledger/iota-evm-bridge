@@ -29,11 +29,12 @@ async function buildTransaction(
         throw Error('Amount is too high');
     }
     const amountToSend = requestedAmount - GAS_BUDGET;
-
+    console.log(amountToSend, recipientAddress, variables)
     const iscTx = new IscTransaction(variables.chain);
     const bag = iscTx.newBag();
-    iscTx.placeCoinsInBag({ amount: amountToSend, bag });
-    iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
+    const coins = iscTx.coinsFromAmount({ amount: amountToSend });
+    iscTx.placeCoinsInBag({ coins, bag });
+    iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend, gasBudget: GAS_BUDGET });
     const transaction = iscTx.build();
 
     transaction.setSender(senderAddress);

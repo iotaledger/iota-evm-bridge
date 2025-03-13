@@ -1,4 +1,4 @@
-import { Transaction, TransactionResult } from '@iota/iota-sdk/transactions';
+import { Transaction, TransactionObjectArgument, TransactionResult } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
 
@@ -6,8 +6,8 @@ export class IscTransaction {
     #transaction: Transaction;
     #chainData: ChainData;
 
-    constructor(chainData: ChainData) {
-        this.#transaction = new Transaction();
+    constructor(chainData: ChainData, transaction = new Transaction()) {
+        this.#transaction = transaction;
         this.#chainData = chainData;
     }
 
@@ -19,10 +19,17 @@ export class IscTransaction {
     }
 
     /**
+     * Get some amount of coins.
+     */
+    coinsFromAmount({ amount }: { amount: number | bigint }) {
+        return isc.coinsFromAmount(this.#transaction, amount);
+    }
+
+    /**
      * Place some coins in a bag.
      */
-    placeCoinsInBag({ bag, amount }: { amount: number | bigint; bag: TransactionResult }) {
-        isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, amount);
+    placeCoinsInBag({ bag, coins }: { coins: TransactionObjectArgument; bag: TransactionResult }) {
+        isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, coins);
     }
 
     /**

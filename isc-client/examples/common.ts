@@ -1,9 +1,4 @@
-// Copyright (c) 2025 IOTA Stiftung
-// SPDX-License-Identifier: Apache-2.0
-
-import { createNetworkConfig } from '@iota/dapp-kit';
-
-const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetworkConfig({
+export const CommonVariables = {
     alphanet: {
         url: 'https://api.iota-rebased-alphanet.iota.cafe',
         variables: {
@@ -16,6 +11,4 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
             },
         },
     },
-});
-
-export { useNetworkVariable, useNetworkVariables, networkConfig };
+}
