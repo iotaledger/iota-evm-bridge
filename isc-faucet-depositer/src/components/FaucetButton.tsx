@@ -3,7 +3,7 @@
 
 import { useCurrentAccount, useCurrentWallet } from '@iota/dapp-kit';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
-import { useNetworkVariables } from '../networkConfig';
+import { useNetworkVariables } from '../config/l1config';
 import { Button } from '@iota/apps-ui-kit';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';

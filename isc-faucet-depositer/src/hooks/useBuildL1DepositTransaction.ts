@@ -3,8 +3,8 @@ import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { getGasSummary, parseAmount } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
-import { useNetworkVariables } from '../networkConfig';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
+import { useNetworkVariables } from '../config/l1config';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
