@@ -8,10 +8,6 @@ interface BridgeState {
     toggleBridgeDirection: () => void;
     isDepositAddressManualInput: boolean;
     toggleIsDepositAddressManualInput: () => void;
-    gasEstimation: string | null;
-    setGasEstimation: (gasEstimation: string | null) => void;
-    isTransactionLoading: boolean;
-    setIsTransactionLoading: (value: boolean) => void;
 }
 
 export const useBridgeStore = create<BridgeState>((set, get) => {
@@ -20,23 +16,12 @@ export const useBridgeStore = create<BridgeState>((set, get) => {
         toggleBridgeDirection: () => {
             set({
                 isFromLayer1: !get().isFromLayer1,
-                gasEstimation: null,
             });
         },
 
         isDepositAddressManualInput: false,
         toggleIsDepositAddressManualInput: () => {
             set({ isDepositAddressManualInput: !get().isDepositAddressManualInput });
-        },
-
-        gasEstimation: null,
-        setGasEstimation: (value) => {
-            set({ gasEstimation: value });
-        },
-
-        isTransactionLoading: false,
-        setIsTransactionLoading: (value: boolean) => {
-            set({ isTransactionLoading: value });
         },
     };
 });

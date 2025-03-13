@@ -6,24 +6,25 @@ import { IscTransaction } from 'isc-client';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config/l1config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
-import { useBridgeStore } from '../lib/stores';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
     amount: string;
+    gasEstimation: string;
 }
-const GAS_BUDGET = 10000000n;
+
+export const GAS_BUDGET = 10000000n;
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
     amount,
+    gasEstimation,
 }: BuildL1DepositTransaction) {
     const currentAccount = useCurrentAccount();
     const client = useIotaClient();
     const variables = useNetworkVariables();
     const senderAddress = currentAccount?.address as string;
-    const isBridgingAllBalance = useIsBridgingAllBalance();
-    const gasEstimation = useBridgeStore((state) => state.gasEstimation);
+    const isBridgingAllBalance = useIsBridgingAllBalance(gasEstimation);
 
     return useQuery({
         queryKey: [
@@ -39,9 +40,7 @@ export function useBuildL1DepositTransaction({
             if (!requestedAmount) {
                 throw Error('Amount is too high');
             }
-            const gasFormated = gasEstimation
-                ? parseAmount(gasEstimation, IOTA_DECIMALS)
-                : GAS_BUDGET;
+            const gasFormated = parseAmount(gasEstimation, IOTA_DECIMALS);
             const amountToSend =
                 isBridgingAllBalance && gasFormated
                     ? requestedAmount - gasFormated

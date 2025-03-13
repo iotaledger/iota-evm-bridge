@@ -26,9 +26,11 @@ import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailabl
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 
 interface DepositFormProps {
-    deposit: (receivingAddressStr: string, depositAmount: string) => void;
+    deposit: () => void;
+    isTransactionLoading: boolean;
+    gasEstimation?: string;
 }
-export function DepositForm({ deposit }: DepositFormProps) {
+export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: DepositFormProps) {
     const layer1Account = useCurrentAccount();
     const layer2Account = useAccount();
     const isLayer1WalletConnected = !!layer1Account?.address;
@@ -36,9 +38,7 @@ export function DepositForm({ deposit }: DepositFormProps) {
 
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const gasEstimation = useBridgeStore((state) => state.gasEstimation);
-    const isTransactionLoading = useBridgeStore((state) => state.isTransactionLoading);
-    const isPayingAllBalance = useIsBridgingAllBalance();
+    const isPayingAllBalance = useIsBridgingAllBalance(gasEstimation);
 
     const {
         availableBalance,
@@ -71,13 +71,10 @@ export function DepositForm({ deposit }: DepositFormProps) {
         }
     }, [isLoadingBalance, trigger, getValues]);
 
-    const onSubmit: SubmitHandler<DepositFormData> = useCallback(
-        (data) => {
-            deposit(data.receivingAddress, data.depositAmount.toString());
-            setValue(BridgeFormInputName.DepositAmount, '');
-        },
-        [deposit, setValue],
-    );
+    const onSubmit: SubmitHandler<DepositFormData> = useCallback(() => {
+        deposit();
+        setValue(BridgeFormInputName.DepositAmount, '');
+    }, [deposit, setValue]);
 
     const receivingAmountDisplay = (() => {
         if (!depositAmountValue || !gasEstimation) {

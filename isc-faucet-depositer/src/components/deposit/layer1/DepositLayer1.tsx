@@ -6,36 +6,36 @@ import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 
 import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { useBridgeStore } from '../../../lib/stores';
-import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
-import { useEffect } from 'react';
+import {
+    GAS_BUDGET,
+    useBuildL1DepositTransaction,
+} from '../../../hooks/useBuildL1DepositTransaction';
 import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
+import { useEffect, useState } from 'react';
 
 export function DepositLayer1() {
-    const setIsTransactionLoading = useBridgeStore((state) => state.setIsTransactionLoading);
-    const setGasEstimation = useBridgeStore((state) => state.setGasEstimation);
-
     const client = useIotaClient();
-    const { mutateAsync: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecuteTransaction, isPending: isTransactionLoading } =
+        useSignAndExecuteTransaction();
     const { depositAmount, receivingAddress } = useBridgeFormValues();
+    const [gasEstimation, setGasEstimation] = useState<string>(() => GAS_BUDGET.toString());
 
     const { data: transactionData } = useBuildL1DepositTransaction({
         receivingAddress,
         amount: depositAmount,
+        gasEstimation,
     });
 
     useEffect(() => {
-        if (transactionData?.gasSummary?.budget) {
-            setGasEstimation(formatIOTAFromNanos(BigInt(transactionData.gasSummary.budget)));
-        }
-    }, [transactionData, setGasEstimation]);
+        const budget = formatIOTAFromNanos(BigInt(transactionData?.gasSummary?.budget ?? 0));
+        setGasEstimation(budget);
+    }, [transactionData?.gasSummary?.budget, setGasEstimation]);
 
     const deposit = async () => {
         if (!transactionData?.transaction) {
             throw Error('Transaction is missing');
         }
-        setIsTransactionLoading(true);
         await signAndExecuteTransaction(
             {
                 transaction: transactionData.transaction,
@@ -69,12 +69,15 @@ export function DepositLayer1() {
                         toast.error('Something went wrong while submitting deposit.');
                     }
                 },
-                onSettled: () => {
-                    setIsTransactionLoading(false);
-                },
             },
         );
     };
 
-    return <DepositForm deposit={deposit} />;
+    return (
+        <DepositForm
+            deposit={deposit}
+            isTransactionLoading={isTransactionLoading}
+            gasEstimation={gasEstimation}
+        />
+    );
 }
