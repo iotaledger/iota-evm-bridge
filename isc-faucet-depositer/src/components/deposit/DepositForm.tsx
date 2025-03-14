@@ -21,14 +21,14 @@ import { useAccount } from 'wagmi';
 import { useBridgeStore } from '../../lib/stores';
 import { BridgeFormInputName } from '../../lib/enums';
 import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
-import { SwapAccount } from '@iota/apps-ui-icons';
+import { Loader, SwapAccount } from '@iota/apps-ui-icons';
 import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 
 interface DepositFormProps {
     deposit: () => void;
     isTransactionLoading: boolean;
-    gasEstimation?: string;
+    gasEstimation?: string | null;
 }
 export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: DepositFormProps) {
     const layer1Account = useCurrentAccount();
@@ -38,7 +38,7 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
 
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const isPayingAllBalance = useIsBridgingAllBalance(gasEstimation);
+    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const {
         availableBalance,
@@ -197,6 +197,12 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
                     isTransactionLoading ||
                     !!(isPayingAllBalance && !gasEstimation)
                 }
+                icon={
+                    depositAmountValue && isTransactionLoading ? (
+                        <Loader className="animate-spin" />
+                    ) : undefined
+                }
+                iconAfterText
             />
         </form>
     );

@@ -10,7 +10,7 @@ import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
 interface BuildL1DepositTransaction {
     receivingAddress: string;
     amount: string;
-    gasEstimation: string;
+    gasEstimation?: string;
 }
 
 export const GAS_BUDGET = 10000000n;
@@ -24,7 +24,7 @@ export function useBuildL1DepositTransaction({
     const client = useIotaClient();
     const variables = useNetworkVariables();
     const senderAddress = currentAccount?.address as string;
-    const isBridgingAllBalance = useIsBridgingAllBalance(gasEstimation);
+    const isBridgingAllBalance = useIsBridgingAllBalance();
 
     return useQuery({
         queryKey: [
@@ -40,10 +40,10 @@ export function useBuildL1DepositTransaction({
             if (!requestedAmount) {
                 throw Error('Amount is too high');
             }
-            const gasFormated = parseAmount(gasEstimation, IOTA_DECIMALS);
+
             const amountToSend =
-                isBridgingAllBalance && gasFormated
-                    ? requestedAmount - gasFormated
+                isBridgingAllBalance && gasEstimation
+                    ? requestedAmount - BigInt(gasEstimation)
                     : requestedAmount;
 
             const iscTx = new IscTransaction(variables.chain);
@@ -51,12 +51,18 @@ export function useBuildL1DepositTransaction({
             iscTx.placeCoinsInBag({ amount: amountToSend, bag });
             iscTx.createAndSend({ bag, address: receivingAddress, amount: amountToSend });
             const transaction = iscTx.build();
-
+            if (isBridgingAllBalance && gasEstimation) {
+                transaction.setGasBudget(BigInt(gasEstimation));
+            }
             transaction.setSender(senderAddress);
             const txBytes = await transaction.build({ client });
             const txDryRun = await client.dryRunTransactionBlock({
                 transactionBlock: txBytes,
             });
+            if (txDryRun.effects.status.status !== 'success') {
+                throw Error(`Tx dry run failed: ${txDryRun.effects.status?.error}`);
+            }
+
             return {
                 txBytes,
                 txDryRun,

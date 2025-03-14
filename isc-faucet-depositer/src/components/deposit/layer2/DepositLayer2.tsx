@@ -22,11 +22,12 @@ export function DepositLayer2() {
     const account = useCurrentAccount();
     const address = account?.address;
     const { depositAmount } = useBridgeFormValues();
+    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const { data: hash, writeContract, isSuccess, isError, error } = useWriteContract();
 
-    const { data: gasEstimation } = useQuery({
-        queryKey: ['layer-2', address, depositAmount],
+    const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
+        queryKey: ['l2-deposit-transaction-gas-estimate', address, depositAmount],
         async queryFn() {
             if (address && depositAmount) {
                 const params = withdrawParameters(address, depositAmount);
@@ -37,12 +38,11 @@ export function DepositLayer2() {
                     args: params,
                     account: layer2Account.address,
                 });
-                return gas ? formatGwei(gas) : undefined;
+                return gas ? formatGwei(gas) : null;
             }
+            return null;
         },
     });
-
-    const isPayingAllBalance = useIsBridgingAllBalance(gasEstimation);
 
     useEffect(() => {
         if (isSuccess && hash) {
@@ -65,7 +65,13 @@ export function DepositLayer2() {
     }, [isError, error]);
 
     const { mutate: deposit, isPending: isTransactionLoading } = useMutation({
-        mutationKey: ['layer-2', address, depositAmount, isPayingAllBalance, gasEstimation],
+        mutationKey: [
+            'l2-deposit-transaction',
+            address,
+            depositAmount,
+            isPayingAllBalance,
+            gasEstimation,
+        ],
         async mutationFn() {
             if (!address || !depositAmount) {
                 throw Error('Transaction is missing');
@@ -90,7 +96,7 @@ export function DepositLayer2() {
     return (
         <DepositForm
             deposit={deposit}
-            isTransactionLoading={isTransactionLoading}
+            isTransactionLoading={isTransactionLoading || isGasEstimationLoading}
             gasEstimation={gasEstimation}
         />
     );
