@@ -21,15 +21,14 @@ export function coinsFromAmount(
     // Split the senders Gas coin so we have a coin to transfer
     const [splitCoin] = tx.splitCoins(tx.gas, [tx.pure(bcs.U64.serialize(amount))]);
 
-    return splitCoin
+    return splitCoin;
 }
-
 
 export function placeCoinsInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coins: TransactionObjectArgument
+    coins: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin`,
@@ -166,20 +165,21 @@ export function destroyBag(
     });
 }
 
-
 export function startNewChain(
     tx: Transaction,
     { packageId }: ChainData,
     metadata: Uint8Array,
-    coin?: TransactionObjectArgument
+    coin?: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::start_new_chain`,
         typeArguments: [IOTA_COIN_TYPE],
-        arguments: [bcs.vector(bcs.u8()).serialize(metadata), coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null)],
+        arguments: [
+            bcs.vector(bcs.u8()).serialize(metadata),
+            coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null),
+        ],
     });
 }
-
 
 export function createAnchorWithAssetBag(
     tx: Transaction,
@@ -192,20 +192,22 @@ export function createAnchorWithAssetBag(
     });
 }
 
-
 export function updateAnchorStateForMigraton(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
     metadata: Uint8Array,
-    stateIndex: number
+    stateIndex: number,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::update_anchor_state_for_migration`,
-        arguments: [anchor, bcs.vector(bcs.u8()).serialize(metadata), bcs.u32().serialize(stateIndex)],
+        arguments: [
+            anchor,
+            bcs.vector(bcs.u8()).serialize(metadata),
+            bcs.u32().serialize(stateIndex),
+        ],
     });
 }
-
 
 export function destroyAnchor(
     tx: Transaction,
@@ -246,7 +248,7 @@ export function receiveRequest(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
-    request: TransactionObjectArgument
+    request: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::receive_request`,
@@ -259,7 +261,7 @@ export function transition(
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
     newStateMetadata: Uint8Array,
-    receipts: TransactionObjectArgument
+    receipts: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::transition`,
@@ -280,7 +282,6 @@ export function placeCoinForMigration(
     });
 }
 
-
 export function placeCoinBalanceForMigration(
     tx: Transaction,
     { packageId }: ChainData,
@@ -293,7 +294,6 @@ export function placeCoinBalanceForMigration(
         arguments: [anchor, balance],
     });
 }
-
 
 export function placeAssetForMigration(
     tx: Transaction,
