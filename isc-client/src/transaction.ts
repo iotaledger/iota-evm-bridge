@@ -14,7 +14,7 @@ export class IscTransaction {
     /**
      * Create a bag.
      */
-    newBag(): TransactionResult {
+    newBag(): TransactionObjectArgument {
         return isc.newBag(this.#transaction, this.#chainData);
     }
 
@@ -28,7 +28,7 @@ export class IscTransaction {
     /**
      * Place some coins in a bag.
      */
-    placeCoinsInBag({ bag, coins }: { coins: TransactionObjectArgument; bag: TransactionResult }) {
+    placeCoinsInBag({ bag, coins }: { coins: TransactionObjectArgument; bag: TransactionObjectArgument }) {
         isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, coins);
     }
 
@@ -44,7 +44,7 @@ export class IscTransaction {
         address: string;
         amount: number | bigint;
         gasBudget?: number | bigint;
-        bag: TransactionResult;
+        bag: TransactionObjectArgument;
     }) {
         isc.createAndSend(this.#transaction, this.#chainData, bag, amount, address, gasBudget);
     }
@@ -102,6 +102,52 @@ export class IscTransaction {
      */
     destroyBag({ bag }: { bag: TransactionResult }) {
         return isc.destroyBag(this.#transaction, this.#chainData, bag);
+    }
+
+    startNewChain({ metadata, coin }: { metadata: Uint8Array, coin?: TransactionObjectArgument}){
+        return isc.startNewChain(this.#transaction, this.#chainData, metadata, coin)
+    }
+
+    createAnchorWithAssetBag({ bag }: { bag: TransactionObjectArgument }){
+        return isc.createAnchorWithAssetBag(this.#transaction, this.#chainData, bag)
+    }
+
+    updateAnchorStateForMigraton({ anchor, metadata, stateIndex }: { anchor: TransactionObjectArgument, metadata: Uint8Array, stateIndex: number }){
+        return isc.updateAnchorStateForMigraton(this.#transaction, this.#chainData, anchor, metadata, stateIndex)
+    }
+
+    destroyAnchor({ anchor }: { anchor: TransactionObjectArgument }){
+        return isc.destroyAnchor(this.#transaction, this.#chainData, anchor)
+    }
+
+    borrowAssets({ anchor }: { anchor: TransactionObjectArgument }){
+        return isc.borrowAssets(this.#transaction, this.#chainData, anchor)
+    }
+
+    returnAssetsFromBorrow({ anchor, bag, borrow }: { anchor: TransactionObjectArgument, bag: TransactionObjectArgument, borrow: TransactionObjectArgument }){
+        return isc.returnAssetsFromBorrow(this.#transaction, this.#chainData, anchor, bag, borrow)
+    }
+
+    receiveRequest({ anchor, request }: { anchor: TransactionObjectArgument, request: TransactionObjectArgument }){
+        return isc.receiveRequest(this.#transaction, this.#chainData, anchor, request)
+    }
+
+
+    transition({ anchor, newStateMetadata, receipts }: { anchor: TransactionObjectArgument, newStateMetadata: Uint8Array, receipts: TransactionObjectArgument }){
+        return isc.transition(this.#transaction, this.#chainData, anchor, newStateMetadata, receipts)
+    }
+
+
+    placeCoinForMigration({ anchor, coins }: { anchor: TransactionObjectArgument, coins: TransactionObjectArgument }){
+        return isc.placeCoinForMigration(this.#transaction, this.#chainData, anchor, coins)
+    }
+
+    placeCoinBalanceForMigration({ anchor, balance }: { anchor: TransactionObjectArgument, balance: TransactionObjectArgument }){
+        return isc.placeCoinBalanceForMigration(this.#transaction, this.#chainData, anchor, balance)
+    }
+    
+    placeAssetForMigration({ anchor, asset }: { anchor: TransactionObjectArgument, asset: TransactionObjectArgument }){
+        return isc.placeAssetForMigration(this.#transaction, this.#chainData, anchor, asset)
     }
 
     /**
