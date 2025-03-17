@@ -12,10 +12,18 @@
         "prettier:check": "prettier -c --ignore-unknown --ignore-path=.prettierignore .",
         "prettier:fix": "prettier -w --ignore-unknown --ignore-path=.prettierignore .",
         "lint": "pnpm run typecheck && pnpm eslint:check && pnpm prettier:check",
-        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix"
+        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix",
+        "test:prepare:L1": "L1=true vite-node scripts/downloadWallet.js",
+        "test:prepare:L2": "L1=false vite-node scripts/downloadWallet.js",
+        "test:prepare": "pnpm test:prepare:L1 && pnpm test:prepare:L2",
+        "test:e2e:L1": "pnpm exec playwright test depositL1",
+        "test:e2e:L2": "pnpm exec playwright test depositL2",
+        "test:e2e": "pnpm exec playwright test"
     },
     "dependencies": {
         "@hookform/resolvers": "^4.1.0",
+        "@iota/apps-ui-icons": "^0.2.1",
+        "@iota/apps-ui-kit": "^0.2.1",
         "@iota/bcs": "^0.2.1",
         "@iota/dapp-kit": "0.3.3",
         "@iota/iota-sdk": "0.4.1",
@@ -31,26 +39,29 @@
         "react-hot-toast": "^2.5.2",
         "viem": "^2.23.3",
         "wagmi": "^2.14.11",
-        "zod": "^3.24.2",
-        "@iota/apps-ui-icons": "^0.2.1",
-        "@iota/apps-ui-kit": "^0.2.1"
+        "zod": "^3.24.2"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
+        "@playwright/test": "^1.51.0",
+        "@types/node": "^22.13.4",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
         "@typescript-eslint/eslint-plugin": "^8.18.0",
         "@typescript-eslint/parser": "^8.18.0",
         "@vitejs/plugin-react-swc": "^3.7.0",
+        "dotenv": "^16.4.7",
         "eslint": "^9.17.0",
         "eslint-plugin-react": "^7.37.2",
         "eslint-plugin-react-hooks": "^5.1.0",
         "eslint-plugin-react-refresh": "^0.4.7",
+        "ethers": "^6.13.5",
         "prettier": "^3.3.2",
         "tailwindcss": "^3.4.17",
         "typescript": "^5.7.3",
         "typescript-eslint": "^8.18.0",
-        "vite": "^5.3.3"
+        "vite": "^5.3.3",
+        "vite-node": "^3.0.8"
     },
     "lint-staged": {
         "src/**/*.{ts,js,mjs,tsx}": "eslint --fix",
