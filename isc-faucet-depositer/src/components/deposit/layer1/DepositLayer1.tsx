@@ -21,7 +21,6 @@ export function DepositLayer1() {
 
     const { depositAmount, receivingAddress } = useBridgeFormValues();
     const [gasEstimation, setGasEstimation] = useState<string>(GAS_BUDGET.toString());
-    const [gasEstimationFormatted, setGasEstimationFormatted] = useState<string>();
 
     const { data: transactionData, isPending: isBuildingTransaction } =
         useBuildL1DepositTransaction({
@@ -29,11 +28,14 @@ export function DepositLayer1() {
             amount: depositAmount,
             gasEstimation,
         });
+    const gasSummary = transactionData?.gasSummary;
+    const formattedGasEstimation = gasSummary?.budget
+        ? formatIOTAFromNanos(BigInt(gasSummary.budget))
+        : undefined;
 
     useEffect(() => {
-        const gasBudget = transactionData?.gasSummary?.totalGas;
+        const gasBudget = transactionData?.gasSummary?.budget;
         if (gasBudget) {
-            setGasEstimationFormatted(formatIOTAFromNanos(BigInt(gasBudget)));
             setGasEstimation(gasBudget);
         }
     }, [transactionData?.gasSummary?.budget, setGasEstimation]);
@@ -83,7 +85,7 @@ export function DepositLayer1() {
         <DepositForm
             deposit={deposit}
             isTransactionLoading={isTransactionLoading || isBuildingTransaction}
-            gasEstimation={gasEstimationFormatted}
+            gasEstimation={formattedGasEstimation}
         />
     );
 }

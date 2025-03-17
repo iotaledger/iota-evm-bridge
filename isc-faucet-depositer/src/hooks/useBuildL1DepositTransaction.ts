@@ -51,9 +51,6 @@ export function useBuildL1DepositTransaction({
             iscTx.placeCoinsInBag({ amount: amountToSend, bag });
             iscTx.createAndSend({ bag, address: receivingAddress, amount: amountToSend });
             const transaction = iscTx.build();
-            if (isBridgingAllBalance && gasEstimation) {
-                transaction.setGasBudget(BigInt(gasEstimation));
-            }
             transaction.setSender(senderAddress);
             const txBytes = await transaction.build({ client });
             const txDryRun = await client.dryRunTransactionBlock({
