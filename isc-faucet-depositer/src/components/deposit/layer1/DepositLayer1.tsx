@@ -23,7 +23,7 @@ async function buildTransaction(
     variables: ReturnType<typeof useNetworkVariables>,
     client: IotaClient,
 ) {
-    const GAS_BUDGET = BigInt(100000000);
+    const GAS_BUDGET = BigInt(10000000);
     const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
     if (!requestedAmount) {
         throw Error('Amount is too high');

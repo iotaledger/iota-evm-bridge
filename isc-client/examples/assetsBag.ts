@@ -27,7 +27,7 @@ console.log('Sending...');
 const requestedAmount = BigInt(1000000000);
 // EVM Address
 const recipientAddress = '0xdEC684752A21Ea475972055c07e586A434328f4D';
-const GAS_BUDGET = BigInt(100000000);
+const GAS_BUDGET = BigInt(10000000);
 const amount = requestedAmount - GAS_BUDGET;
 
 const iscTx = new IscTransaction({
