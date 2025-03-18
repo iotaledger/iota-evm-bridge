@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { IscTransaction } from 'isc-client';
 import { parseAmount } from '../../../lib/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
-import { useNetworkVariables } from '../../../networkConfig';
+import { useNetworkVariables } from '../../../config/l1config';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useQuery } from '@tanstack/react-query';
@@ -23,18 +23,22 @@ async function buildTransaction(
     variables: ReturnType<typeof useNetworkVariables>,
     client: IotaClient,
 ) {
-    const GAS_BUDGET = BigInt(10000000);
+    const GAS_BUDGET = BigInt(100000000);
     const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
     if (!requestedAmount) {
         throw Error('Amount is too high');
     }
     const amountToSend = requestedAmount - GAS_BUDGET;
-    console.log(amountToSend, recipientAddress, variables)
     const iscTx = new IscTransaction(variables.chain);
     const bag = iscTx.newBag();
     const coins = iscTx.coinsFromAmount({ amount: amountToSend });
     iscTx.placeCoinsInBag({ coins, bag });
-    iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend, gasBudget: GAS_BUDGET });
+    iscTx.createAndSend({
+        bag,
+        address: recipientAddress,
+        amount: amountToSend,
+        gasBudget: GAS_BUDGET,
+    });
     const transaction = iscTx.build();
 
     transaction.setSender(senderAddress);

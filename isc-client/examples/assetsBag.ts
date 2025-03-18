@@ -1,13 +1,13 @@
 import { IscTransaction } from '../src/index';
-import { CommonVariables } from './common';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';
+import { CONFIG } from './config';
 
-const { url, variables } = CommonVariables.alphanet;
+const { L1 } = CONFIG;
 
 const client = new IotaClient({
-    url,
+    url: L1.rpcUrl,
 });
 
 const keypair = Ed25519Keypair.deriveKeypair(
@@ -17,7 +17,7 @@ const address = keypair.toIotaAddress();
 
 console.log('Requesting faucet...');
 await requestIotaFromFaucetV0({
-    host: variables.faucet,
+    host: L1.faucetUrl,
     recipient: address,
 });
 
@@ -27,12 +27,15 @@ console.log('Sending...');
 const requestedAmount = BigInt(1000000000);
 // EVM Address
 const recipientAddress = '0xdEC684752A21Ea475972055c07e586A434328f4D';
-const GAS_BUDGET = BigInt(10000000);
+const GAS_BUDGET = BigInt(100000000);
 const amount = requestedAmount - GAS_BUDGET;
 
-console.log(address, amount, recipientAddress, variables.chain);
-
-const iscTx = new IscTransaction(variables.chain);
+const iscTx = new IscTransaction({
+    chainId: L1.chainId,
+    packageId: L1.packageId,
+    coreContractAccounts: Number(L1.coreContractAccounts),
+    accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
+});
 
 const bag = iscTx.newBag();
 
