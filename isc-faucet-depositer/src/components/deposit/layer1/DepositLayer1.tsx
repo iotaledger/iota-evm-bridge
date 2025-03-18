@@ -11,15 +11,17 @@ import {
     useBuildL1DepositTransaction,
 } from '../../../hooks/useBuildL1DepositTransaction';
 import { formatIOTAFromNanos } from '../../../lib/utils';
-import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
 import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 
 export function DepositLayer1() {
     const client = useIotaClient();
     const { mutateAsync: signAndExecuteTransaction, isPending: isTransactionLoading } =
         useSignAndExecuteTransaction();
+    const { watch } = useFormContext<DepositFormData>();
+    const { depositAmount, receivingAddress } = watch();
 
-    const { depositAmount, receivingAddress } = useBridgeFormValues();
     const [gasEstimation, setGasEstimation] = useState<string>(GAS_BUDGET.toString());
 
     const { data: transactionData, isPending: isBuildingTransaction } =
@@ -29,8 +31,8 @@ export function DepositLayer1() {
             gasEstimation,
         });
     const gasSummary = transactionData?.gasSummary;
-    const formattedGasEstimation = gasSummary?.budget
-        ? formatIOTAFromNanos(BigInt(gasSummary.budget))
+    const formattedGasEstimation = gasSummary?.totalGas
+        ? formatIOTAFromNanos(BigInt(gasSummary.totalGas))
         : undefined;
 
     useEffect(() => {

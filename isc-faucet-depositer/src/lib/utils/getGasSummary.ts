@@ -21,19 +21,20 @@ export function getGasSummary(
     transaction: IotaTransactionBlockResponse | DryRunTransactionBlockResponse,
 ): GasSummaryType {
     const { effects } = transaction;
-    if (!effects) return null;
-    const totalGas = getTotalGasUsed(effects);
-    let sender = undefined;
-    let owner = '';
+    if (!effects) {
+        return null;
+    }
+    let sender: string | undefined;
     let gasData = {} as IotaGasData;
     if ('transaction' in transaction && transaction.transaction?.data) {
-        sender = transaction.transaction?.data.sender;
+        sender = transaction.transaction.data.sender;
         gasData = transaction.transaction.data.gasData;
     } else if ('input' in transaction) {
         sender = transaction.input.sender;
         gasData = transaction.input.gasData;
     }
-    owner = gasData?.owner ?? '';
+    const owner = gasData?.owner;
+    const totalGas = getTotalGasUsed(effects);
 
     return {
         ...effects.gasUsed,

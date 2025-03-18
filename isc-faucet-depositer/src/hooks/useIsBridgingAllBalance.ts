@@ -1,10 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { useGetCurrentAvailableBalance } from './useGetCurrentAvailableBalance';
-import { useBridgeFormValues } from './useBridgeFormValues';
+import { useFormContext } from 'react-hook-form';
+import { DepositFormData } from '../lib/schema/bridgeForm.schema';
 
 export function useIsBridgingAllBalance(): boolean | null {
     const { formattedAvailableBalance } = useGetCurrentAvailableBalance();
-    const { depositAmount } = useBridgeFormValues();
+    const { watch } = useFormContext<DepositFormData>();
+    const { depositAmount } = watch();
 
     if (!formattedAvailableBalance) {
         return false;

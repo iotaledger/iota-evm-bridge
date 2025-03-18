@@ -6,22 +6,26 @@ import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { withdrawParameters } from '../../../lib/utils';
-import { iscAbi, iscContractAddress, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useCurrentAccount } from '@iota/dapp-kit';
 import { formatGwei } from 'viem';
-import { useBridgeFormValues } from '../../../hooks/useBridgeFormValues';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import BigNumber from 'bignumber.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useFormContext } from 'react-hook-form';
+import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
+import { useNetworkVariables } from '../../../config/l1config';
 
 export function DepositLayer2() {
     const layer2Account = useAccount();
     const client = usePublicClient();
     const chainId = useChainId();
+    const variables = useNetworkVariables();
 
     const account = useCurrentAccount();
     const address = account?.address;
-    const { depositAmount } = useBridgeFormValues();
+    const { watch } = useFormContext<DepositFormData>();
+    const { depositAmount } = watch();
     const isPayingAllBalance = useIsBridgingAllBalance();
 
     const { data: hash, writeContract, isSuccess, isError, error } = useWriteContract();
@@ -32,7 +36,7 @@ export function DepositLayer2() {
             if (address && depositAmount) {
                 const params = withdrawParameters(address, depositAmount);
                 const gas = await client?.estimateContractGas({
-                    address: iscContractAddress,
+                    address: variables.iscContractAddress,
                     abi: iscAbi,
                     functionName: 'send',
                     args: params,
@@ -83,11 +87,9 @@ export function DepositLayer2() {
             const params = withdrawParameters(address, depositTotal);
             writeContract({
                 abi: iscAbi,
-                address: iscContractAddress,
+                address: variables.iscContractAddress,
                 functionName: 'send',
                 args: params,
-                // Added during testing, remove or change to your liking
-                maxFeePerGas: 9999999n,
                 chainId: chainId,
             });
         },

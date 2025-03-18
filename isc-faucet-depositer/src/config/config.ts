@@ -18,6 +18,9 @@ const envSchema = z.object({
         accountsTransferAllowanceTo: z
             .string()
             .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+        iscContractAddress: z
+            .string()
+            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
     }),
     L2: z.object({
         chainName: z.string(),
