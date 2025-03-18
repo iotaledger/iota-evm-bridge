@@ -10,9 +10,7 @@ const client = new IotaClient({
     url: L1.rpcUrl,
 });
 
-const keypair = Ed25519Keypair.deriveKeypair(
-    'carbon cushion people lion curve small inch saddle useful spike cousin finger secret label spare exact build unfair okay state filter pink tortoise squirrel',
-);
+const keypair = new Ed25519Keypair();
 const address = keypair.toIotaAddress();
 
 console.log('Requesting faucet...');
@@ -27,7 +25,8 @@ console.log('Sending...');
 const requestedAmount = BigInt(1000000000);
 // EVM Address
 const recipientAddress = '0xdEC684752A21Ea475972055c07e586A434328f4D';
-const GAS_BUDGET = BigInt(10000000);
+const GAS_BUDGET = BigInt(1_000_0000);
+const GAS_ESTIMATE = BigInt(1_000);
 const amount = requestedAmount - GAS_BUDGET;
 
 const iscTx = new IscTransaction({
@@ -39,7 +38,7 @@ const iscTx = new IscTransaction({
 
 const bag = iscTx.newBag();
 
-const coins = iscTx.coinsFromAmount({ amount });
+const coins = iscTx.coinsFromAmount({ amount, gasEstimate: GAS_ESTIMATE });
 
 iscTx.placeCoinsInBag({ coins, bag });
 

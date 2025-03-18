@@ -23,6 +23,7 @@ async function buildTransaction(
     variables: ReturnType<typeof useNetworkVariables>,
     client: IotaClient,
 ) {
+    const GAS_ESTIMATE = BigInt(1000);
     const GAS_BUDGET = BigInt(10000000);
     const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
     if (!requestedAmount) {
@@ -31,7 +32,7 @@ async function buildTransaction(
     const amountToSend = requestedAmount - GAS_BUDGET;
     const iscTx = new IscTransaction(variables.chain);
     const bag = iscTx.newBag();
-    const coins = iscTx.coinsFromAmount({ amount: amountToSend });
+    const coins = iscTx.coinsFromAmount({ amount: amountToSend, gasEstimate: GAS_ESTIMATE });
     iscTx.placeCoinsInBag({ coins, bag });
     iscTx.createAndSend({
         bag,

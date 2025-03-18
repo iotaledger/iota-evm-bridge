@@ -25,8 +25,14 @@ export class IscTransaction {
     /**
      * Get some amount of coins.
      */
-    coinsFromAmount({ amount }: { amount: number | bigint }) {
-        return isc.coinsFromAmount(this.#transaction, amount);
+    coinsFromAmount({
+        amount,
+        gasEstimate = BigInt(0),
+    }: {
+        amount: number | bigint;
+        gasEstimate: number | bigint;
+    }) {
+        return isc.coinsFromAmount(this.#transaction, BigInt(amount) + BigInt(gasEstimate));
     }
 
     /**
