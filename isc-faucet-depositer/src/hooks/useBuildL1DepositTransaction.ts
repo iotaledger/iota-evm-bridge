@@ -44,7 +44,7 @@ export function useBuildL1DepositTransaction({
 
             const amountToSend =
                 isBridgingAllBalance && gasEstimation
-                    ? requestedAmount - BigInt(gasEstimation)
+                    ? requestedAmount - BigInt(gasEstimation) - L2_GAS_ESTIMATION
                     : requestedAmount;
 
             const iscTx = new IscTransaction(variables.chain);
