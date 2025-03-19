@@ -14,6 +14,7 @@ interface BuildL1DepositTransaction {
 }
 
 export const GAS_BUDGET = 10000000n;
+export const L2_GAS_ESTIMATION = 1000n;
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
@@ -43,12 +44,12 @@ export function useBuildL1DepositTransaction({
 
             const amountToSend =
                 isBridgingAllBalance && gasEstimation
-                    ? requestedAmount - BigInt(gasEstimation)
+                    ? requestedAmount - BigInt(gasEstimation) - L2_GAS_ESTIMATION
                     : requestedAmount;
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
-            iscTx.placeCoinsInBag({ amount: amountToSend, bag });
+            iscTx.placeCoinsInBag({ amount: amountToSend + L2_GAS_ESTIMATION, bag });
             iscTx.createAndSend({ bag, address: receivingAddress, amount: amountToSend });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);
