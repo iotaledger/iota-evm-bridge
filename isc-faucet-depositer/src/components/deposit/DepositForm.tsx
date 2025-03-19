@@ -82,7 +82,6 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
         if (!depositAmountValue || !gasEstimation) {
             return PLACEHOLDER_VALUE_DISPLAY;
         } else if (isPayingAllBalance) {
-            
             const receivingAmount = new BigNumber(depositAmountValue)
                 .minus(gasEstimation)
                 .minus(formatIOTAFromNanos(L2_GAS_ESTIMATION));
@@ -185,7 +184,7 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
                 />
                 <KeyValueInfo
                     fullwidth
-                    keyText={`${isPayingAllBalance ? 'Est. ':''} You Receive`}
+                    keyText={`${isPayingAllBalance ? 'Est. ' : ''} You Receive`}
                     supportingLabel="IOTA"
                     value={receivingAmountDisplay}
                 />
