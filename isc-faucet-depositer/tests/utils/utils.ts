@@ -13,7 +13,7 @@ export async function checkL2BalanceWithRetries(
     address: string,
     rpcUrl: string,
     maxRetries = 10,
-    delay = 5000,
+    delay = 2500,
 ): Promise<string | null> {
     let balanceEth: string | null = null;
 

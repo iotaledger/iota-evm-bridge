@@ -4,7 +4,7 @@ import { createL1WalletAndAddFunds } from './utils/auth';
 import { checkL2BalanceWithRetries, getRandomL2Address } from './utils/utils';
 import { CONFIG } from './utils/config';
 
-test.setTimeout(300_000);
+test.setTimeout(60_000);
 
 let testPage: Page;
 
@@ -14,10 +14,6 @@ test.describe('Deposit L1', () => {
         await createL1WalletAndAddFunds(page, l1ExtensionUrl);
 
         testPage = await contextL1.newPage();
-
-        // After funding let's WAIT a while! Apparently there is an issue where
-        // if we fund a new address and ummediately use it to bridge to EVM it won't go throught
-        await testPage.waitForTimeout(60_000);
 
         await testPage.goto('/');
     });
@@ -62,6 +58,6 @@ test.describe('Deposit L1', () => {
 
         const balance = await checkL2BalanceWithRetries(l2Address, CONFIG.L2.rpcUrl);
 
-        expect(balance).toEqual('5');
+        expect(balance).toEqual('5.0');
     });
 });
