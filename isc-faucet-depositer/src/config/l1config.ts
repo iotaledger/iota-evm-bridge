@@ -15,7 +15,6 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
                 coreContractAccounts: parseInt(CONFIG.L1.coreContractAccounts, 16),
                 accountsTransferAllowanceTo: parseInt(CONFIG.L1.accountsTransferAllowanceTo, 16),
             },
-            iscContractAddress: CONFIG.L1.iscContractAddress as `0x${string}`,
         },
     },
 });
