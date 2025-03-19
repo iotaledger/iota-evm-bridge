@@ -25,6 +25,7 @@ import { Loader, SwapAccount } from '@iota/apps-ui-icons';
 import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 import { L2_GAS_ESTIMATION } from '../../hooks/useBuildL1DepositTransaction';
+import { formatIOTAFromNanos } from '../../lib/utils';
 
 interface DepositFormProps {
     deposit: () => void;
@@ -83,7 +84,7 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
         } else if (isPayingAllBalance) {
             const receivingAmount = new BigNumber(depositAmountValue)
                 .minus(gasEstimation)
-                .minus(L2_GAS_ESTIMATION.toString());
+                .minus(formatIOTAFromNanos(L2_GAS_ESTIMATION));
             return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         } else {
             return depositAmountValue;
@@ -184,7 +185,7 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
                 <KeyValueInfo
                     fullwidth
                     keyText="You Receive"
-                    supportingLabel="IOTA"
+                    supportingLabel={`${isPayingAllBalance ? '~ ' : ''}IOTA`}
                     value={receivingAmountDisplay}
                 />
             </div>
