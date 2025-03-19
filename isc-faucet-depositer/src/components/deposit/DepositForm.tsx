@@ -81,7 +81,9 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
         if (!depositAmountValue || !gasEstimation) {
             return PLACEHOLDER_VALUE_DISPLAY;
         } else if (isPayingAllBalance) {
-            const receivingAmount = new BigNumber(depositAmountValue).minus(gasEstimation).minus(L2_GAS_ESTIMATION.toString());
+            const receivingAmount = new BigNumber(depositAmountValue)
+                .minus(gasEstimation)
+                .minus(L2_GAS_ESTIMATION.toString());
             return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         } else {
             return depositAmountValue;
