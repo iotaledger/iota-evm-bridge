@@ -35,6 +35,12 @@ const envSchema = z.object({
         chainExplorerUrl: z.string(),
         wagmiAppName: z.string(),
         walletConnectProjectId: z.string(),
+        iscContractAddress: z
+            .string()
+            .regex(
+                HEX_REGEX,
+                'Must be a valid hex string starting with 0x',
+            ) as z.ZodType<`0x${string}`>,
     }),
 });
 

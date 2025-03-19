@@ -5,30 +5,48 @@ import {
     Button,
     ButtonHtmlType,
     ButtonPill,
+    ButtonType,
     ButtonUnstyled,
     Input,
     InputType,
     KeyValueInfo,
 } from '@iota/apps-ui-kit';
-import { useCurrentAccount, useCurrentWallet } from '@iota/dapp-kit';
-import { type ComponentProps, forwardRef, useCallback, useEffect, useState } from 'react';
+import { useCurrentAccount } from '@iota/dapp-kit';
+import { type ComponentProps, forwardRef, useCallback, useEffect } from 'react';
 import { type SubmitHandler, useFormContext } from 'react-hook-form';
 import { WalletConnectInput } from '../';
-import { useBalance } from '../../hooks/useBalance';
 import { DepositFormData } from '../../lib/schema/bridgeForm.schema';
-import { formatIOTAFromNanos } from '../../lib/utils';
 import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
+import { useBridgeStore } from '../../lib/stores';
+import { BridgeFormInputName } from '../../lib/enums';
+import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
+import { Loader, SwapAccount } from '@iota/apps-ui-icons';
+import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
+import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 
 interface DepositFormProps {
-    send: () => Promise<void>;
-    gasEstimation: number | null;
-    isPayingAllBalance: boolean;
+    deposit: () => void;
+    isTransactionLoading: boolean;
+    gasEstimation?: string | null;
 }
-export function DepositForm({ send, gasEstimation, isPayingAllBalance }: DepositFormProps) {
-    const { isConnected } = useCurrentWallet();
-    const account = useCurrentAccount();
-    const { data: balance, isLoading: isLoadingBalance } = useBalance(account?.address || '');
+export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: DepositFormProps) {
+    const layer1Account = useCurrentAccount();
+    const layer2Account = useAccount();
+    const isLayer1WalletConnected = !!layer1Account?.address;
+    const isLayer2WalletConnected = layer2Account.isConnected;
+
+    const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
+    const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
+    const isPayingAllBalance = useIsBridgingAllBalance();
+
+    const {
+        availableBalance,
+        isLoading: isLoadingBalance,
+        formattedAvailableBalance,
+    } = useGetCurrentAvailableBalance();
+
+    const formMethods = useFormContext<DepositFormData>();
 
     const {
         trigger,
@@ -38,8 +56,9 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
         formState: { errors, isValid },
         setValue,
         watch,
-    } = useFormContext<DepositFormData>();
+    } = formMethods;
     const values = watch();
+    const depositAmountValue = values.depositAmount;
 
     useEffect(() => {
         const isFormIncomplete = Object.values(getValues()).some(
@@ -53,40 +72,43 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
     }, [isLoadingBalance, trigger, getValues]);
 
     const onSubmit: SubmitHandler<DepositFormData> = useCallback(() => {
-        send().then(() => {
-            setValue('depositAmount', '');
-        });
-    }, [send, setValue]);
+        deposit();
+        setValue(BridgeFormInputName.DepositAmount, '');
+    }, [deposit, setValue]);
+
+    const receivingAmountDisplay = (() => {
+        if (!depositAmountValue || !gasEstimation) {
+            return PLACEHOLDER_VALUE_DISPLAY;
+        } else if (isPayingAllBalance) {
+            const receivingAmount = new BigNumber(depositAmountValue).minus(gasEstimation);
+            return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
+        } else {
+            return depositAmountValue;
+        }
+    })();
+
+    const fromAddress = isFromLayer1 ? layer1Account?.address : layer2Account?.address;
+
+    const FROM_LABEL = `From ${isFromLayer1 ? 'IOTA' : 'IOTA EVM'}`;
 
     function handleMaxAmountClick() {
-        if (!balance) {
+        if (!availableBalance) {
             return;
         }
-        setValue('depositAmount', formatIOTAFromNanos(BigInt(balance.totalBalance)), {
+        setValue(BridgeFormInputName.DepositAmount, formattedAvailableBalance, {
             shouldValidate: true,
         });
     }
 
-    const isMaxButtonDisabled = !account?.address;
+    const isMaxButtonDisabled =
+        (isFromLayer1 && !isLayer1WalletConnected) || (!isFromLayer1 && !isLayer2WalletConnected);
 
     const depositAmountErrorMessage =
-        values.depositAmount !== '' ? errors['depositAmount']?.message : undefined;
-
+        depositAmountValue !== '' ? errors[BridgeFormInputName.DepositAmount]?.message : undefined;
     const receivingAddressErrorMessage =
-        values.receivingAddress !== '' ? errors.receivingAddress?.message : undefined;
-
-    const receivingAmountDisplay = (() => {
-        if (!values.depositAmount || !gasEstimation) {
-            return '--';
-        } else if (isPayingAllBalance) {
-            const receivingAmount = new BigNumber(values.depositAmount).minus(gasEstimation);
-            return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
-        } else {
-            return values.depositAmount;
-        }
-    })();
-
-    const gasEstimationDisplay = gasEstimation ? formatIOTAFromNanos(BigInt(gasEstimation)) : null;
+        values.receivingAddress !== ''
+            ? errors[BridgeFormInputName.ReceivingAddress]?.message
+            : undefined;
 
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -94,7 +116,7 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onChange: _onChange,
         ...registerDepositAmount
-    } = register('depositAmount');
+    } = register(BridgeFormInputName.DepositAmount);
     return (
         <form className="flex flex-col gap-y-md--rs" onSubmit={handleSubmit(onSubmit)}>
             <Input
@@ -106,12 +128,12 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
                 {...registerDepositAmount}
                 data-testid="bridge-amount"
                 onValueChange={(values) => {
-                    setValue('depositAmount', values.value, {
+                    setValue(BridgeFormInputName.DepositAmount, values.value, {
                         shouldValidate: true,
                         shouldTouch: true,
                     });
                 }}
-                maxLength={20}
+                maxLength={MAX_DEPOSIT_INPUT_LENGTH}
                 trailingElement={
                     <ButtonPill onClick={handleMaxAmountClick} disabled={isMaxButtonDisabled}>
                         Max
@@ -119,23 +141,32 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
                 }
             />
             <div className="relative flex flex-col gap-y-md--rs">
-                {isConnected ? (
+                {fromAddress ? (
                     <Input
                         type={InputType.Text}
-                        label="From IOTA"
+                        label={FROM_LABEL}
                         name="senderAddress"
-                        value={account?.address}
-                        key={account?.address}
+                        value={fromAddress}
+                        key={fromAddress}
                         readOnly
                     />
                 ) : (
-                    <WalletConnectInput label="From IOTA" isLayer1 />
+                    <WalletConnectInput label={FROM_LABEL} isLayer1={isFromLayer1} />
                 )}
+
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1]">
+                    <Button
+                        type={ButtonType.Primary}
+                        icon={<SwapAccount className="rotate-90 -scale-x-100" />}
+                        onClick={toggleBridgeDirection}
+                        testId="toggle-bridge-direction"
+                    />
+                </div>
 
                 <DestinationInput
                     type={InputType.Text}
                     errorMessage={receivingAddressErrorMessage}
-                    {...register('receivingAddress')}
+                    {...register(BridgeFormInputName.ReceivingAddress)}
                     data-testid="receive-address"
                 />
             </div>
@@ -145,7 +176,7 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
                     fullwidth
                     keyText="Est. Gas Fees"
                     supportingLabel="IOTA"
-                    value={gasEstimationDisplay ?? '--'}
+                    value={gasEstimation ?? PLACEHOLDER_VALUE_DISPLAY}
                 />
                 <KeyValueInfo
                     fullwidth
@@ -159,10 +190,19 @@ export function DepositForm({ send, gasEstimation, isPayingAllBalance }: Deposit
                 text="Bridge Assets"
                 htmlType={ButtonHtmlType.Submit}
                 disabled={
-                    !isConnected ||
+                    (isFromLayer1 && !isLayer1WalletConnected) ||
+                    (!isFromLayer1 && !isLayer2WalletConnected) ||
                     !isValid ||
-                    !!Object.values(values).some((value) => value === '')
+                    !!Object.values(values).some((value) => value === '') ||
+                    isTransactionLoading ||
+                    !!(isPayingAllBalance && !gasEstimation)
                 }
+                icon={
+                    depositAmountValue && isTransactionLoading ? (
+                        <Loader className="animate-spin" />
+                    ) : undefined
+                }
+                iconAfterText
             />
         </form>
     );
@@ -174,36 +214,45 @@ const DestinationInput = forwardRef<HTMLInputElement, InputProps>(function Desti
     ref,
 ) {
     const { setValue } = useFormContext<DepositFormData>();
+    const layer1Account = useCurrentAccount();
     const layer2Account = useAccount();
 
-    const [isManualInput, setManualInput] = useState(false);
+    const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
+    const toggleIsDepositAddressManualInput = useBridgeStore(
+        (state) => state.toggleIsDepositAddressManualInput,
+    );
+    const isManualInput = useBridgeStore((state) => state.isDepositAddressManualInput);
 
+    const isLayer1WalletConnected = !!layer1Account?.address;
     const isLayer2WalletConnected = layer2Account.isConnected;
 
+    const shouldRenderConnectedAddress =
+        (isFromLayer1 && isLayer2WalletConnected) || (!isFromLayer1 && isLayer1WalletConnected);
+
     useEffect(() => {
-        const destinationAddress = layer2Account.address;
+        const destinationAddress = isFromLayer1 ? layer2Account?.address : layer1Account?.address;
 
         if (!isManualInput) {
-            setValue('receivingAddress', destinationAddress ?? '', {
+            setValue(BridgeFormInputName.ReceivingAddress, destinationAddress ?? '', {
                 shouldValidate: !!destinationAddress,
             });
         } else {
-            setValue('receivingAddress', '');
+            setValue(BridgeFormInputName.ReceivingAddress, '');
         }
-    }, [isManualInput, layer2Account, setValue]);
+    }, [isManualInput, layer1Account, layer2Account, isFromLayer1, setValue]);
 
-    const TO_LABEL = `To IOTA EVM`;
+    const TO_LABEL = `To ${isFromLayer1 ? 'IOTA EVM' : 'IOTA'}`;
 
     return (
         <div className="relative">
-            {isManualInput || isLayer2WalletConnected ? (
+            {isManualInput || shouldRenderConnectedAddress ? (
                 <Input ref={ref} {...props} caption={TO_LABEL} readOnly={!isManualInput} />
             ) : (
-                <WalletConnectInput label={TO_LABEL} isDestination isLayer1={false} />
+                <WalletConnectInput label={TO_LABEL} isDestination isLayer1={!isFromLayer1} />
             )}
 
             <ButtonUnstyled
-                onClick={() => setManualInput(!isManualInput)}
+                onClick={toggleIsDepositAddressManualInput}
                 className="absolute bottom-0 right-0 group state-layer flex items-center px-xs rounded-full"
                 testId="toggle-receiver-address-input"
             >

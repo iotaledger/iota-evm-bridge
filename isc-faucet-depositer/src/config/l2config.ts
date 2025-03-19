@@ -4,7 +4,11 @@
 import { Chain } from '@rainbow-me/rainbowkit';
 import { CONFIG } from './config';
 
-export const L2_CHAIN_CONFIG: Chain = {
+export interface L2Chain extends Chain {
+    iscContractAddress: `0x${string}`;
+}
+
+export const L2_CHAIN_CONFIG: L2Chain = {
     id: CONFIG.L2.chainId,
     name: CONFIG.L2.chainName,
     nativeCurrency: {
@@ -23,6 +27,7 @@ export const L2_CHAIN_CONFIG: Chain = {
             url: CONFIG.L2.chainExplorerUrl,
         },
     },
+    iscContractAddress: CONFIG.L2.iscContractAddress,
 };
 
 export const L2_WAGMI_CONFIG = {
