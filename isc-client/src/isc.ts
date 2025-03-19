@@ -45,8 +45,6 @@ export function createAndSend(
         },
     }).toBytes();
 
-    const allowance = Number(amount) + Number(gasBudget);
-
     /* Execute iscmove::requests::create_and_send_request. 
        This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID) 
         
@@ -65,8 +63,8 @@ export function createAndSend(
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
             tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
             tx.pure(bcs.vector(bcs.string()).serialize([IOTA_COIN_TYPE])),
-            tx.pure(bcs.vector(bcs.u64()).serialize([allowance])),
-            tx.pure(bcs.U64.serialize(gasBudget.toString())),
+            tx.pure(bcs.vector(bcs.u64()).serialize([amount])),
+            tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });
 
