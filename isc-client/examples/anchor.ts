@@ -1,4 +1,4 @@
-import { AssetsBag, IscTransaction, Request } from '../src/index';
+import { IscTransaction } from '../src/index';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';

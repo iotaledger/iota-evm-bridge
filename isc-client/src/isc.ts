@@ -143,7 +143,6 @@ export function getSizeOfBag(
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::get_size`,
-        typeArguments: [IOTA_COIN_TYPE],
         arguments: [assetsBag],
     });
 }
@@ -155,7 +154,6 @@ export function destroyBag(
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::destroy_empty`,
-        typeArguments: [IOTA_COIN_TYPE],
         arguments: [assetsBag],
     });
 }
@@ -168,7 +166,6 @@ export function startNewChain(
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::start_new_chain`,
-        typeArguments: [IOTA_COIN_TYPE],
         arguments: [
             bcs.vector(bcs.u8()).serialize(metadata),
             coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null),
