@@ -28,13 +28,11 @@ export class IscTransaction {
     placeCoinsInBag({
         bag,
         amount,
-        gasEstimate = BigInt(0),
     }: {
         bag: TransactionObjectArgument;
-        amount: number;
-        gasEstimate: bigint
+        amount: number | bigint;
     }) {
-        const coins = isc.coinsFromAmount(this.#transaction, BigInt(amount) + gasEstimate);
+        const coins = isc.coinsFromAmount(this.#transaction, BigInt(amount));
         isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, coins);
     }
 

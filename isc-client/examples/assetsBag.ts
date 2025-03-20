@@ -14,6 +14,7 @@ const keypair = new Ed25519Keypair();
 const address = keypair.toIotaAddress();
 
 console.log('Requesting faucet...');
+
 await requestIotaFromFaucetV0({
     host: L1.faucetUrl,
     recipient: address,
@@ -21,13 +22,13 @@ await requestIotaFromFaucetV0({
 
 console.log('Sending...');
 
-// Amount to send (1 IOTAs)
-const requestedAmount = BigInt(1000000000);
 // EVM Address
 const recipientAddress = '0xdEC684752A21Ea475972055c07e586A434328f4D';
-const GAS_BUDGET = BigInt(1_000_0000);
-const GAS_ESTIMATE = BigInt(1_000);
-const amount = requestedAmount - GAS_BUDGET;
+// Amount to send (1 IOTAs)
+const amountToSend = BigInt(1000000000);
+// We also need to put a little more to cover the L2 gas
+const L2_GAS_ESTIMATE = BigInt(1_000);
+const amountToPlace = amountToSend + L2_GAS_ESTIMATE;
 
 const iscTx = new IscTransaction({
     chainId: L1.chainId,
@@ -37,26 +38,17 @@ const iscTx = new IscTransaction({
 });
 
 const bag = iscTx.newBag();
-
-const coins = iscTx.coinsFromAmount({ amount, gasEstimate: GAS_ESTIMATE });
-
-iscTx.placeCoinsInBag({ coins, bag });
-
-iscTx.createAndSend({ bag, address: recipientAddress, amount, gasBudget: GAS_BUDGET });
-
+iscTx.placeCoinsInBag({ amount: amountToPlace, bag });
+iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
 const transaction = iscTx.build();
+
 transaction.setSender(address);
 
 await transaction.build({ client });
 
 await client.signAndExecuteTransaction({
     signer: keypair,
-    transaction,
-    options: {
-        showEffects: true,
-        showEvents: true,
-        showObjectChanges: true,
-    },
+    transaction
 });
 
 console.log('Sent!');
