@@ -49,6 +49,10 @@
         "src/**/*.{ts,js,mjs}": [
             "eslint --fix",
             "prettier --write"
+        ],
+        "examples/**/*.{ts,js,mjs}": [
+            "eslint --fix",
+            "prettier --write"
         ]
     }
 }
