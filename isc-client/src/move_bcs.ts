@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { bcs } from '@iota/iota-sdk/bcs';
 
 export const Receipt = bcs.struct('Receipt', {
