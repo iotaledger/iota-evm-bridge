@@ -50,7 +50,7 @@ export function useBuildL1DepositTransaction({
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
-            const coins = iscTx.coinsFromAmount({ amount: amountToPlace })
+            const coins = iscTx.coinsFromAmount({ amount: amountToPlace });
             iscTx.placeCoinsInBag({ coins, bag });
             iscTx.createAndSend({ bag, address: receivingAddress, amount: amountToSend });
             const transaction = iscTx.build();
