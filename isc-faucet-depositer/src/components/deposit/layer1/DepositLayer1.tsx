@@ -5,11 +5,8 @@ import { useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 
-import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import {
-    GAS_BUDGET,
-    useBuildL1DepositTransaction,
-} from '../../../hooks/useBuildL1DepositTransaction';
+import { L1_GAS_BUDGET, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
 import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -22,7 +19,7 @@ export function DepositLayer1() {
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount, receivingAddress } = watch();
 
-    const [gasEstimation, setGasEstimation] = useState<string>(GAS_BUDGET.toString());
+    const [gasEstimation, setGasEstimation] = useState<string>(L1_GAS_BUDGET.toString());
 
     const { data: transactionData, isPending: isBuildingTransaction } =
         useBuildL1DepositTransaction({

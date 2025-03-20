@@ -84,7 +84,7 @@ export function DepositLayer2() {
                 isPayingAllBalance && gasEstimation
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
-            const params = buildDepositL2Parameters(address, depositTotal);
+            const params = buildDepositL2Parameters(address, depositTotal, gasEstimation);
             writeContract({
                 abi: iscAbi,
                 address: iscContractAddress,

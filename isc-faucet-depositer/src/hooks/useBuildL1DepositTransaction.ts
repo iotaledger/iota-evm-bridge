@@ -6,15 +6,13 @@ import { IscTransaction } from 'isc-client';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config/l1config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
+import { L2_GAS_BUDGET } from '../lib/constants';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
     amount: string;
     gasEstimation?: string;
 }
-
-export const GAS_BUDGET = 10000000n;
-export const L2_GAS_ESTIMATION = 1000n;
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
@@ -44,13 +42,17 @@ export function useBuildL1DepositTransaction({
 
             const amountToSend =
                 isBridgingAllBalance && gasEstimation
-                    ? requestedAmount - BigInt(gasEstimation) - L2_GAS_ESTIMATION
+                    ? requestedAmount - BigInt(gasEstimation) - L2_GAS_BUDGET
                     : requestedAmount;
-
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
-            iscTx.placeCoinsInBag({ amount: amountToSend + L2_GAS_ESTIMATION, bag });
-            iscTx.createAndSend({ bag, address: receivingAddress, amount: amountToSend });
+            iscTx.placeCoinsInBag({ amount: amountToSend + L2_GAS_BUDGET, bag });
+            iscTx.createAndSend({
+                bag,
+                address: receivingAddress,
+                amount: amountToSend,
+                gasBudget: L2_GAS_BUDGET,
+            });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);
             const txBytes = await transaction.build({ client });
@@ -60,7 +62,6 @@ export function useBuildL1DepositTransaction({
             if (txDryRun.effects.status.status !== 'success') {
                 throw Error(`Tx dry run failed: ${txDryRun.effects.status?.error}`);
             }
-
             return {
                 txBytes,
                 txDryRun,
