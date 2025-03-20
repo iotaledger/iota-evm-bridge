@@ -1,4 +1,4 @@
-import { IscTransaction } from '../src/index';
+import { AssetsBag, IscTransaction, Request } from '../src/index';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';
@@ -37,13 +37,24 @@ const iscTx = new IscTransaction({
     accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
 });
 
-const bag = iscTx.newBag();
-const coins = iscTx.coinsFromAmount({ amount: amountToPlace });
-iscTx.placeCoinsInBag({ coins, bag });
+let bag = iscTx.newBag();
+
+const bagCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
+iscTx.placeCoinsInBag({ coins: bagCoins, bag });
+const anchor = iscTx.createAnchorWithAssetBag({ bag });
+iscTx.updateAnchorStateForMigraton({
+    anchor,
+    metadata: new TextEncoder().encode('Something is going on here'),
+    stateIndex: 0,
+});
+const migrationCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
+iscTx.placeCoinForMigration({ anchor, coins: migrationCoins });
+bag = iscTx.destroyAnchor({ anchor });
 iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
 
 const transaction = iscTx.build();
 transaction.setSender(address);
+
 await transaction.build({ client });
 
 await client.signAndExecuteTransaction({
