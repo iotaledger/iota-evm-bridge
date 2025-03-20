@@ -48,7 +48,7 @@ await transaction.build({ client });
 
 await client.signAndExecuteTransaction({
     signer: keypair,
-    transaction
+    transaction,
 });
 
 console.log('Sent!');
