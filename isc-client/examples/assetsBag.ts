@@ -23,10 +23,10 @@ await requestIotaFromFaucetV0({
 console.log('Sending...');
 
 // EVM Address
-const recipientAddress = '0xdEC684752A21Ea475972055c07e586A434328f4D';
+const recipientAddress = process.argv[2];
 // Amount to send (1 IOTAs)
-const amountToSend = BigInt(1000000000);
-// We also need to put a little more to cover the L2 gas
+const amountToSend = BigInt(1 * 1000000000);
+// We also need to place a little more in the bag to cover the L2 gas
 const L2_GAS_ESTIMATE = BigInt(1_000);
 const amountToPlace = amountToSend + L2_GAS_ESTIMATE;
 
