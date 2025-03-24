@@ -48,6 +48,6 @@ jobs:
             - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
               if: always()
               with:
-                  name: playwright-report-wallet
-                  path: apps/frontend/playwright-report/
+                  name: playwright-report-isc-faucet-depositer
+                  path: isc-faucet-depositer/playwright-report/
                   retention-days: 30
