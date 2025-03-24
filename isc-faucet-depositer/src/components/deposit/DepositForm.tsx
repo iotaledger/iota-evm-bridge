@@ -29,10 +29,16 @@ import { formatIOTAFromNanos } from '../../lib/utils';
 
 interface DepositFormProps {
     deposit: () => void;
+    isGasEstimationLoading: boolean;
     isTransactionLoading: boolean;
     gasEstimation?: string | null;
 }
-export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: DepositFormProps) {
+export function DepositForm({
+    deposit,
+    gasEstimation,
+    isTransactionLoading,
+    isGasEstimationLoading,
+}: DepositFormProps) {
     const layer1Account = useCurrentAccount();
     const layer2Account = useAccount();
     const isLayer1WalletConnected = !!layer1Account?.address;
@@ -73,9 +79,15 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
         }
     }, [isLoadingBalance, trigger, getValues]);
 
+    useEffect(() => {
+        // Reset the amount when the transaction is no longer loading
+        if (!isTransactionLoading) {
+            setValue(BridgeFormInputName.DepositAmount, '');
+        }
+    }, [isTransactionLoading]);
+
     const onSubmit: SubmitHandler<DepositFormData> = useCallback(() => {
         deposit();
-        setValue(BridgeFormInputName.DepositAmount, '');
     }, [deposit, setValue]);
 
     const receivingAmountDisplay = (() => {
@@ -199,6 +211,7 @@ export function DepositForm({ deposit, gasEstimation, isTransactionLoading }: De
                     !isValid ||
                     !!Object.values(values).some((value) => value === '') ||
                     isTransactionLoading ||
+                    isGasEstimationLoading ||
                     !!(isPayingAllBalance && !gasEstimation)
                 }
                 icon={

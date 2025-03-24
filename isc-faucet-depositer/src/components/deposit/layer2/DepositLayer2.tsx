@@ -28,7 +28,7 @@ export function DepositLayer2() {
     const { depositAmount } = watch();
     const isPayingAllBalance = useIsBridgingAllBalance();
 
-    const { data: hash, writeContract, isSuccess, isError, error } = useWriteContract();
+    const { data: hash, writeContractAsync, isSuccess, isError, error } = useWriteContract();
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
         queryKey: ['l2-deposit-transaction-gas-estimate', address, depositAmount],
@@ -85,7 +85,7 @@ export function DepositLayer2() {
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
             const params = buildDepositL2Parameters(address, depositTotal);
-            writeContract({
+            await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
                 functionName: 'send',
@@ -98,7 +98,8 @@ export function DepositLayer2() {
     return (
         <DepositForm
             deposit={deposit}
-            isTransactionLoading={isTransactionLoading || isGasEstimationLoading}
+            isGasEstimationLoading={isGasEstimationLoading}
+            isTransactionLoading={isTransactionLoading}
             gasEstimation={gasEstimation}
         />
     );
