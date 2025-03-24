@@ -51,15 +51,15 @@ export class IscTransaction {
     createAndSend({
         bag,
         address,
-        amount,
+        transfers,
         gasBudget,
     }: {
         address: string;
-        amount: number | bigint;
+        transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
-        isc.createAndSend(this.#transaction, this.#chainData, bag, amount, address, gasBudget);
+        isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, address, gasBudget);
     }
 
     /**
@@ -101,11 +101,13 @@ export class IscTransaction {
     placeAssetInBag({
         bag,
         asset,
+        coinType
     }: {
         asset: TransactionObjectArgument;
         bag: TransactionObjectArgument;
+        coinType: string,
     }) {
-        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, asset);
+        isc.placeAssetInBag(this.#transaction, this.#chainData, bag,coinType, asset);
     }
 
     /**

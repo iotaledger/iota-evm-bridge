@@ -38,7 +38,7 @@ export function createAndSend(
     tx: Transaction,
     { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
     assetsBag: TransactionObjectArgument,
-    amount: number | bigint,
+    transfers: Array<[string, number | bigint]>,
     address: string,
     gasBudget: number | bigint = 10000000,
 ) {
@@ -66,8 +66,8 @@ export function createAndSend(
             tx.pure(bcs.U32.serialize(coreContractAccounts)),
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
             tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
-            tx.pure(bcs.vector(bcs.string()).serialize([IOTA_COIN_TYPE])),
-            tx.pure(bcs.vector(bcs.u64()).serialize([amount])),
+            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map(([coinType]) => coinType))),
+            tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map(([_, amount]) => amount))),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });
@@ -115,11 +115,12 @@ export function placeAssetInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     asset: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_asset`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, asset],
     });
 }
