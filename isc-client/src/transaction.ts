@@ -1,8 +1,4 @@
-import {
-    Transaction,
-    TransactionObjectArgument,
-    TransactionResult,
-} from '@iota/iota-sdk/transactions';
+import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
 
@@ -69,14 +65,20 @@ export class IscTransaction {
     /**
      * Take out the specied amount of coins from the bag.
      */
-    takeCoinsBalanceFromBag({ bag, amount }: { amount: number | bigint; bag: TransactionResult }) {
+    takeCoinsBalanceFromBag({
+        bag,
+        amount,
+    }: {
+        amount: number | bigint;
+        bag: TransactionObjectArgument;
+    }) {
         return isc.takeCoinsBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
     }
 
     /**
      * Take out all the coins from the bag.
      */
-    takeAllCoinsBalanceFromBag({ bag }: { bag: TransactionResult }) {
+    takeAllCoinsBalanceFromBag({ bag }: { bag: TransactionObjectArgument }) {
         return isc.takeAllCoinsBalanceFromBag(this.#transaction, this.#chainData, bag);
     }
 
@@ -87,8 +89,8 @@ export class IscTransaction {
         bag,
         balance,
     }: {
-        balance: TransactionResult;
-        bag: TransactionResult;
+        balance: TransactionObjectArgument;
+        bag: TransactionObjectArgument;
     }) {
         isc.placeCoinsBalanceInBag(this.#transaction, this.#chainData, bag, balance);
     }
@@ -96,28 +98,34 @@ export class IscTransaction {
     /**
      * Place an asset in the bag.
      */
-    placeAssetInBag({ bag, asset }: { asset: TransactionResult; bag: TransactionResult }) {
+    placeAssetInBag({
+        bag,
+        asset,
+    }: {
+        asset: TransactionObjectArgument;
+        bag: TransactionObjectArgument;
+    }) {
         isc.placeAssetInBag(this.#transaction, this.#chainData, bag, asset);
     }
 
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag }: { bag: TransactionResult }) {
+    takeAssetFromBag({ bag }: { bag: TransactionObjectArgument }) {
         isc.takeAssetFromBag(this.#transaction, this.#chainData, bag);
     }
 
     /**
      * Get the size of the bag.
      */
-    getSizeOfBag({ bag }: { bag: TransactionResult }) {
+    getSizeOfBag({ bag }: { bag: TransactionObjectArgument }) {
         return isc.getSizeOfBag(this.#transaction, this.#chainData, bag);
     }
 
     /**
      * Destroy the bag.
      */
-    destroyBag({ bag }: { bag: TransactionResult }) {
+    destroyBag({ bag }: { bag: TransactionObjectArgument }) {
         return isc.destroyBag(this.#transaction, this.#chainData, bag);
     }
 
