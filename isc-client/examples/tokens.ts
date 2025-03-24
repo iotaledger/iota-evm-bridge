@@ -53,7 +53,7 @@ iscTx.placeAssetInBag({
 iscTx.placeCoinsInBag({ coins, bag });
 iscTx.createAndSend({ bag, address: recipientAddress, transfers: [
     [IOTA_COIN_TYPE, amountToSend],
-    // [BOXFISH_COIN_TYPE, tokenAmountToSend]
+    [BOXFISH_COIN_TYPE, tokenAmountToSend]
 ] });
 
 const transaction = iscTx.build();
