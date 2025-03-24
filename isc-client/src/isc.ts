@@ -36,7 +36,7 @@ export function createAndSend(
     assetsBag: TransactionResult,
     amount: number | bigint,
     address: string,
-    gasBudget: number,
+    gasBudget: number | bigint,
 ) {
     const agentID = IscAgentID.serialize({
         EthereumAddressAgentID: {
