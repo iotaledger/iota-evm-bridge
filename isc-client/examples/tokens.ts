@@ -27,9 +27,9 @@ const recipientAddress = process.argv[2];
 // Amount to send (1 IOTAs)
 const amountToSend = BigInt(1 * 1000000000);
 // Amount to send (1 Boxfish)
-const tokenAmountToSend = BigInt(5);
+const tokenAmountToSend = BigInt(1);
 // We also need to place a little more in the bag to cover the L2 gas
-const L2_GAS_ESTIMATE = BigInt(1_000);
+const L2_GAS_ESTIMATE = BigInt(100_000);
 const amountToPlace = amountToSend + L2_GAS_ESTIMATE;
 
 const BOXFISH_COIN_TYPE = "0x2::coin::Coin<0xe02c05fe78a112a045b9ab25794ad19fc8895155fa8ac9c057cd6a0f5a1f3c5a::box_coin::BOX_COIN>"
