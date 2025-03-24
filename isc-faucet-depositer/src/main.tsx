@@ -54,6 +54,7 @@ function RainbowKit({ children }: React.PropsWithChildren) {
 
     return (
         <RainbowKitProvider
+            initialChain={L2_CHAIN_CONFIG}
             modalSize="compact"
             theme={{
                 ...theme,

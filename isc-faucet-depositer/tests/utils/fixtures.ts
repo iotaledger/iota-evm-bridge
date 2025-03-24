@@ -36,10 +36,7 @@ export const test = base.extend<ExtensionFixtures>({
             ],
         });
 
-        await context.newPage();
-
         await use(context);
-        await context.close();
     },
 
     contextL2: async ({}, use) => {
@@ -52,10 +49,7 @@ export const test = base.extend<ExtensionFixtures>({
             ],
         });
 
-        await context.newPage();
-
         await use(context);
-        await context.close();
     },
 
     l1ExtensionUrl: async ({ contextL1 }, use) => {
@@ -66,14 +60,6 @@ export const test = base.extend<ExtensionFixtures>({
 
     l2ExtensionUrl: async ({ contextL2 }, use) => {
         const extensionId = await waitForExtension(contextL2);
-
-        const pages = contextL2.pages();
-        if (pages.length > 1) {
-            for (let i = 1; i < pages.length; i++) {
-                await pages[i].close();
-            }
-        }
-
         const extensionUrl = `chrome-extension://${extensionId}/home.html`;
         await use(extensionUrl);
     },

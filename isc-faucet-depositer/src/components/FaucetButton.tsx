@@ -38,6 +38,7 @@ export function FaucetButton() {
             text="Request funds"
             onClick={() => requestFaucet()}
             disabled={!isConnected || isPending}
+            testId="request-l1-funds-button"
         />
     );
 }

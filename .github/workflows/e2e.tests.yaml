@@ -39,11 +39,11 @@ jobs:
 
             - name: Prepare e2e tests (downloads wallet artifact dist)
               working-directory: ./isc-faucet-depositer
-              run: pnpm run test:prepare:L1
+              run: pnpm run test:prepare
 
             - name: Run tests
               working-directory: ./isc-faucet-depositer
-              run: DEBUG=pw:webserver xvfb-run --auto-servernum pnpm run test:e2e:L1
+              run: DEBUG=pw:webserver xvfb-run --auto-servernum pnpm run test:e2e
 
             - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
               if: always()

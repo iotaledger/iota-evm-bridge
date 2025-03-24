@@ -16,8 +16,6 @@
         "test:prepare:L1": "L1=true vite-node scripts/downloadWallet.js",
         "test:prepare:L2": "L1=false vite-node scripts/downloadWallet.js",
         "test:prepare": "pnpm test:prepare:L1 && pnpm test:prepare:L2",
-        "test:e2e:L1": "pnpm exec playwright test depositL1",
-        "test:e2e:L2": "pnpm exec playwright test depositL2",
         "test:e2e": "pnpm exec playwright test"
     },
     "dependencies": {
