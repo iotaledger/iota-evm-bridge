@@ -36,7 +36,7 @@ export class IscTransaction {
     }: {
         address: string;
         amount: number | bigint;
-        gasBudget?: number | bigint;
+        gasBudget: number | bigint;
         bag: TransactionResult;
     }) {
         isc.createAndSend(this.#transaction, this.#chainData, bag, amount, address, gasBudget);
