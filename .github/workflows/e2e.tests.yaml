@@ -1,0 +1,53 @@
+name: Run End-to-end tests
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+    group: e2e-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+env:
+    VITE_EVM_TOOLKIT_CONFIG: ${{ secrets.EVM_TOOLKIT_CONFIG }}
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+    e2e-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Install Playwright Browsers
+              working-directory: ./isc-faucet-depositer
+              run: pnpm exec playwright install --with-deps chromium
+
+            - name: Build
+              run: pnpm isc-faucet-depositer build
+
+            - name: Prepare e2e tests (downloads wallet artifact dist)
+              working-directory: ./isc-faucet-depositer
+              run: pnpm run test:prepare:L1
+
+            - name: Run tests
+              working-directory: ./isc-faucet-depositer
+              run: DEBUG=pw:webserver xvfb-run --auto-servernum pnpm run test:e2e:L1
+
+            - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+              if: always()
+              with:
+                  name: playwright-report-wallet
+                  path: apps/frontend/playwright-report/
+                  retention-days: 30
