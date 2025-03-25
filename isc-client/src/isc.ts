@@ -5,7 +5,7 @@ import { IOTA_COIN_TYPE } from './constants';
 import { IscAgentID } from './bcs';
 
 export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
-    // Create a new empty AssetsBag. It will be used to attach coins/objects to the request
+    // Create a new empty AssetsBag. It will be used to attach coin/objects to the request
     const assetsBag = tx.moveCall({
         target: `${packageId}::assets_bag::new`,
         arguments: [],
@@ -14,23 +14,24 @@ export function newBag(tx: Transaction, { packageId }: ChainData): TransactionOb
     return assetsBag;
 }
 
-export function coinsFromAmount(tx: Transaction, amount: bigint): TransactionObjectArgument {
+export function coinFromAmount(tx: Transaction, amount: bigint): TransactionObjectArgument {
     // Split the senders Gas coin so we have a coin to transfer
     const [splitCoin] = tx.splitCoins(tx.gas, [tx.pure(bcs.U64.serialize(amount))]);
 
     return splitCoin;
 }
 
-export function placeCoinsInBag(
+export function placeCoinInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coins: TransactionObjectArgument,
+    coinType: string,
+    coin: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin`,
-        typeArguments: [IOTA_COIN_TYPE],
-        arguments: [assetsBag, coins],
+        typeArguments: [coinType],
+        arguments: [assetsBag, coin],
     });
 }
 
@@ -73,7 +74,7 @@ export function createAndSend(
     });
 }
 
-export function takeCoinsBalanceFromBag(
+export function takeCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
@@ -86,7 +87,7 @@ export function takeCoinsBalanceFromBag(
     });
 }
 
-export function takeAllCoinsBalanceFromBag(
+export function takeAllCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
@@ -98,7 +99,7 @@ export function takeAllCoinsBalanceFromBag(
     });
 }
 
-export function placeCoinsBalanceInBag(
+export function placeCoinBalanceInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
@@ -266,12 +267,12 @@ export function placeCoinForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
-    coins: TransactionObjectArgument,
+    coin: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_for_migration`,
         typeArguments: [IOTA_COIN_TYPE],
-        arguments: [anchor, coins],
+        arguments: [anchor, coin],
     });
 }
 

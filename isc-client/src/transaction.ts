@@ -26,23 +26,25 @@ export class IscTransaction {
     }
 
     /**
-     * Get some amount of coins.
+     * Get some amount in a coin.
      */
-    coinsFromAmount({ amount }: { amount: number | bigint }) {
-        return isc.coinsFromAmount(this.#transaction, BigInt(amount));
+    coinFromAmount({ amount }: { amount: number | bigint }) {
+        return isc.coinFromAmount(this.#transaction, BigInt(amount));
     }
 
     /**
-     * Place some coins in a bag.
+     * Place a coin in a bag.
      */
-    placeCoinsInBag({
+    placeCoinInBag({
         bag,
-        coins,
+        coinType,
+        coin: coin,
     }: {
-        coins: TransactionObjectArgument;
+        coin: TransactionObjectArgument;
+        coinType: string;
         bag: TransactionObjectArgument;
     }) {
-        isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, coins);
+        isc.placeCoinInBag(this.#transaction, this.#chainData, bag, coinType, coin);
     }
 
     /**
@@ -63,36 +65,36 @@ export class IscTransaction {
     }
 
     /**
-     * Take out the specied amount of coins from the bag.
+     * Take out the specied amount of coin from the bag.
      */
-    takeCoinsBalanceFromBag({
+    takeCoinBalanceFromBag({
         bag,
         amount,
     }: {
         amount: number | bigint;
         bag: TransactionObjectArgument;
     }) {
-        return isc.takeCoinsBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
+        return isc.takeCoinBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
     }
 
     /**
-     * Take out all the coins from the bag.
+     * Take out all the coin from the bag.
      */
-    takeAllCoinsBalanceFromBag({ bag }: { bag: TransactionObjectArgument }) {
-        return isc.takeAllCoinsBalanceFromBag(this.#transaction, this.#chainData, bag);
+    takeAllCoinBalanceFromBag({ bag }: { bag: TransactionObjectArgument }) {
+        return isc.takeAllCoinBalanceFromBag(this.#transaction, this.#chainData, bag);
     }
 
     /**
-     * Place a coins balance in the bag.
+     * Place a coin balance in the bag.
      */
-    placeCoinsBalanceInBag({
+    placeCoinBalanceInBag({
         bag,
         balance,
     }: {
         balance: TransactionObjectArgument;
         bag: TransactionObjectArgument;
     }) {
-        isc.placeCoinsBalanceInBag(this.#transaction, this.#chainData, bag, balance);
+        isc.placeCoinBalanceInBag(this.#transaction, this.#chainData, bag, balance);
     }
 
     /**
@@ -101,13 +103,13 @@ export class IscTransaction {
     placeAssetInBag({
         bag,
         asset,
-        coinType
+        coinType,
     }: {
         asset: TransactionObjectArgument;
         bag: TransactionObjectArgument;
-        coinType: string,
+        coinType: string;
     }) {
-        isc.placeAssetInBag(this.#transaction, this.#chainData, bag,coinType, asset);
+        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, coinType, asset);
     }
 
     /**
@@ -207,12 +209,12 @@ export class IscTransaction {
 
     placeCoinForMigration({
         anchor,
-        coins,
+        coin,
     }: {
         anchor: TransactionObjectArgument;
-        coins: TransactionObjectArgument;
+        coin: TransactionObjectArgument;
     }) {
-        return isc.placeCoinForMigration(this.#transaction, this.#chainData, anchor, coins);
+        return isc.placeCoinForMigration(this.#transaction, this.#chainData, anchor, coin);
     }
 
     placeCoinBalanceForMigration({
