@@ -111,12 +111,10 @@ export const LoTuple2_Hname_ContractRecord = bcs.struct('LoTuple2_Hname_Contract
 });
 
 export const IscContractAgentID = bcs.struct('IscContractAgentID', {
-    chainID: bcs.fixedArray(32, bcs.u8()),
     hname: bcs.u32(),
 });
 
 export const IscEthereumAddressAgentID = bcs.struct('IscEthereumAddressAgentID', {
-    chainID: bcs.fixedArray(32, bcs.u8()),
     eth: bcs.fixedArray(20, bcs.u8()),
 });
 
