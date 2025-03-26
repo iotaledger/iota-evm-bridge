@@ -68,6 +68,15 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await pageWithL1Wallet.getByTestId('request-l1-funds-button').click();
         await expect(pageWithL1Wallet.getByText('Funds successfully sent.')).toBeVisible();
 
+        // Check the funds arrived (ui)
+        const l1WalletExtension = await browserL1.newPage();
+        const l1ExtensionUrl = await getExtensionUrl(browserL1);
+        await l1WalletExtension.goto(l1ExtensionUrl, { waitUntil: 'commit' });
+        await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10', {
+            timeout: 15_000,
+        });
+        l1WalletExtension.close();
+
         const toggleManualInput = pageWithL1Wallet.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
         await toggleManualInput.click();
@@ -112,8 +121,9 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await pageWithL2Wallet.getByTestId(/metamask/).click();
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
-        await walletL2Modal.waitForLoadState();
+        await walletL2Modal.waitForLoadState('networkidle');
         await walletL2Modal.getByRole('button', { name: 'Connect' }).click();
+        await walletL2Modal.waitForLoadState('networkidle');
         await walletL2Modal.getByRole('button', { name: 'Approve' }).click();
 
         try {
