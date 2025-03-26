@@ -12,7 +12,7 @@ const client = new IotaClient({
 
 const MNEMONIC =
     'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst';
-const BOXFISH_COIN_TYPE =
+const TOKEN_COIN_TYPE =
     '0xe02c05fe78a112a045b9ab25794ad19fc8895155fa8ac9c057cd6a0f5a1f3c5a::box_coin::BOX_COIN';
 
 const keypair = Ed25519Keypair.deriveKeypair(MNEMONIC);
@@ -52,7 +52,7 @@ let tokenCoin = tx.splitCoins(
 iscTx.placeCoinInBag({
     bag,
     coin: tokenCoin,
-    coinType: BOXFISH_COIN_TYPE,
+    coinType: TOKEN_COIN_TYPE,
 });
 
 iscTx.createAndSend({
@@ -60,7 +60,7 @@ iscTx.createAndSend({
     address: recipientAddress,
     transfers: [
         [IOTA_COIN_TYPE, amountToSend],
-        [BOXFISH_COIN_TYPE, tokenAmountToSend],
+        [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
 });
 
