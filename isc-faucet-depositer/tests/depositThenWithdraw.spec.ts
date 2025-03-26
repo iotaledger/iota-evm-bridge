@@ -11,7 +11,7 @@ import {
 
 test.setTimeout(60_000);
 
-test.describe.serial('Deposit + Withdraw (sequential)', () => {
+test.describe.serial('Deposit then withdraw roundtrip', () => {
     let browserL1: BrowserContext;
     let browserL2: BrowserContext;
     let pageWithL1Wallet: Page;
@@ -20,7 +20,7 @@ test.describe.serial('Deposit + Withdraw (sequential)', () => {
     let addressL2: string | null = null;
 
     test.beforeAll(
-        'Setup L1/L2 wallets',
+        'setup L1/L2 wallets',
         async ({ contextL1, l1ExtensionUrl, contextL2, l2ExtensionUrl }) => {
             const mnemonicL1 = generate24WordMnemonic();
 
