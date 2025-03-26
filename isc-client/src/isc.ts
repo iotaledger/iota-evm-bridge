@@ -66,7 +66,7 @@ export function createAndSend(
             tx.pure(bcs.U32.serialize(coreContractAccounts)),
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
             tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
-            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map(([transfer]) => transfer[0]))),
+            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map((transfer) => transfer[0]))),
             tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
