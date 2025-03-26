@@ -1,10 +1,10 @@
-import { Transaction, TransactionResult } from '@iota/iota-sdk/transactions';
+import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import { ChainData } from './types';
 import { bcs } from '@iota/iota-sdk/bcs';
 import { IOTA_COIN_TYPE } from './constants';
 import { IscAgentID } from './bcs';
 
-export function newBag(tx: Transaction, { packageId }: ChainData): TransactionResult {
+export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
     // Create a new empty AssetsBag. It will be used to attach coins/objects to the request
     const assetsBag = tx.moveCall({
         target: `${packageId}::assets_bag::new`,
@@ -14,26 +14,30 @@ export function newBag(tx: Transaction, { packageId }: ChainData): TransactionRe
     return assetsBag;
 }
 
-export function placeCoinsInBag(
-    tx: Transaction,
-    { packageId }: ChainData,
-    assetsBag: TransactionResult,
-    amount: number | bigint,
-) {
+export function coinsFromAmount(tx: Transaction, amount: bigint): TransactionObjectArgument {
     // Split the senders Gas coin so we have a coin to transfer
     const [splitCoin] = tx.splitCoins(tx.gas, [tx.pure(bcs.U64.serialize(amount))]);
 
+    return splitCoin;
+}
+
+export function placeCoinsInBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+    coins: TransactionObjectArgument,
+) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin`,
         typeArguments: [IOTA_COIN_TYPE],
-        arguments: [assetsBag, splitCoin],
+        arguments: [assetsBag, coins],
     });
 }
 
 export function createAndSend(
     tx: Transaction,
     { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
-    assetsBag: TransactionResult,
+    assetsBag: TransactionObjectArgument,
     amount: number | bigint,
     address: string,
     gasBudget: number | bigint,
@@ -67,6 +71,231 @@ export function createAndSend(
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });
+}
 
-    return tx;
+export function takeCoinsBalanceFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+    amount: number | bigint,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, tx.pure(bcs.U64.serialize(amount))],
+    });
+}
+
+export function takeAllCoinsBalanceFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_all_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag],
+    });
+}
+
+export function placeCoinsBalanceInBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+    balance: TransactionObjectArgument,
+) {
+    tx.moveCall({
+        target: `${packageId}::assets_bag::place_coin_balance`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, balance],
+    });
+}
+
+export function placeAssetInBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+    asset: TransactionObjectArgument,
+) {
+    tx.moveCall({
+        target: `${packageId}::assets_bag::place_asset`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, asset],
+    });
+}
+
+export function takeAssetFromBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+) {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::take_asset`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [assetsBag, assetsBag], // TODO: USE ID!
+    });
+}
+
+export function getSizeOfBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::get_size`,
+        arguments: [assetsBag],
+    });
+}
+
+export function destroyBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::assets_bag::destroy_empty`,
+        arguments: [assetsBag],
+    });
+}
+
+export function startNewChain(
+    tx: Transaction,
+    { packageId }: ChainData,
+    metadata: Uint8Array,
+    coin?: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::start_new_chain`,
+        arguments: [
+            bcs.vector(bcs.u8()).serialize(metadata),
+            coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null),
+        ],
+    });
+}
+
+export function createAnchorWithAssetBag(
+    tx: Transaction,
+    { packageId }: ChainData,
+    assetsBag: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::create_anchor_with_assets_bag_ref`,
+        arguments: [assetsBag],
+    });
+}
+
+export function updateAnchorStateForMigraton(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    metadata: Uint8Array,
+    stateIndex: number,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::update_anchor_state_for_migration`,
+        arguments: [
+            anchor,
+            bcs.vector(bcs.u8()).serialize(metadata),
+            bcs.u32().serialize(stateIndex),
+        ],
+    });
+}
+
+export function destroyAnchor(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::destroy`,
+        arguments: [anchor],
+    });
+}
+
+export function borrowAssets(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::borrow_assets`,
+        arguments: [anchor],
+    });
+}
+
+export function returnAssetsFromBorrow(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    assetsBag: TransactionObjectArgument,
+    borrow: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::return_assets_from_borrow`,
+        arguments: [anchor, assetsBag, borrow],
+    });
+}
+
+export function receiveRequest(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    request: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::receive_request`,
+        arguments: [anchor, request],
+    });
+}
+
+export function transition(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    newStateMetadata: Uint8Array,
+    receipts: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::transition`,
+        arguments: [anchor, bcs.vector(bcs.u8()).serialize(newStateMetadata), receipts],
+    });
+}
+
+export function placeCoinForMigration(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    coins: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::place_coin_for_migration`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [anchor, coins],
+    });
+}
+
+export function placeCoinBalanceForMigration(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    balance: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::place_coin_balance_for_migration`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [anchor, balance],
+    });
+}
+
+export function placeAssetForMigration(
+    tx: Transaction,
+    { packageId }: ChainData,
+    anchor: TransactionObjectArgument,
+    asset: TransactionObjectArgument,
+): TransactionObjectArgument {
+    return tx.moveCall({
+        target: `${packageId}::anchor::place_asset_for_migration`,
+        typeArguments: [IOTA_COIN_TYPE],
+        arguments: [anchor, asset],
+    });
 }

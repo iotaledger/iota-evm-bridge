@@ -44,9 +44,12 @@ export function useBuildL1DepositTransaction({
                 isBridgingAllBalance && gasEstimation
                     ? requestedAmount - BigInt(gasEstimation) - L2_GAS_BUDGET
                     : requestedAmount;
+            const amountToPlace = amountToSend + L2_GAS_BUDGET;
+
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
-            iscTx.placeCoinsInBag({ amount: amountToSend + L2_GAS_BUDGET, bag });
+            const coins = iscTx.coinsFromAmount({ amount: amountToPlace });
+            iscTx.placeCoinsInBag({ coins, bag });
             iscTx.createAndSend({
                 bag,
                 address: receivingAddress,
