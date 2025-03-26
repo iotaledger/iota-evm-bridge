@@ -75,8 +75,8 @@ const { digest } = await client.signAndExecuteTransaction({
 });
 
 await client.waitForTransaction({
-    digest
-})
+    digest,
+});
 
 console.log('Sent!');
 
