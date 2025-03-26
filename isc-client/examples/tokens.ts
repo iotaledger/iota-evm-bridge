@@ -69,10 +69,14 @@ transaction.setSender(address);
 
 await transaction.build({ client });
 
-await client.signAndExecuteTransaction({
+const { digest } = await client.signAndExecuteTransaction({
     signer: keypair,
     transaction,
 });
+
+await client.waitForTransaction({
+    digest
+})
 
 console.log('Sent!');
 
