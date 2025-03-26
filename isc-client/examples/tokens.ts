@@ -20,8 +20,8 @@ const address = keypair.toIotaAddress();
 
 // EVM Address
 const recipientAddress = process.argv[2];
-// Amount to send (1 IOTAs)
-const amountToSend = BigInt(1 * 1_000_000_000);
+// Amount to send (0.01 IOTAs)
+const amountToSend = BigInt(1 * 1_000_000);
 // Amount to send (1 Boxfish)
 const tokenAmountToSend = BigInt(1);
 // We also need to place a little more in the bag to cover the L2 gas
