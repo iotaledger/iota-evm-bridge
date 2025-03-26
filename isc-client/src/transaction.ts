@@ -1,6 +1,7 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
+import { IOTA_COIN_TYPE } from './constants';
 
 export class IscTransaction {
     #transaction: Transaction;
@@ -37,11 +38,11 @@ export class IscTransaction {
      */
     placeCoinInBag({
         bag,
-        coinType,
-        coin: coin,
+        coinType = IOTA_COIN_TYPE,
+        coin,
     }: {
         coin: TransactionObjectArgument;
-        coinType: string;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
         isc.placeCoinInBag(this.#transaction, this.#chainData, bag, coinType, coin);
@@ -89,12 +90,14 @@ export class IscTransaction {
      */
     placeCoinBalanceInBag({
         bag,
+        coinType = IOTA_COIN_TYPE,
         balance,
     }: {
         balance: TransactionObjectArgument;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
-        isc.placeCoinBalanceInBag(this.#transaction, this.#chainData, bag, balance);
+        isc.placeCoinBalanceInBag(this.#transaction, this.#chainData, bag, coinType, balance);
     }
 
     /**
@@ -115,8 +118,14 @@ export class IscTransaction {
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag }: { bag: TransactionObjectArgument }) {
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag);
+    takeAssetFromBag({
+        bag,
+        coinType = IOTA_COIN_TYPE,
+    }: {
+        bag: TransactionObjectArgument;
+        coinType?: string;
+    }) {
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, coinType);
     }
 
     /**
@@ -209,37 +218,56 @@ export class IscTransaction {
 
     placeCoinForMigration({
         anchor,
+        coinType = IOTA_COIN_TYPE,
         coin,
     }: {
         anchor: TransactionObjectArgument;
+        coinType?: string;
         coin: TransactionObjectArgument;
     }) {
-        return isc.placeCoinForMigration(this.#transaction, this.#chainData, anchor, coin);
+        return isc.placeCoinForMigration(
+            this.#transaction,
+            this.#chainData,
+            anchor,
+            coinType,
+            coin,
+        );
     }
 
     placeCoinBalanceForMigration({
         anchor,
+        coinType = IOTA_COIN_TYPE,
         balance,
     }: {
         anchor: TransactionObjectArgument;
+        coinType?: string;
         balance: TransactionObjectArgument;
     }) {
         return isc.placeCoinBalanceForMigration(
             this.#transaction,
             this.#chainData,
             anchor,
+            coinType,
             balance,
         );
     }
 
     placeAssetForMigration({
         anchor,
+        coinType = IOTA_COIN_TYPE,
         asset,
     }: {
         anchor: TransactionObjectArgument;
+        coinType?: string;
         asset: TransactionObjectArgument;
     }) {
-        return isc.placeAssetForMigration(this.#transaction, this.#chainData, anchor, asset);
+        return isc.placeAssetForMigration(
+            this.#transaction,
+            this.#chainData,
+            anchor,
+            coinType,
+            asset,
+        );
     }
 
     /**

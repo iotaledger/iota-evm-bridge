@@ -1,4 +1,4 @@
-import { IscTransaction } from '../src/index';
+import { IOTA_COIN_TYPE, IscTransaction } from '../src/index';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';
@@ -39,18 +39,22 @@ const iscTx = new IscTransaction({
 
 let bag = iscTx.newBag();
 
-const bagCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
-iscTx.placeCoinsInBag({ coins: bagCoins, bag });
+const bagCoin = iscTx.coinFromAmount({ amount: amountToPlace });
+iscTx.placeCoinInBag({ coin: bagCoin, bag });
 const anchor = iscTx.createAnchorWithAssetBag({ bag });
 iscTx.updateAnchorStateForMigraton({
     anchor,
     metadata: new TextEncoder().encode('Something is going on here'),
     stateIndex: 0,
 });
-const migrationCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
-iscTx.placeCoinForMigration({ anchor, coins: migrationCoins });
+const migrationCoin = iscTx.coinFromAmount({ amount: amountToPlace });
+iscTx.placeCoinForMigration({ anchor, coin: migrationCoin });
 bag = iscTx.destroyAnchor({ anchor });
-iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
+iscTx.createAndSend({
+    bag,
+    address: recipientAddress,
+    transfers: [[IOTA_COIN_TYPE, amountToSend]],
+});
 
 const transaction = iscTx.build();
 transaction.setSender(address);

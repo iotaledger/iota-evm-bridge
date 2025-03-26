@@ -67,8 +67,8 @@ export function createAndSend(
             tx.pure(bcs.U32.serialize(coreContractAccounts)),
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
             tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
-            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map(([coinType]) => coinType))),
-            tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map(([_, amount]) => amount))),
+            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map(([transfer]) => transfer[0]))),
+            tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });
@@ -103,11 +103,12 @@ export function placeCoinBalanceInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     balance: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, balance],
     });
 }
@@ -130,11 +131,12 @@ export function takeAssetFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
-        typeArguments: [IOTA_COIN_TYPE],
-        arguments: [assetsBag, assetsBag], // TODO: USE ID!
+        typeArguments: [coinType],
+        arguments: [assetsBag, assetsBag],
     });
 }
 
@@ -267,11 +269,12 @@ export function placeCoinForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
+    coinType: string,
     coin: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [anchor, coin],
     });
 }
@@ -280,11 +283,12 @@ export function placeCoinBalanceForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
+    coinType: string,
     balance: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_balance_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [anchor, balance],
     });
 }
@@ -293,11 +297,12 @@ export function placeAssetForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
+    coinType: string,
     asset: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_asset_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [anchor, asset],
     });
 }

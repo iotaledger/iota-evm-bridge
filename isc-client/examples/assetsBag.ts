@@ -1,4 +1,4 @@
-import { IscTransaction } from '../src/index';
+import { IOTA_COIN_TYPE, IscTransaction } from '../src/index';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';
@@ -38,9 +38,13 @@ const iscTx = new IscTransaction({
 });
 
 const bag = iscTx.newBag();
-const coins = iscTx.coinsFromAmount({ amount: amountToPlace });
-iscTx.placeCoinsInBag({ coins, bag });
-iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
+const coin = iscTx.coinFromAmount({ amount: amountToPlace });
+iscTx.placeCoinInBag({ coin, bag });
+iscTx.createAndSend({
+    bag,
+    address: recipientAddress,
+    transfers: [[IOTA_COIN_TYPE, amountToSend]],
+});
 
 const transaction = iscTx.build();
 transaction.setSender(address);

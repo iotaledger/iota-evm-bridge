@@ -10,19 +10,13 @@ const client = new IotaClient({
     url: L1.rpcUrl,
 });
 
-const keypair = Ed25519Keypair.deriveKeypair(
-    'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst',
-);
+const MNEMONIC =
+    'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst';
+const BOXFISH_COIN_TYPE =
+    '0xe02c05fe78a112a045b9ab25794ad19fc8895155fa8ac9c057cd6a0f5a1f3c5a::box_coin::BOX_COIN';
+
+const keypair = Ed25519Keypair.deriveKeypair(MNEMONIC);
 const address = keypair.toIotaAddress();
-
-// console.log('Requesting faucet...');
-
-// await requestIotaFromFaucetV0({
-//     host: L1.faucetUrl,
-//     recipient: address,
-// });
-
-console.log('Sending...');
 
 // EVM Address
 const recipientAddress = process.argv[2];
@@ -34,8 +28,7 @@ const tokenAmountToSend = BigInt(1);
 const L2_GAS_ESTIMATE = BigInt(10_000);
 const amountToPlace = amountToSend + L2_GAS_ESTIMATE;
 
-const BOXFISH_COIN_TYPE =
-    '0xe02c05fe78a112a045b9ab25794ad19fc8895155fa8ac9c057cd6a0f5a1f3c5a::box_coin::BOX_COIN';
+console.log('Sending...');
 
 const iscTx = new IscTransaction({
     chainId: L1.chainId,
@@ -43,7 +36,6 @@ const iscTx = new IscTransaction({
     coreContractAccounts: Number(L1.coreContractAccounts),
     accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
 });
-
 const tx = iscTx.transaction();
 
 const bag = iscTx.newBag();
@@ -55,7 +47,7 @@ iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_COIN_TYPE });
 // Place Token
 let tokenCoin = tx.splitCoins(
     tx.object('0x75dff2c55d8bdba5dba85f2b3e464e2d26d1f6bc8e557c7efc46b63fdb30d322'),
-    [tx.pure(bcs.U64.serialize(100))],
+    [tx.pure(bcs.U64.serialize(1))],
 );
 iscTx.placeCoinInBag({
     bag,
@@ -83,3 +75,8 @@ await client.signAndExecuteTransaction({
 });
 
 console.log('Sent!');
+
+const data = await fetch(
+    `https://api.evm.lb-0.h.iota-rebased-alphanet.iota.cafe/v1/chains/0x838559fdf277aa3b95f77afaa81a13d64e20b120a11bb59d3cf2c92843c70c54/core/accounts/account/${recipientAddress}@0x838559fdf277aa3b95f77afaa81a13d64e20b120a11bb59d3cf2c92843c70c54/balance`,
+).then((r) => r.json());
+console.log(data);
