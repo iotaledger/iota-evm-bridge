@@ -1,7 +1,7 @@
 // Copyright (c) 2025 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
+import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '@iota/dapp-kit';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,8 @@ import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
+import { useAnchorBalanceBaseToken } from '../../../hooks/useAnchorBalanceBaseToken';
+import { useNetworkVariables } from '../../../config';
 
 export function DepositLayer1() {
     const client = useIotaClient();
@@ -21,6 +23,11 @@ export function DepositLayer1() {
         useSignAndExecuteTransaction();
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount, receivingAddress } = watch();
+
+    const { chain } = useNetworkVariables();
+    const address = useCurrentAccount()?.address as string;
+    const { data: anchorBalance } = useAnchorBalanceBaseToken(address, chain.chainId);
+    console.log('balance', anchorBalance);
 
     const [gasEstimation, setGasEstimation] = useState<string>(GAS_BUDGET.toString());
 

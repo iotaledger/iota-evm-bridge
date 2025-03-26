@@ -19,8 +19,8 @@ import { WagmiProvider } from 'wagmi';
 import { useTheme } from './hooks/useTheme.ts';
 import { Theme } from './lib/enums';
 import { Toaster } from 'react-hot-toast';
-import { networkConfig } from './config/l1config.ts';
-import { L2_CHAIN_CONFIG, L2_WAGMI_CONFIG } from './config/l2config.ts';
+import { L2_CHAIN_CONFIG, L2_WAGMI_CONFIG, networkConfig } from './config';
+import { EvmRpcClientProvider } from './providers/EvmRpcClientProvider.tsx';
 
 const queryClient = new QueryClient();
 
@@ -32,18 +32,20 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 chains: [L2_CHAIN_CONFIG as Chain],
             })}
         >
-            <QueryClientProvider client={queryClient}>
-                <IotaClientProvider networks={networkConfig} defaultNetwork="alphanet">
-                    <WalletProvider autoConnect>
-                        <ThemeProvider appId="IOTA-evm-toolkit">
-                            <RainbowKit>
-                                <App />
-                                <Toaster />
-                            </RainbowKit>
-                        </ThemeProvider>
-                    </WalletProvider>
-                </IotaClientProvider>
-            </QueryClientProvider>
+            <EvmRpcClientProvider baseUrl={L2_CHAIN_CONFIG.evmRpcUrl}>
+                <QueryClientProvider client={queryClient}>
+                    <IotaClientProvider networks={networkConfig} defaultNetwork="alphanet">
+                        <WalletProvider autoConnect>
+                            <ThemeProvider appId="IOTA-evm-toolkit">
+                                <RainbowKit>
+                                    <App />
+                                    <Toaster />
+                                </RainbowKit>
+                            </ThemeProvider>
+                        </WalletProvider>
+                    </IotaClientProvider>
+                </QueryClientProvider>
+            </EvmRpcClientProvider>
         </WagmiProvider>
     </React.StrictMode>,
 );

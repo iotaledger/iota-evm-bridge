@@ -13,7 +13,7 @@ import BigNumber from 'bignumber.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import { L2Chain } from '../../../config/l2config';
+import { L2Chain } from '../../../config';
 
 export function DepositLayer2() {
     const layer2Account = useAccount();

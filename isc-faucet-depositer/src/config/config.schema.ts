@@ -38,6 +38,7 @@ export const envSchema = z.object({
                 HEX_REGEX,
                 'Must be a valid hex string starting with 0x',
             ) as z.ZodType<`0x${string}`>,
+        evmRpcUrl: z.string().url(),
     }),
 });
 
