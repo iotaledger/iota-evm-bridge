@@ -7,7 +7,6 @@ import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
 import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { useCurrentAccount } from '@iota/dapp-kit';
 import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import BigNumber from 'bignumber.js';
@@ -22,19 +21,17 @@ export function DepositLayer2() {
     const chainId = useChainId();
     const iscContractAddress = (layer2Account?.chain as L2Chain)?.iscContractAddress;
 
-    const account = useCurrentAccount();
-    const address = account?.address;
     const { watch } = useFormContext<DepositFormData>();
-    const { depositAmount } = watch();
+    const { depositAmount, receivingAddress } = watch();
     const isPayingAllBalance = useIsBridgingAllBalance();
 
     const { data: hash, writeContract, isSuccess, isError, error } = useWriteContract();
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: ['l2-deposit-transaction-gas-estimate', address, depositAmount],
+        queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, depositAmount],
         async queryFn() {
-            if (address && depositAmount && iscContractAddress) {
-                const params = buildDepositL2Parameters(address, depositAmount);
+            if (receivingAddress && depositAmount && iscContractAddress) {
+                const params = buildDepositL2Parameters(receivingAddress, depositAmount);
                 const gas = await client?.estimateContractGas({
                     address: iscContractAddress,
                     abi: iscAbi,
@@ -71,20 +68,20 @@ export function DepositLayer2() {
     const { mutate: deposit, isPending: isTransactionLoading } = useMutation({
         mutationKey: [
             'l2-deposit-transaction',
-            address,
+            receivingAddress,
             depositAmount,
             isPayingAllBalance,
             gasEstimation,
         ],
         async mutationFn() {
-            if (!address || !depositAmount || !iscContractAddress) {
+            if (!receivingAddress || !depositAmount || !iscContractAddress) {
                 throw Error('Transaction is missing');
             }
             const depositTotal =
                 isPayingAllBalance && gasEstimation
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
-            const params = buildDepositL2Parameters(address, depositTotal);
+            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
             writeContract({
                 abi: iscAbi,
                 address: iscContractAddress,
