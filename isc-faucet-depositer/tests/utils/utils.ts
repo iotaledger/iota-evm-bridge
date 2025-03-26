@@ -1,5 +1,4 @@
 import { ethers, Wallet, HDNodeWallet, JsonRpcProvider } from 'ethers';
-import crypto from 'crypto';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { CONFIG } from '../config/config';
 import { BrowserContext } from '@playwright/test';
