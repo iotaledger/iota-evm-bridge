@@ -93,7 +93,8 @@ export function DepositLayer1() {
     return (
         <DepositForm
             deposit={deposit}
-            isTransactionLoading={isTransactionLoading || isBuildingTransaction}
+            isGasEstimationLoading={isBuildingTransaction}
+            isTransactionLoading={isTransactionLoading}
             gasEstimation={formattedGasEstimation}
         />
     );
