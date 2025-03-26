@@ -70,19 +70,33 @@ export class IscTransaction {
      */
     takeCoinBalanceFromBag({
         bag,
+        coinType = IOTA_COIN_TYPE,
         amount,
     }: {
         amount: number | bigint;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
-        return isc.takeCoinBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
+        return isc.takeCoinBalanceFromBag(
+            this.#transaction,
+            this.#chainData,
+            bag,
+            coinType,
+            amount,
+        );
     }
 
     /**
      * Take out all the coin from the bag.
      */
-    takeAllCoinBalanceFromBag({ bag }: { bag: TransactionObjectArgument }) {
-        return isc.takeAllCoinBalanceFromBag(this.#transaction, this.#chainData, bag);
+    takeAllCoinBalanceFromBag({
+        bag,
+        coinType = IOTA_COIN_TYPE,
+    }: {
+        bag: TransactionObjectArgument;
+        coinType?: string;
+    }) {
+        return isc.takeAllCoinBalanceFromBag(this.#transaction, this.#chainData, bag, coinType);
     }
 
     /**

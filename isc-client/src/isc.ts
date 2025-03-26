@@ -1,7 +1,6 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import { ChainData } from './types';
 import { bcs } from '@iota/iota-sdk/bcs';
-import { IOTA_COIN_TYPE } from './constants';
 import { IscAgentID } from './bcs';
 
 export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
@@ -78,11 +77,12 @@ export function takeCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     amount: number | bigint,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, tx.pure(bcs.U64.serialize(amount))],
     });
 }
@@ -91,10 +91,11 @@ export function takeAllCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_all_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag],
     });
 }
