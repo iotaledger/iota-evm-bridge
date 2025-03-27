@@ -1,4 +1,4 @@
-import { IOTA_COIN_TYPE, IscTransaction } from '../src/index';
+import { IOTA_COIN_TYPE, IscTransaction, L2_GAS_BUDGET } from '../src/index';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { CONFIG } from './config';
@@ -25,8 +25,7 @@ const amountToSend = BigInt(1 * 1_000_000);
 // Amount to send (1 Boxfish)
 const tokenAmountToSend = BigInt(1);
 // We also need to place a little more in the bag to cover the L2 gas
-const L2_GAS_ESTIMATE = BigInt(10_000);
-const amountToPlace = amountToSend + L2_GAS_ESTIMATE;
+const amountToPlace = amountToSend + L2_GAS_BUDGET;
 
 console.log('Sending...');
 
@@ -62,6 +61,7 @@ iscTx.createAndSend({
         [IOTA_COIN_TYPE, amountToSend],
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
+    gasBudget: L2_GAS_BUDGET,
 });
 
 const transaction = iscTx.build();

@@ -59,7 +59,7 @@ export class IscTransaction {
     }: {
         address: string;
         transfers: Array<[string, number | bigint]>;
-        gasBudget?: number | bigint;
+        gasBudget: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, address, gasBudget);

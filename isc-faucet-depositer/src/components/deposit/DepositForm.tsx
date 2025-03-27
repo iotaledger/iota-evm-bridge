@@ -20,12 +20,15 @@ import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
 import { useBridgeStore } from '../../lib/stores';
 import { BridgeFormInputName } from '../../lib/enums';
-import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
+import {
+    MAX_DEPOSIT_INPUT_LENGTH,
+    PLACEHOLDER_VALUE_DISPLAY,
+} from '../../lib/constants';
 import { Loader, SwapAccount } from '@iota/apps-ui-icons';
 import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
-import { L2_GAS_ESTIMATION } from '../../hooks/useBuildL1DepositTransaction';
 import { formatIOTAFromNanos } from '../../lib/utils';
+import { L2_GAS_BUDGET } from 'isc-client'
 
 interface DepositFormProps {
     deposit: () => void;
@@ -96,7 +99,7 @@ export function DepositForm({
         } else if (isPayingAllBalance) {
             const receivingAmount = new BigNumber(depositAmountValue)
                 .minus(gasEstimation)
-                .minus(formatIOTAFromNanos(L2_GAS_ESTIMATION));
+                .minus(formatIOTAFromNanos(L2_GAS_BUDGET));
             return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         } else {
             return depositAmountValue;
