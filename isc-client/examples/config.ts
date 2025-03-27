@@ -50,7 +50,6 @@ type EnvConfig = z.infer<typeof envSchema>;
 
 function loadEnv(): EnvConfig {
     config();
-    console.log('ENVVV', process.env);
     const rawEvmToolkitConfig = process.env.VITE_EVM_TOOLKIT_CONFIG as string;
 
     let evmToolkitConfig: Record<string, unknown> = {};

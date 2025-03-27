@@ -51,21 +51,16 @@ iscTx.updateAnchorStateForMigraton({
 const migrationCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
 iscTx.placeCoinForMigration({ anchor, coins: migrationCoins });
 bag = iscTx.destroyAnchor({ anchor });
-iscTx.createAndSend({
-    bag,
-    address: recipientAddress,
-    amount: amountToSend,
-    gasBudget: L2_GAS_ESTIMATE,
-});
+iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
 
 const transaction = iscTx.build();
 transaction.setSender(address);
 
 await transaction.build({ client });
 
-// await client.signAndExecuteTransaction({
-//     signer: keypair,
-//     transaction,
-// });
+await client.signAndExecuteTransaction({
+    signer: keypair,
+    transaction,
+});
 
 console.log('Sent!');

@@ -56,13 +56,15 @@ transaction.setSender(address);
 
 await transaction.build({ client });
 
-await client.signAndExecuteTransaction({
+const { digest } = await client.signAndExecuteTransaction({
     signer: keypair,
     transaction,
 });
 
-await new Promise((resolve) => setTimeout(resolve, 5000));
+await client.waitForTransaction({
+    digest,
+});
 
 const anchorBalance = await evmRpcClient.getBalanceBaseToken(address);
 
-console.log(`Anchor balance: ${JSON.stringify(anchorBalance)}`);
+console.log(`L2 balance of the L1 address ${address}: ${JSON.stringify(anchorBalance)}`);

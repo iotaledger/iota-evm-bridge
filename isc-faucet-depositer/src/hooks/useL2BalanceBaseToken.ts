@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEvmRpcClient } from '../contexts';
 
-export function useAnchorBalanceBaseToken(address: string) {
+export function useL2BalanceBaseToken(address: string) {
     const { evmRpcClient } = useEvmRpcClient();
 
     return useQuery({
