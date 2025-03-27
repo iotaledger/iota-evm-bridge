@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { useAnchorBalanceBaseToken } from '../../../hooks/useAnchorBalanceBaseToken';
-import { useNetworkVariables } from '../../../config';
 
 export function DepositLayer1() {
     const client = useIotaClient();
@@ -21,9 +20,8 @@ export function DepositLayer1() {
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount, receivingAddress } = watch();
 
-    const { chain } = useNetworkVariables();
     const address = useCurrentAccount()?.address as string;
-    const { data: anchorBalance } = useAnchorBalanceBaseToken(address, chain.chainId);
+    const { data: anchorBalance } = useAnchorBalanceBaseToken(address);
     console.log('balance', anchorBalance);
 
     const [gasEstimation, setGasEstimation] = useState<string>(L1_GAS_BUDGET.toString());

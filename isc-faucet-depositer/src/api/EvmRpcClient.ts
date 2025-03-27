@@ -42,10 +42,7 @@ export class EvmRpcClient {
         return response.json();
     }
 
-    public getBalanceBaseToken = async (
-        address: string,
-        chainId: string,
-    ): Promise<AssetsResponse> => {
-        return this.request(`/v1/chains/${chainId}/core/accounts/account/${address}/balance`);
+    public getBalanceBaseToken = async (address: string): Promise<AssetsResponse> => {
+        return this.request(`/v1/chain/core/accounts/account/${address}/balance`);
     };
 }
