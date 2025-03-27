@@ -1,5 +1,5 @@
+import { EvmRpcClient } from 'isc-client';
 import { useContext, createContext, useMemo } from 'react';
-import { EvmRpcClient } from '../api';
 
 type EvmRpcClientContextType = {
     evmRpcClient: EvmRpcClient | null;

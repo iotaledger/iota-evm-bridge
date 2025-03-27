@@ -36,6 +36,13 @@ const envSchema = z.object({
         chainExplorerUrl: z.string(),
         wagmiAppName: z.string(),
         walletConnectProjectId: z.string(),
+        iscContractAddress: z
+            .string()
+            .regex(
+                HEX_REGEX,
+                'Must be a valid hex string starting with 0x',
+            ) as z.ZodType<`0x${string}`>,
+        evmRpcUrl: z.string().url(),
     }),
 });
 
@@ -43,6 +50,7 @@ type EnvConfig = z.infer<typeof envSchema>;
 
 function loadEnv(): EnvConfig {
     config();
+    console.log('ENVVV', process.env);
     const rawEvmToolkitConfig = process.env.VITE_EVM_TOOLKIT_CONFIG as string;
 
     let evmToolkitConfig: Record<string, unknown> = {};

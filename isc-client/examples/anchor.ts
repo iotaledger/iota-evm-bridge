@@ -24,6 +24,7 @@ console.log('Sending...');
 
 // EVM Address
 const recipientAddress = process.argv[2];
+console.log('Recipient Address', recipientAddress);
 // Amount to send (1 IOTAs)
 const amountToSend = BigInt(1 * 1000000000);
 // We also need to place a little more in the bag to cover the L2 gas
@@ -50,16 +51,21 @@ iscTx.updateAnchorStateForMigraton({
 const migrationCoins = iscTx.coinsFromAmount({ amount: amountToPlace });
 iscTx.placeCoinForMigration({ anchor, coins: migrationCoins });
 bag = iscTx.destroyAnchor({ anchor });
-iscTx.createAndSend({ bag, address: recipientAddress, amount: amountToSend });
+iscTx.createAndSend({
+    bag,
+    address: recipientAddress,
+    amount: amountToSend,
+    gasBudget: L2_GAS_ESTIMATE,
+});
 
 const transaction = iscTx.build();
 transaction.setSender(address);
 
 await transaction.build({ client });
 
-await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction,
-});
+// await client.signAndExecuteTransaction({
+//     signer: keypair,
+//     transaction,
+// });
 
 console.log('Sent!');

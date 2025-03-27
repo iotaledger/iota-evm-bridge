@@ -39,7 +39,7 @@ export class EvmRpcClient {
             throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
-        return response.json();
+        return response.json() as T;
     }
 
     public getBalanceBaseToken = async (address: string): Promise<AssetsResponse> => {
