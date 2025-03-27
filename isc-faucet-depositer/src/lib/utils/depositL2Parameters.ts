@@ -1,8 +1,15 @@
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { parseAmount } from './parseAmount';
+import { L1_GAS_BUDGET } from '../constants/gas.constants';
+import { parseGwei } from 'viem';
 
-export function buildDepositL2Parameters(receiverAddress: string, baseTokensToWithdraw: string) {
+export function buildDepositL2Parameters(
+    receiverAddress: string,
+    baseTokensToWithdraw: string,
+    gasEstimation?: string | null,
+) {
     const convertedBaseToken = Number(parseAmount(baseTokensToWithdraw, IOTA_DECIMALS));
+    const gasBudget = gasEstimation ? parseGwei(gasEstimation) : L1_GAS_BUDGET;
     const parameters = [
         receiverAddress,
         {
@@ -29,8 +36,7 @@ export function buildDepositL2Parameters(receiverAddress: string, baseTokensToWi
                 coins: [],
                 objects: [],
             },
-            // TODO: Magic number, replace with actual gas budget once we have a proper estimation
-            gasBudget: 1000000000n,
+            gasBudget: gasBudget,
         },
         {
             timelock: 0n,
