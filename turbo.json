@@ -20,6 +20,6 @@
         }
     },
     "globalEnv": [
-        "VITE_WALLET_CONNECT_L2_PROJECT_ID"
+        "VITE_EVM_TOOLKIT_CONFIG"
     ]
 }

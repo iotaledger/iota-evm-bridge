@@ -22,7 +22,8 @@
         "prettier:check": "prettier -c --ignore-unknown --ignore-path=.prettierignore .",
         "prettier:fix": "prettier -w --ignore-unknown --ignore-path=.prettierignore .",
         "lint": "pnpm run typecheck && pnpm eslint:check && pnpm prettier:check",
-        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix"
+        "lint:fix": "pnpm eslint:fix && pnpm prettier:fix",
+        "run:example": "tsx"
     },
     "dependencies": {
         "@iota/bcs": "^0.2.1",
@@ -31,18 +32,25 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
+        "@types/node": "^22.13.4",
         "@typescript-eslint/eslint-plugin": "^8.18.0",
         "@typescript-eslint/parser": "^8.18.0",
+        "dotenv": "^16.4.7",
         "eslint": "^9.17.0",
         "prettier": "^3.3.2",
+        "tsx": "^4.19.3",
         "typescript": "^5.7.3",
         "typescript-eslint": "^8.18.0",
         "vite": "^5.3.3",
         "vite-plugin-dts": "^4.5.0",
-        "@types/node": "^22.13.4"
+        "zod": "^3.24.2"
     },
     "lint-staged": {
         "src/**/*.{ts,js,mjs}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "examples/**/*.{ts,js,mjs}": [
             "eslint --fix",
             "prettier --write"
         ]
