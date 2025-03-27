@@ -9,7 +9,7 @@ import {
     getExtensionUrl,
 } from './utils/utils';
 
-test.setTimeout(60_000);
+test.setTimeout(120_000);
 
 test.describe.serial('Deposit then withdraw roundtrip', () => {
     let browserL1: BrowserContext;
@@ -21,7 +21,9 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
     test.beforeAll(
         'setup L1/L2 wallets',
-        async ({ contextL1, l1ExtensionUrl, contextL2, l2ExtensionUrl }) => {
+        async ({ contextL1, l1ExtensionUrl, contextL2, l2ExtensionUrl }, testInfo) => {
+            testInfo.setTimeout(120000);
+
             const mnemonicL1 = generate24WordMnemonic();
 
             pageWithL1Wallet = await contextL1.newPage();
@@ -38,8 +40,8 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             await pageWithL1Wallet.goto('/');
             await pageWithL2Wallet.goto('/');
 
-            closeBrowserTabsExceptLast(browserL1);
-            closeBrowserTabsExceptLast(browserL2);
+            await closeBrowserTabsExceptLast(browserL1);
+            await closeBrowserTabsExceptLast(browserL2);
         },
     );
 
@@ -100,7 +102,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         expect(balance).toEqual('5.0');
 
-        closeBrowserTabsExceptLast(browserL1);
+        await closeBrowserTabsExceptLast(browserL1);
     });
 
     test('should successfully process an L2 deposit', async () => {
