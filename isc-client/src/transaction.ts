@@ -66,7 +66,7 @@ export class IscTransaction {
     }
 
     /**
-     * Take out the specied amount of coin from the bag.
+     * Take out the specified amount of coin from the bag.
      */
     takeCoinBalanceFromBag({
         bag,
