@@ -54,7 +54,7 @@ export function useBuildL1DepositTransaction({
                 bag,
                 address: receivingAddress,
                 transfers: [[IOTA_COIN_TYPE, amountToSend]],
-                gasBudget: L2_GAS_BUDGET
+                gasBudget: L2_GAS_BUDGET,
             });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);
