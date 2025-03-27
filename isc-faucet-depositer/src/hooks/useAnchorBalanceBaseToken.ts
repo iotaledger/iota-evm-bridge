@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEvmRpcClientContext } from '../contexts';
+import { useEvmRpcClient } from '../contexts';
 
 export function useAnchorBalanceBaseToken(address: string) {
-    const { evmRpcClient } = useEvmRpcClientContext();
+    const { evmRpcClient } = useEvmRpcClient();
 
     return useQuery({
         queryKey: ['anchor-balance-base-token', address, evmRpcClient?.baseUrl],
@@ -11,7 +11,7 @@ export function useAnchorBalanceBaseToken(address: string) {
 
             return await evmRpcClient.getBalanceBaseToken(address);
         },
-        enabled: !!address,
+        enabled: !!address && !!evmRpcClient?.baseUrl,
         staleTime: 1000 * 60 * 5,
     });
 }

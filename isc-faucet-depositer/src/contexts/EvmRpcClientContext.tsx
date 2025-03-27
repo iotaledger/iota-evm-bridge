@@ -1,5 +1,5 @@
 import { EvmRpcClient } from 'isc-client';
-import { useContext, createContext, useMemo } from 'react';
+import { useContext, createContext } from 'react';
 
 type EvmRpcClientContextType = {
     evmRpcClient: EvmRpcClient | null;
@@ -7,20 +7,10 @@ type EvmRpcClientContextType = {
 
 export const EvmRpcClientContext = createContext<EvmRpcClientContextType | null>(null);
 
-export function useEvmRpcClientContext(): EvmRpcClientContextType {
+export function useEvmRpcClient(): EvmRpcClientContextType {
     const context = useContext(EvmRpcClientContext);
     if (!context) {
         throw new Error('useEvmRpcClient must be used within a EvmRpcClientProvider');
     }
     return context;
-}
-
-export function useEvmRpcClient(baseUrl: string) {
-    const evmRpcClient = useMemo(() => {
-        return new EvmRpcClient(baseUrl);
-    }, [baseUrl]);
-
-    return {
-        evmRpcClient,
-    };
 }
