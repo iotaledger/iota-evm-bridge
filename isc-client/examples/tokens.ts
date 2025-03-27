@@ -1,5 +1,5 @@
 import { IscTransaction, L2_GAS_BUDGET } from '../src/index';
-import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { CONFIG } from './config';
@@ -21,6 +21,12 @@ const address = keypair.toIotaAddress();
 
 // EVM Address
 const recipientAddress = process.argv[2];
+
+if (!recipientAddress) {
+    console.error('Please provide a recipient address as an argument');
+    process.exit(1);
+}
+
 // Amount to send (0.01 IOTAs)
 const amountToSend = BigInt(1 * 1_000_000);
 // Amount to send (1 Boxfish)
@@ -45,9 +51,9 @@ const iotaCoin = iscTx.coinFromAmount({ amount: amountToPlace });
 iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_TYPE_ARG });
 
 // Place Token
-let tokenCoin = tx.splitCoins(
+const tokenCoin = tx.splitCoins(
     tx.object('0x75dff2c55d8bdba5dba85f2b3e464e2d26d1f6bc8e557c7efc46b63fdb30d322'),
-    [tx.pure(bcs.U64.serialize(1))],
+    [tx.pure(bcs.U64.serialize(tokenAmountToSend))],
 );
 iscTx.placeCoinInBag({
     bag,

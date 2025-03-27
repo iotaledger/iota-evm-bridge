@@ -1,5 +1,5 @@
 import { IscTransaction, L2_GAS_BUDGET } from '../src/index';
-import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';

@@ -1,7 +1,7 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
-import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 
 export class IscTransaction {
     #transaction: Transaction;
