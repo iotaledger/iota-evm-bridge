@@ -81,6 +81,6 @@ await client.waitForTransaction({
 console.log('Sent!');
 
 const data = await fetch(
-    `https://api.evm.lb-0.h.iota-rebased-alphanet.iota.cafe/v1/chains/0x838559fdf277aa3b95f77afaa81a13d64e20b120a11bb59d3cf2c92843c70c54/core/accounts/account/${recipientAddress}@0x838559fdf277aa3b95f77afaa81a13d64e20b120a11bb59d3cf2c92843c70c54/balance`,
+    `https://api.evm.lb-0.h.iota-rebased-alphanet.iota.cafe/v1/chain/core/accounts/account/${recipientAddress}/balance`,
 ).then((r) => r.json());
 console.log(data);
