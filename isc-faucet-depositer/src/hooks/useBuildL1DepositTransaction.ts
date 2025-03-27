@@ -3,7 +3,7 @@ import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { getGasSummary, parseAmount } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
-import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config/l1config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
