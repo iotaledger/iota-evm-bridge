@@ -44,7 +44,6 @@ export function createAndSend(
 ) {
     const agentID = IscAgentID.serialize({
         EthereumAddressAgentID: {
-            chainID: bcs.fixedArray(32, bcs.u8()).fromHex(chainId),
             eth: bcs.fixedArray(20, bcs.u8()).fromHex(address),
         },
     }).toBytes();
