@@ -84,7 +84,7 @@ export async function getExtensionUrl(browserContext: BrowserContext): Promise<s
     return `chrome-extension://${extensionId}/ui.html`;
 }
 
-export async function addNetworkToMetaMaskDirectly(l2WalletPage: Page) {
+export async function addNetworkToMetaMask(l2WalletPage: Page) {
     await l2WalletPage.click('[data-testid="network-display"]');
     await l2WalletPage.getByText('Add a custom network').click();
 

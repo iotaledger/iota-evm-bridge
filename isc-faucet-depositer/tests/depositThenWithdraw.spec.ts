@@ -8,7 +8,7 @@ import {
     closeBrowserTabsExceptLast,
     getExtensionUrl,
     addNetworkToMetamask,
-    addNetworkToMetaMaskDirectly,
+    addNetworkToMetaMask,
 } from './utils/utils';
 
 const THREE_MINUTES = 180_000;
@@ -41,7 +41,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             browserL1 = contextL1;
             browserL2 = contextL2;
 
-            await addNetworkToMetaMaskDirectly(pageWithL2Wallet);
+            await addNetworkToMetaMask(pageWithL2Wallet);
 
             await pageWithL1Wallet.goto('/');
             await pageWithL2Wallet.goto('/');
