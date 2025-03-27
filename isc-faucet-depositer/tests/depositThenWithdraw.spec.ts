@@ -7,6 +7,8 @@ import {
     checkL2BalanceWithRetries,
     closeBrowserTabsExceptLast,
     getExtensionUrl,
+    addNetworkToMetamask,
+    addNetworkToMetaMaskDirectly,
 } from './utils/utils';
 
 const THREE_MINUTES = 180_000;
@@ -38,6 +40,8 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
             browserL1 = contextL1;
             browserL2 = contextL2;
+
+            await addNetworkToMetaMaskDirectly(pageWithL2Wallet);
 
             await pageWithL1Wallet.goto('/');
             await pageWithL2Wallet.goto('/');
@@ -125,23 +129,6 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         const walletL2Modal = await approveWalletL2ConnectDialog;
         await walletL2Modal.waitForLoadState();
         await walletL2Modal.getByRole('button', { name: 'Connect' }).click();
-        await walletL2Modal.getByRole('button', { name: 'Approve' }).click();
-
-        try {
-            const retryButton = pageWithL2Wallet.getByText('Retry');
-            await retryButton.waitFor({ timeout: 2500 });
-            // If first "Connect" attempt fails, retry
-            if (retryButton) {
-                await retryButton.click();
-                const secondAttemptDialog = await browserL2.waitForEvent('page');
-                await secondAttemptDialog.waitForLoadState();
-                await secondAttemptDialog.getByRole('button', { name: 'Connect' }).click();
-                const secondAttemptClosePromise = secondAttemptDialog.waitForEvent('close');
-                await secondAttemptClosePromise;
-            }
-        } catch {
-            console.log('No retry button found, continuing test');
-        }
 
         const toggleBridgeDirectionButton = pageWithL2Wallet.getByTestId('toggle-bridge-direction');
         await expect(toggleBridgeDirectionButton).toBeVisible();
