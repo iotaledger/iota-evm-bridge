@@ -11,7 +11,7 @@ import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import { L1_GAS_BUDGET } from 'isc-client'
+import { L1_GAS_BUDGET } from 'isc-client';
 
 export function DepositLayer1() {
     const client = useIotaClient();
