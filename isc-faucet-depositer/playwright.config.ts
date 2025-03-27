@@ -10,6 +10,9 @@ export default defineConfig({
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 2 : undefined,
     reporter: 'html',
+    expect: {
+        timeout: 10_000,
+    },
     use: {
         /* Base URL to use in actions like `await page.goto('/')`. */
         baseURL: 'http://localhost:4173',

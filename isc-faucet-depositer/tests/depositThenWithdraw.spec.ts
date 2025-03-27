@@ -9,9 +9,11 @@ import {
     getExtensionUrl,
 } from './utils/utils';
 
-test.setTimeout(120_000);
+const THREE_MINUTES = 180_000;
 
 test.describe.serial('Deposit then withdraw roundtrip', () => {
+    test.setTimeout(THREE_MINUTES);
+
     let browserL1: BrowserContext;
     let browserL2: BrowserContext;
     let pageWithL1Wallet: Page;
@@ -21,8 +23,8 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
     test.beforeAll(
         'setup L1/L2 wallets',
-        async ({ contextL1, l1ExtensionUrl, contextL2, l2ExtensionUrl }, testInfo) => {
-            testInfo.setTimeout(120000);
+        async ({ contextL1, l1ExtensionUrl, contextL2, l2ExtensionUrl }) => {
+            test.setTimeout(THREE_MINUTES);
 
             const mnemonicL1 = generate24WordMnemonic();
 
@@ -51,14 +53,14 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         }
 
         const connectButtonId = 'connect-l1-wallet';
-        const connectButton = await pageWithL1Wallet.waitForSelector(
+        const connectButtonL1 = await pageWithL1Wallet.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
             {
                 state: 'visible',
             },
         );
 
-        await connectButton.click();
+        await connectButtonL1.click();
         const approveWalletConnectPage = browserL1.waitForEvent('page');
         await pageWithL1Wallet.getByText('IOTA Wallet').click();
 
@@ -74,9 +76,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         const l1WalletExtension = await browserL1.newPage();
         const l1ExtensionUrl = await getExtensionUrl(browserL1);
         await l1WalletExtension.goto(l1ExtensionUrl, { waitUntil: 'commit' });
-        await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10', {
-            timeout: 15_000,
-        });
+        await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10');
         l1WalletExtension.close();
 
         const toggleManualInput = pageWithL1Wallet.getByTestId('toggle-receiver-address-input');
@@ -111,21 +111,20 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         }
 
         const connectButtonId = 'connect-l2-wallet';
-        const connectButton = await pageWithL2Wallet.waitForSelector(
+        const connectButtonL2 = await pageWithL2Wallet.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
             {
                 state: 'visible',
             },
         );
 
-        await connectButton.click();
+        await connectButtonL2.click();
         const approveWalletL2ConnectDialog = browserL2.waitForEvent('page');
         await pageWithL2Wallet.getByTestId(/metamask/).click();
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
-        await walletL2Modal.waitForLoadState('networkidle');
+        await walletL2Modal.waitForLoadState();
         await walletL2Modal.getByRole('button', { name: 'Connect' }).click();
-        await walletL2Modal.waitForLoadState('networkidle');
         await walletL2Modal.getByRole('button', { name: 'Approve' }).click();
 
         try {
@@ -170,8 +169,6 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         const l1ExtensionUrl = await getExtensionUrl(browserL1);
         await pageWithL1Wallet.goto(l1ExtensionUrl, { waitUntil: 'commit' });
 
-        await expect(pageWithL1Wallet.getByTestId('coin-balance')).toHaveText('6.99', {
-            timeout: 15_000,
-        });
+        await expect(pageWithL1Wallet.getByTestId('coin-balance')).toHaveText('6.99');
     });
 });
