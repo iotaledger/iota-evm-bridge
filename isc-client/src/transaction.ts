@@ -1,7 +1,7 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
-import { IOTA_COIN_TYPE } from './constants';
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
 
 export class IscTransaction {
     #transaction: Transaction;
@@ -38,7 +38,7 @@ export class IscTransaction {
      */
     placeCoinInBag({
         bag,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         coin,
     }: {
         coin: TransactionObjectArgument;
@@ -70,7 +70,7 @@ export class IscTransaction {
      */
     takeCoinBalanceFromBag({
         bag,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         amount,
     }: {
         amount: number | bigint;
@@ -91,7 +91,7 @@ export class IscTransaction {
      */
     takeAllCoinBalanceFromBag({
         bag,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
     }: {
         bag: TransactionObjectArgument;
         coinType?: string;
@@ -104,7 +104,7 @@ export class IscTransaction {
      */
     placeCoinBalanceInBag({
         bag,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         balance,
     }: {
         balance: TransactionObjectArgument;
@@ -134,7 +134,7 @@ export class IscTransaction {
      */
     takeAssetFromBag({
         bag,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
     }: {
         bag: TransactionObjectArgument;
         coinType?: string;
@@ -232,7 +232,7 @@ export class IscTransaction {
 
     placeCoinForMigration({
         anchor,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         coin,
     }: {
         anchor: TransactionObjectArgument;
@@ -250,7 +250,7 @@ export class IscTransaction {
 
     placeCoinBalanceForMigration({
         anchor,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         balance,
     }: {
         anchor: TransactionObjectArgument;
@@ -268,7 +268,7 @@ export class IscTransaction {
 
     placeAssetForMigration({
         anchor,
-        coinType = IOTA_COIN_TYPE,
+        coinType = IOTA_TYPE_ARG,
         asset,
     }: {
         anchor: TransactionObjectArgument;

@@ -1,4 +1,5 @@
-import { IOTA_COIN_TYPE, IscTransaction, L2_GAS_BUDGET } from '../src/index';
+import { IscTransaction, L2_GAS_BUDGET } from '../src/index';
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils'
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { CONFIG } from './config';
@@ -41,7 +42,7 @@ const bag = iscTx.newBag();
 
 // Place IOTA
 const iotaCoin = iscTx.coinFromAmount({ amount: amountToPlace });
-iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_COIN_TYPE });
+iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_TYPE_ARG });
 
 // Place Token
 let tokenCoin = tx.splitCoins(
@@ -58,7 +59,7 @@ iscTx.createAndSend({
     bag,
     address: recipientAddress,
     transfers: [
-        [IOTA_COIN_TYPE, amountToSend],
+        [IOTA_TYPE_ARG, amountToSend],
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
     gasBudget: L2_GAS_BUDGET,
