@@ -21,8 +21,8 @@ export function DepositLayer1() {
     const { depositAmount, receivingAddress } = watch();
 
     const address = useCurrentAccount()?.address as string;
-    const { data: anchorBalance } = useL2BalanceBaseToken(address);
-    console.log('balance', anchorBalance);
+    const { data: l1BalanceInL2 } = useL2BalanceBaseToken(address);
+    console.log('l1BalanceInL2:', l1BalanceInL2);
 
     const [gasEstimation, setGasEstimation] = useState<string>(L1_GAS_BUDGET.toString());
 
