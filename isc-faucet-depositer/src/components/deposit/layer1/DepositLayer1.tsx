@@ -5,12 +5,13 @@ import { useCurrentAccount, useIotaClient, useSignAndExecuteTransaction } from '
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 
-import { L1_GAS_BUDGET, L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
 import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
+import { L1_GAS_BUDGET } from 'isc-client';
 import { useL2BalanceBaseToken } from '../../../hooks/useL2BalanceBaseToken';
 
 export function DepositLayer1() {

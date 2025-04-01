@@ -1,6 +1,6 @@
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { parseAmount } from './parseAmount';
-import { L1_GAS_BUDGET } from '../constants/gas.constants';
+import { L1_GAS_BUDGET } from 'isc-client';
 import { parseGwei } from 'viem';
 
 export function buildDepositL2Parameters(

@@ -1,11 +1,10 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import { ChainData } from './types';
 import { bcs } from '@iota/iota-sdk/bcs';
-import { IOTA_COIN_TYPE } from './constants';
 import { IscAgentID } from './bcs';
 
 export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
-    // Create a new empty AssetsBag. It will be used to attach coins/objects to the request
+    // Create a new empty AssetsBag. It will be used to attach coin/objects to the request
     const assetsBag = tx.moveCall({
         target: `${packageId}::assets_bag::new`,
         arguments: [],
@@ -14,23 +13,24 @@ export function newBag(tx: Transaction, { packageId }: ChainData): TransactionOb
     return assetsBag;
 }
 
-export function coinsFromAmount(tx: Transaction, amount: bigint): TransactionObjectArgument {
+export function coinFromAmount(tx: Transaction, amount: bigint): TransactionObjectArgument {
     // Split the senders Gas coin so we have a coin to transfer
     const [splitCoin] = tx.splitCoins(tx.gas, [tx.pure(bcs.U64.serialize(amount))]);
 
     return splitCoin;
 }
 
-export function placeCoinsInBag(
+export function placeCoinInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coins: TransactionObjectArgument,
+    coinType: string,
+    coin: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin`,
-        typeArguments: [IOTA_COIN_TYPE],
-        arguments: [assetsBag, coins],
+        typeArguments: [coinType],
+        arguments: [assetsBag, coin],
     });
 }
 
@@ -38,7 +38,7 @@ export function createAndSend(
     tx: Transaction,
     { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
     assetsBag: TransactionObjectArgument,
-    amount: number | bigint,
+    transfers: Array<[string, number | bigint]>,
     address: string,
     gasBudget: number | bigint,
 ) {
@@ -65,47 +65,50 @@ export function createAndSend(
             tx.pure(bcs.U32.serialize(coreContractAccounts)),
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
             tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
-            tx.pure(bcs.vector(bcs.string()).serialize([IOTA_COIN_TYPE])),
-            tx.pure(bcs.vector(bcs.u64()).serialize([amount])),
+            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map((transfer) => transfer[0]))),
+            tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });
 }
 
-export function takeCoinsBalanceFromBag(
+export function takeCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     amount: number | bigint,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, tx.pure(bcs.U64.serialize(amount))],
     });
 }
 
-export function takeAllCoinsBalanceFromBag(
+export function takeAllCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_all_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag],
     });
 }
 
-export function placeCoinsBalanceInBag(
+export function placeCoinBalanceInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     balance: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin_balance`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, balance],
     });
 }
@@ -114,11 +117,12 @@ export function placeAssetInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
     asset: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_asset`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [assetsBag, asset],
     });
 }
@@ -127,11 +131,12 @@ export function takeAssetFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
+    coinType: string,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
-        typeArguments: [IOTA_COIN_TYPE],
-        arguments: [assetsBag, assetsBag], // TODO: USE ID!
+        typeArguments: [coinType],
+        arguments: [assetsBag, assetsBag],
     });
 }
 
@@ -264,12 +269,13 @@ export function placeCoinForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
-    coins: TransactionObjectArgument,
+    coinType: string,
+    coin: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
-        arguments: [anchor, coins],
+        typeArguments: [coinType],
+        arguments: [anchor, coin],
     });
 }
 
@@ -277,11 +283,12 @@ export function placeCoinBalanceForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
+    coinType: string,
     balance: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_balance_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [anchor, balance],
     });
 }
@@ -290,11 +297,12 @@ export function placeAssetForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
+    coinType: string,
     asset: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_asset_for_migration`,
-        typeArguments: [IOTA_COIN_TYPE],
+        typeArguments: [coinType],
         arguments: [anchor, asset],
     });
 }

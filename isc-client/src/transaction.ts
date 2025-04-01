@@ -1,6 +1,7 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import * as isc from './isc';
 import { ChainData } from './types';
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 
 export class IscTransaction {
     #transaction: Transaction;
@@ -26,23 +27,25 @@ export class IscTransaction {
     }
 
     /**
-     * Get some amount of coins.
+     * Get some amount in a coin.
      */
-    coinsFromAmount({ amount }: { amount: number | bigint }) {
-        return isc.coinsFromAmount(this.#transaction, BigInt(amount));
+    coinFromAmount({ amount }: { amount: number | bigint }) {
+        return isc.coinFromAmount(this.#transaction, BigInt(amount));
     }
 
     /**
-     * Place some coins in a bag.
+     * Place a coin in a bag.
      */
-    placeCoinsInBag({
+    placeCoinInBag({
         bag,
-        coins,
+        coinType = IOTA_TYPE_ARG,
+        coin,
     }: {
-        coins: TransactionObjectArgument;
+        coin: TransactionObjectArgument;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
-        isc.placeCoinsInBag(this.#transaction, this.#chainData, bag, coins);
+        isc.placeCoinInBag(this.#transaction, this.#chainData, bag, coinType, coin);
     }
 
     /**
@@ -51,48 +54,64 @@ export class IscTransaction {
     createAndSend({
         bag,
         address,
-        amount,
+        transfers,
         gasBudget,
     }: {
         address: string;
-        amount: number | bigint;
+        transfers: Array<[string, number | bigint]>;
         gasBudget: number | bigint;
         bag: TransactionObjectArgument;
     }) {
-        isc.createAndSend(this.#transaction, this.#chainData, bag, amount, address, gasBudget);
+        isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, address, gasBudget);
     }
 
     /**
-     * Take out the specied amount of coins from the bag.
+     * Take out the specified amount of coin from the bag.
      */
-    takeCoinsBalanceFromBag({
+    takeCoinBalanceFromBag({
         bag,
+        coinType = IOTA_TYPE_ARG,
         amount,
     }: {
         amount: number | bigint;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
-        return isc.takeCoinsBalanceFromBag(this.#transaction, this.#chainData, bag, amount);
+        return isc.takeCoinBalanceFromBag(
+            this.#transaction,
+            this.#chainData,
+            bag,
+            coinType,
+            amount,
+        );
     }
 
     /**
-     * Take out all the coins from the bag.
+     * Take out all the coin from the bag.
      */
-    takeAllCoinsBalanceFromBag({ bag }: { bag: TransactionObjectArgument }) {
-        return isc.takeAllCoinsBalanceFromBag(this.#transaction, this.#chainData, bag);
-    }
-
-    /**
-     * Place a coins balance in the bag.
-     */
-    placeCoinsBalanceInBag({
+    takeAllCoinBalanceFromBag({
         bag,
+        coinType = IOTA_TYPE_ARG,
+    }: {
+        bag: TransactionObjectArgument;
+        coinType?: string;
+    }) {
+        return isc.takeAllCoinBalanceFromBag(this.#transaction, this.#chainData, bag, coinType);
+    }
+
+    /**
+     * Place a coin balance in the bag.
+     */
+    placeCoinBalanceInBag({
+        bag,
+        coinType = IOTA_TYPE_ARG,
         balance,
     }: {
         balance: TransactionObjectArgument;
+        coinType?: string;
         bag: TransactionObjectArgument;
     }) {
-        isc.placeCoinsBalanceInBag(this.#transaction, this.#chainData, bag, balance);
+        isc.placeCoinBalanceInBag(this.#transaction, this.#chainData, bag, coinType, balance);
     }
 
     /**
@@ -101,18 +120,26 @@ export class IscTransaction {
     placeAssetInBag({
         bag,
         asset,
+        coinType,
     }: {
         asset: TransactionObjectArgument;
         bag: TransactionObjectArgument;
+        coinType: string;
     }) {
-        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, asset);
+        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, coinType, asset);
     }
 
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag }: { bag: TransactionObjectArgument }) {
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag);
+    takeAssetFromBag({
+        bag,
+        coinType = IOTA_TYPE_ARG,
+    }: {
+        bag: TransactionObjectArgument;
+        coinType?: string;
+    }) {
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, coinType);
     }
 
     /**
@@ -205,37 +232,56 @@ export class IscTransaction {
 
     placeCoinForMigration({
         anchor,
-        coins,
+        coinType = IOTA_TYPE_ARG,
+        coin,
     }: {
         anchor: TransactionObjectArgument;
-        coins: TransactionObjectArgument;
+        coinType?: string;
+        coin: TransactionObjectArgument;
     }) {
-        return isc.placeCoinForMigration(this.#transaction, this.#chainData, anchor, coins);
+        return isc.placeCoinForMigration(
+            this.#transaction,
+            this.#chainData,
+            anchor,
+            coinType,
+            coin,
+        );
     }
 
     placeCoinBalanceForMigration({
         anchor,
+        coinType = IOTA_TYPE_ARG,
         balance,
     }: {
         anchor: TransactionObjectArgument;
+        coinType?: string;
         balance: TransactionObjectArgument;
     }) {
         return isc.placeCoinBalanceForMigration(
             this.#transaction,
             this.#chainData,
             anchor,
+            coinType,
             balance,
         );
     }
 
     placeAssetForMigration({
         anchor,
+        coinType = IOTA_TYPE_ARG,
         asset,
     }: {
         anchor: TransactionObjectArgument;
+        coinType?: string;
         asset: TransactionObjectArgument;
     }) {
-        return isc.placeAssetForMigration(this.#transaction, this.#chainData, anchor, asset);
+        return isc.placeAssetForMigration(
+            this.#transaction,
+            this.#chainData,
+            anchor,
+            coinType,
+            asset,
+        );
     }
 
     /**

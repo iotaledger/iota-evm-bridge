@@ -3,10 +3,11 @@ import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { getGasSummary, parseAmount } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
-import { L2_GAS_BUDGET } from '../lib/constants';
+import { L2_GAS_BUDGET } from 'isc-client';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
@@ -48,12 +49,12 @@ export function useBuildL1DepositTransaction({
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
-            const coins = iscTx.coinsFromAmount({ amount: amountToPlace });
-            iscTx.placeCoinsInBag({ coins, bag });
+            const coin = iscTx.coinFromAmount({ amount: amountToPlace });
+            iscTx.placeCoinInBag({ coin, bag });
             iscTx.createAndSend({
                 bag,
                 address: receivingAddress,
-                amount: amountToSend,
+                transfers: [[IOTA_TYPE_ARG, amountToSend]],
                 gasBudget: L2_GAS_BUDGET,
             });
             const transaction = iscTx.build();
