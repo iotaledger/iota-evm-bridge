@@ -5,7 +5,7 @@ import { getGasSummary, parseAmount } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
-import { useNetworkVariables } from '../config/l1config';
+import { useNetworkVariables } from '../config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
 import { L2_GAS_BUDGET } from 'isc-client';
 

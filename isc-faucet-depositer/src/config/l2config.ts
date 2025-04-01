@@ -6,6 +6,7 @@ import { CONFIG } from './config';
 
 export interface L2Chain extends Chain {
     iscContractAddress: `0x${string}`;
+    evmRpcUrl: string;
 }
 
 export const L2_CHAIN_CONFIG: L2Chain = {
@@ -28,6 +29,7 @@ export const L2_CHAIN_CONFIG: L2Chain = {
         },
     },
     iscContractAddress: CONFIG.L2.iscContractAddress,
+    evmRpcUrl: CONFIG.L2.evmRpcUrl,
 };
 
 export const L2_WAGMI_CONFIG = {
