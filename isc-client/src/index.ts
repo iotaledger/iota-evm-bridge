@@ -3,3 +3,5 @@ export * from './constants';
 export * from './transaction';
 export * from './types';
 export * from './move_bcs';
+export * from './api';
+export * from './types';
