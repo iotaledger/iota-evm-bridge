@@ -24,7 +24,6 @@ console.log('Sending...');
 
 // EVM Address
 const recipientAddress = process.argv[2];
-console.log('Recipient Address', recipientAddress);
 // Amount to send (1 IOTAs)
 const amountToSend = BigInt(1 * 1000000000);
 // We also need to place a little more in the bag to cover the L2 gas

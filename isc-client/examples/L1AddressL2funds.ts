@@ -65,6 +65,6 @@ await client.waitForTransaction({
     digest,
 });
 
-const anchorBalance = await evmRpcClient.getBalanceBaseToken(address);
+const l1BalanceInL2 = await evmRpcClient.getBalanceBaseToken(address);
 
-console.log(`L2 balance of the L1 address ${address}: ${JSON.stringify(anchorBalance)}`);
+console.log(`L2 balance of the L1 address ${address}: ${JSON.stringify(l1BalanceInL2)}`);
