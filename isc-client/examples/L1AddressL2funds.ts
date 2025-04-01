@@ -2,7 +2,8 @@ import { IotaClient } from '@iota/iota-sdk/client';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { CONFIG } from './config';
-import { EvmRpcClient, IscTransaction } from '../src';
+import { EvmRpcClient, IscTransaction, L2_GAS_BUDGET } from '../src';
+import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 
 const { L1, L2 } = CONFIG;
 
@@ -32,7 +33,6 @@ if (!recipientAddress) {
 // Amount to send (2 IOTAs)
 const amountToSend = 2000000000n;
 const amountForBag = 1000000000n; // amount for the bag is lower than the amount to send so that the amountForBag funds remain in the anchor on the L1 address
-const L2_GAS_BUDGET = BigInt(1_000);
 
 const iscTx = new IscTransaction({
     chainId: L1.chainId,
@@ -42,13 +42,13 @@ const iscTx = new IscTransaction({
 });
 const bag = iscTx.newBag();
 
-const bagCoins = iscTx.coinsFromAmount({ amount: amountForBag });
-iscTx.placeCoinsInBag({ coins: bagCoins, bag });
+const bagCoins = iscTx.coinFromAmount({ amount: amountForBag });
+iscTx.placeCoinInBag({ coin: bagCoins, coinType: IOTA_TYPE_ARG, bag });
 
 iscTx.createAndSend({
     bag,
     address: recipientAddress,
-    amount: amountToSend,
+    transfers: [[IOTA_TYPE_ARG, amountToSend]],
     gasBudget: L2_GAS_BUDGET,
 });
 const transaction = iscTx.build();
