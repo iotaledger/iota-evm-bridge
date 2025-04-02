@@ -53,9 +53,11 @@ export function useBuildL1DepositTransaction({
             iscTx.placeCoinInBag({ coin, bag });
             iscTx.createAndSend({
                 bag,
-                address: receivingAddress,
                 transfers: [[IOTA_TYPE_ARG, amountToSend]],
-                gasBudget: L2_GAS_BUDGET,
+                agent: {
+                    type: 'evm',
+                    address: receivingAddress
+                }
             });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);

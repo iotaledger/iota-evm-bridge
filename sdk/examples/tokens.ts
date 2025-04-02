@@ -63,12 +63,14 @@ iscTx.placeCoinInBag({
 
 iscTx.createAndSend({
     bag,
-    address: recipientAddress,
     transfers: [
         [IOTA_TYPE_ARG, amountToSend],
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
-    gasBudget: L2_GAS_BUDGET,
+    agent: {
+        type: 'evm',
+        address: recipientAddress
+    }
 });
 
 const transaction = iscTx.build();
