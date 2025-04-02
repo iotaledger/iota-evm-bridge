@@ -1,10 +1,10 @@
 {
-    "name": "evm-toolkit-rebased-monorepo",
+    "name": "evm-evm-bridge-monorepo",
     "private": true,
     "license": "Apache-2.0",
     "scripts": {
-        "isc-faucet-depositer": "turbo --filter ./isc-faucet-depositer",
-        "isc-client": "turbo --filter ./isc-client",
+        "app": "turbo --filter ./app",
+        "sdk": "turbo --filter ./sdk",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
         "prepare": "husky"

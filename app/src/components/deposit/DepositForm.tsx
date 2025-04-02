@@ -14,7 +14,7 @@ import {
 import { useCurrentAccount } from '@iota/dapp-kit';
 import { type ComponentProps, forwardRef, useCallback, useEffect } from 'react';
 import { type SubmitHandler, useFormContext } from 'react-hook-form';
-import { WalletConnectInput } from '../';
+import { WalletConnectInput } from '..';
 import { DepositFormData } from '../../lib/schema/bridgeForm.schema';
 import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';

@@ -1,5 +1,5 @@
 import { Close, MenuIcon } from '@iota/apps-ui-icons';
-import { IOTABridgeLogo, ThemeSwitcher } from '../';
+import { IOTABridgeLogo, ThemeSwitcher } from '..';
 import { ConnectButtonL1, ConnectButtonL2 } from './connect-buttons';
 import { useState } from 'react';
 import { Button, ButtonType, Divider } from '@iota/apps-ui-kit';
