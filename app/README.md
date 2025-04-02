@@ -16,7 +16,7 @@ To generate the github token go to Your github profile > Settings > Developer Se
 then generate a new token with 'iotaledger' resource owner, 'Only selected repositories' (iota) repository access, and in repository permissions
 set 'Actions' to 'read-only'.
 
-We need a build as the evm bridge app is ran from the `dist` folder for the tests.
+We need a build as the evm bridge app is run from the `dist` folder for the tests.
 In root run:
 
 `pnpm app build`
