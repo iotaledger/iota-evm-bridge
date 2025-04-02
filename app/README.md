@@ -1,7 +1,7 @@
 # Test (Playwright)
 
 Make sure you have the playwright browser drivers.
-In `isc-faucet-depositer` run:
+In `app` run:
 
 `pnpm exec playwright install --with-deps chromium`
 
@@ -16,11 +16,11 @@ To generate the github token go to Your github profile > Settings > Developer Se
 then generate a new token with 'iotaledger' resource owner, 'Only selected repositories' (iota) repository access, and in repository permissions
 set 'Actions' to 'read-only'.
 
-We need a build as the app is ran from the `dist` folder for the tests.
+We need a build as the evm bridge app is ran from the `dist` folder for the tests.
 In root run:
 
-`pnpm isc-faucet-depositer build`
+`pnpm app build`
 
-Finally run the tests (in `isc-faucet-depositer` working dir)
+Finally run the tests (in `app` working dir)
 
 `pnpm run test:e2e`

@@ -6,8 +6,8 @@ on:
             - main
         paths:
             - '.github/workflows/**'
-            - 'isc-faucet-depositer/**'
-            - 'isc-client/**'
+            - 'app/**'
+            - 'sdk/**'
 
 jobs:
     deploy-production:

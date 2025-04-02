@@ -24,7 +24,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build
-              run: pnpm isc-faucet-depositer build
+              run: pnpm app build
 
             - name: Lint Check
               run: pnpm run lint

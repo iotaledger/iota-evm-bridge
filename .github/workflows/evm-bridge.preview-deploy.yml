@@ -6,8 +6,8 @@ on:
         types: [opened, synchronize, reopened, ready_for_review]
         paths:
             - '.github/workflows/**'
-            - 'isc-faucet-depositer/**'
-            - 'isc-client/**'
+            - 'app/**'
+            - 'sdk/**'
 
 jobs:
     deploy-preview:
