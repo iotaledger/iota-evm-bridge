@@ -1,5 +1,5 @@
 {
-    "name": "evm-evm-bridge-monorepo",
+    "name": "evm-bridge-monorepo",
     "private": true,
     "license": "Apache-2.0",
     "scripts": {
