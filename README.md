@@ -6,7 +6,7 @@ Build the sdk:
 pnpm sdk build
 ```
 
-Run the bride app:
+Run the bridge app:
 ```sh
 pnpm app dev
 ```
