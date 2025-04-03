@@ -114,12 +114,12 @@ export function placeAssetInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
     asset: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_asset`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [assetsBag, asset],
     });
 }
@@ -128,11 +128,11 @@ export function takeAssetFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [assetsBag, assetsBag],
     });
 }
@@ -294,12 +294,12 @@ export function placeAssetForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
     asset: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_asset_for_migration`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [anchor, asset],
     });
 }

@@ -51,6 +51,8 @@ export class IscTransaction {
 
     /**
      * Place a coin in a bag.
+     * 
+     * **Uses the IOTA Coin Type by default.**
      */
     placeCoinInBag({
         bag,
@@ -91,6 +93,8 @@ export class IscTransaction {
 
     /**
      * Take out the specified amount of coin from the bag.
+     * 
+     * **Uses the IOTA Coin Type by default.**
      */
     takeCoinBalanceFromBag({
         bag,
@@ -113,6 +117,8 @@ export class IscTransaction {
 
     /**
      * Take out all the coin from the bag.
+     * 
+     * **Uses the IOTA Coin Type by default.**
      */
     takeAllCoinBalanceFromBag({
         bag,
@@ -127,6 +133,8 @@ export class IscTransaction {
 
     /**
      * Place a coin balance in the bag.
+     * 
+     * **Uses the IOTA Coin Type by default.**
      */
     placeCoinBalanceInBag({
         bag,
@@ -147,14 +155,14 @@ export class IscTransaction {
     placeAssetInBag({
         bag,
         asset,
-        coinType,
+        assetType,
     }: {
         asset: TransactionObjectArgument;
         bag: TransactionObjectArgument;
-        coinType: string;
+        assetType: string;
     }) {
         this.validateFinalizedStatus();
-        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, coinType, asset);
+        isc.placeAssetInBag(this.#transaction, this.#chainData, bag, assetType, asset);
     }
 
     /**
@@ -162,13 +170,13 @@ export class IscTransaction {
      */
     takeAssetFromBag({
         bag,
-        coinType,
+        assetType,
     }: {
         bag: TransactionObjectArgument;
-        coinType: string;
+        assetType: string;
     }) {
         this.validateFinalizedStatus();
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, coinType);
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType);
     }
 
     /**
@@ -309,11 +317,11 @@ export class IscTransaction {
 
     placeAssetForMigration({
         anchor,
-        coinType,
+        assetType,
         asset,
     }: {
         anchor: TransactionObjectArgument;
-        coinType: string;
+        assetType: string;
         asset: TransactionObjectArgument;
     }) {
         this.validateFinalizedStatus();
@@ -321,7 +329,7 @@ export class IscTransaction {
             this.#transaction,
             this.#chainData,
             anchor,
-            coinType,
+            assetType,
             asset,
         );
     }
