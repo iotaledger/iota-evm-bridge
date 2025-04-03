@@ -49,8 +49,8 @@ iscTx.createAndSend({
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
     agent: {
         type: 'evm',
-        address: recipientAddress
-    }
+        address: recipientAddress,
+    },
 });
 
 const transaction = iscTx.build();

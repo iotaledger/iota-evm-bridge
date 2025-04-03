@@ -69,8 +69,8 @@ iscTx.createAndSend({
     ],
     agent: {
         type: 'evm',
-        address: recipientAddress
-    }
+        address: recipientAddress,
+    },
 });
 
 const transaction = iscTx.build();

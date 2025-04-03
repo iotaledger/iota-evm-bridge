@@ -5,9 +5,9 @@ import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { L2_GAS_BUDGET } from './constants';
 
 export type Agent = {
-    type: 'evm',
-    address: string
-}
+    type: 'evm';
+    address: string;
+};
 
 export class IscTransaction {
     #finalized: boolean;
@@ -20,9 +20,9 @@ export class IscTransaction {
         this.#chainData = chainData;
     }
 
-    private validateFinalizedStatus(){
-        if(this.#finalized){
-            throw Error('Transaction is built.')
+    private validateFinalizedStatus() {
+        if (this.#finalized) {
+            throw Error('Transaction is built.');
         }
     }
 
@@ -51,7 +51,7 @@ export class IscTransaction {
 
     /**
      * Place a coin in a bag.
-     * 
+     *
      * **Uses the IOTA Coin Type by default.**
      */
     placeCoinInBag({
@@ -76,16 +76,16 @@ export class IscTransaction {
         transfers,
         gasBudget = L2_GAS_BUDGET,
     }: {
-        agent: Agent,
+        agent: Agent;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         this.validateFinalizedStatus();
         const agentID = (() => {
-            switch(agent.type){
+            switch (agent.type) {
                 case 'evm':
-                    return isc.agentIdForEVM(agent.address)
+                    return isc.agentIdForEVM(agent.address);
             }
         })();
         isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, gasBudget, [agentID]);
@@ -93,7 +93,7 @@ export class IscTransaction {
 
     /**
      * Take out the specified amount of coin from the bag.
-     * 
+     *
      * **Uses the IOTA Coin Type by default.**
      */
     takeCoinBalanceFromBag({
@@ -117,7 +117,7 @@ export class IscTransaction {
 
     /**
      * Take out all the coin from the bag.
-     * 
+     *
      * **Uses the IOTA Coin Type by default.**
      */
     takeAllCoinBalanceFromBag({
@@ -133,7 +133,7 @@ export class IscTransaction {
 
     /**
      * Place a coin balance in the bag.
-     * 
+     *
      * **Uses the IOTA Coin Type by default.**
      */
     placeCoinBalanceInBag({
@@ -168,13 +168,7 @@ export class IscTransaction {
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({
-        bag,
-        assetType,
-    }: {
-        bag: TransactionObjectArgument;
-        assetType: string;
-    }) {
+    takeAssetFromBag({ bag, assetType }: { bag: TransactionObjectArgument; assetType: string }) {
         this.validateFinalizedStatus();
         isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType);
     }

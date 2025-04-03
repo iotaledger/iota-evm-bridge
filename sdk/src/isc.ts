@@ -50,7 +50,7 @@ export function createAndSend(
     assetsBag: TransactionObjectArgument,
     transfers: Array<[string, number | bigint]>,
     gasBudget: number | bigint,
-    agentsIDs: Uint8Array[]
+    agentsIDs: Uint8Array[],
 ) {
     // Execute requests::create_and_send_request.
     // This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID)

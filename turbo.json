@@ -6,6 +6,9 @@
         "lint:fix": {
             "cache": false
         },
+        "prettier:fix": {
+            "cache": false
+        },
         "typecheck": {
             "dependsOn": ["^build"]
         },
