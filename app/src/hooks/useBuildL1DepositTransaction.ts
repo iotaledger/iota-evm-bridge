@@ -56,8 +56,8 @@ export function useBuildL1DepositTransaction({
                 transfers: [[IOTA_TYPE_ARG, amountToSend]],
                 agent: {
                     type: 'evm',
-                    address: receivingAddress
-                }
+                    address: receivingAddress,
+                },
             });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);
