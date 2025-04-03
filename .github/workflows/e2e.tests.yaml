@@ -9,7 +9,7 @@ concurrency:
     cancel-in-progress: true
 
 env:
-    VITE_EVM_TOOLKIT_CONFIG: ${{ secrets.EVM_TOOLKIT_CONFIG }}
+    VITE_EVM_BRIDGE_CONFIG: ${{ secrets.EVM_BRIDGE_CONFIG }}
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -31,23 +31,23 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Install Playwright Browsers
-              working-directory: ./isc-faucet-depositer
+              working-directory: ./app
               run: pnpm exec playwright install --with-deps chromium
 
             - name: Build
-              run: pnpm isc-faucet-depositer build
+              run: pnpm app build
 
             - name: Prepare e2e tests (downloads wallet artifact dist)
-              working-directory: ./isc-faucet-depositer
+              working-directory: ./app
               run: pnpm run test:prepare
 
             - name: Run tests
-              working-directory: ./isc-faucet-depositer
+              working-directory: ./app
               run: DEBUG=pw:webserver xvfb-run --auto-servernum pnpm run test:e2e
 
             - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
               if: always()
               with:
-                  name: playwright-report-isc-faucet-depositer
-                  path: isc-faucet-depositer/playwright-report/
+                  name: playwright-report-app
+                  path: app/playwright-report/
                   retention-days: 30

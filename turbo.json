@@ -20,6 +20,6 @@
         }
     },
     "globalEnv": [
-        "VITE_EVM_TOOLKIT_CONFIG"
+        "VITE_EVM_BRIDGE_CONFIG"
     ]
 }

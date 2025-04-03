@@ -1,14 +1,14 @@
-# evm-toolkit-rebased
+# IOTA EVM Bridge
 
 
-Build the Client:
+Build the sdk:
 ```sh
-pnpm isc-client build
+pnpm sdk build
 ```
 
-Run the Depositer:
+Run the bridge app:
 ```sh
-pnpm isc-faucet-depositer dev
+pnpm app dev
 ```
 
 Check eslint and formatting:

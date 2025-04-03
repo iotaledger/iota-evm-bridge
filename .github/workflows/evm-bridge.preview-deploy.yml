@@ -1,22 +1,22 @@
-name: Production Deploy for the EVM Toolkit Rebased
+name: Preview Deploy for the EVM Toolkit Rebased
 
 on:
-    push:
-        branches:
-            - main
+    workflow_dispatch:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
         paths:
             - '.github/workflows/**'
-            - 'isc-faucet-depositer/**'
-            - 'isc-client/**'
+            - 'app/**'
+            - 'sdk/**'
 
 jobs:
-    deploy-production:
+    deploy-preview:
         uses: ./.github/workflows/app-vercel-deploy.yml
         with:
-            PRODUCTION: true
+            PRODUCTION: false
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
             VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
-            EVM_TOOLKIT_CONFIG: ${{ secrets.EVM_TOOLKIT_CONFIG }}
+            EVM_BRIDGE_CONFIG: ${{ secrets.EVM_BRIDGE_CONFIG }}

@@ -1,18 +1,11 @@
+// Copyright (c) 2025 IOTA Stiftung
+// SPDX-License-Identifier: Apache-2.0
+
 import { z } from 'zod';
-import { envSchema, type Config } from '../../src/config/config.schema';
-import * as dotenv from 'dotenv';
-import path from 'path';
+import { Config, envSchema } from './config.schema';
 
-dotenv.config({
-    path: [path.join(__dirname, '..', '..', '.env')],
-});
-
-export function loadConfig(): Config {
-    const rawEvmToolkitConfig = process.env.VITE_EVM_TOOLKIT_CONFIG;
-
-    if (rawEvmToolkitConfig === undefined) {
-        throw new Error('Missing EVM Toolkit config JSON env var!');
-    }
+function loadEnv(): Config {
+    const rawEvmToolkitConfig = import.meta.env.VITE_EVM_BRIDGE_CONFIG;
 
     let evmToolkitConfig: Record<string, unknown> = {};
 
@@ -38,4 +31,4 @@ export function loadConfig(): Config {
     }
 }
 
-export const CONFIG = loadConfig();
+export const CONFIG: Config = loadEnv();

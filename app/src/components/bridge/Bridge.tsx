@@ -1,4 +1,4 @@
-import { DepositLayer1, DepositLayer2 } from '../';
+import { DepositLayer1, DepositLayer2 } from '..';
 import { Header } from '@iota/apps-ui-kit';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useMemo } from 'react';
