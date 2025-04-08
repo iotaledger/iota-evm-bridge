@@ -7,8 +7,8 @@ import {
     checkL2BalanceWithRetries,
     closeBrowserTabsExceptLast,
     getExtensionUrl,
-    addNetworkToMetamask,
     addNetworkToMetaMask,
+    addL1FundsThroughBridgeUI,
 } from './utils/utils';
 
 const THREE_MINUTES = 180_000;
@@ -56,32 +56,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             throw new Error('L2 address not found');
         }
 
-        const connectButtonId = 'connect-l1-wallet';
-        const connectButtonL1 = await pageWithL1Wallet.waitForSelector(
-            `[data-testid="${connectButtonId}"]`,
-            {
-                state: 'visible',
-            },
-        );
-
-        await connectButtonL1.click();
-        const approveWalletConnectPage = browserL1.waitForEvent('page');
-        await pageWithL1Wallet.getByText('IOTA Wallet').click();
-
-        const walletL1Page = await approveWalletConnectPage;
-        await walletL1Page.getByRole('button', { name: 'Continue' }).click();
-        await walletL1Page.getByRole('button', { name: 'Connect' }).click();
-
-        // Add funds to L1
-        await pageWithL1Wallet.getByTestId('request-l1-funds-button').click();
-        await expect(pageWithL1Wallet.getByText('Funds successfully sent.')).toBeVisible();
-
-        // Check the funds arrived (ui)
-        const l1WalletExtension = await browserL1.newPage();
-        const l1ExtensionUrl = await getExtensionUrl(browserL1);
-        await l1WalletExtension.goto(l1ExtensionUrl, { waitUntil: 'commit' });
-        await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10');
-        l1WalletExtension.close();
+        await addL1FundsThroughBridgeUI(pageWithL1Wallet, browserL1);
 
         const toggleManualInput = pageWithL1Wallet.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
@@ -148,6 +123,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
         await pageWithL2Wallet.getByText('Bridge Assets').click();
+
         const approveTransactionPage = await browserL2.waitForEvent('page');
         await approveTransactionPage.getByRole('button', { name: 'Confirm' }).click();
 
