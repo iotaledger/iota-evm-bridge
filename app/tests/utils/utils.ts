@@ -194,5 +194,5 @@ export async function addL1FundsThroughBridgeUI(page: Page, browser: BrowserCont
     const l1ExtensionUrl = await getExtensionUrl(browser);
     await l1WalletExtension.goto(l1ExtensionUrl, { waitUntil: 'commit' });
     await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10');
-    l1WalletExtension.close();
+    await l1WalletExtension.close();
 }

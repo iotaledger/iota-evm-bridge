@@ -111,7 +111,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         const amountField = pageWithL2Wallet.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
-        amountField.fill('2');
+        await amountField.fill('2');
 
         const toggleManualInput = pageWithL2Wallet.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
@@ -119,12 +119,16 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         const addressField = pageWithL2Wallet.getByTestId('receive-address');
         await expect(addressField).toBeVisible();
-        addressField.fill(addressL1);
+        await addressField.fill(addressL1);
+
+        await pageWithL2Wallet.waitForTimeout(2500);
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
+
+        const approveTransactionPagePromise = browserL2.waitForEvent('page');
         await pageWithL2Wallet.getByText('Bridge Assets').click();
 
-        const approveTransactionPage = await browserL2.waitForEvent('page');
+        const approveTransactionPage = await approveTransactionPagePromise;
         await approveTransactionPage.getByRole('button', { name: 'Confirm' }).click();
 
         // Check funds on L1 wallet
