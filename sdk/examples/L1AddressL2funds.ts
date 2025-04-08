@@ -40,17 +40,19 @@ const iscTx = new IscTransaction({
     coreContractAccounts: Number(L1.coreContractAccounts),
     accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
 });
-const bag = iscTx.newBag();
 
+const bag = iscTx.newBag();
 const bagCoins = iscTx.coinFromAmount({ amount: amountForBag });
 iscTx.placeCoinInBag({ coin: bagCoins, coinType: IOTA_TYPE_ARG, bag });
-
 iscTx.createAndSend({
     bag,
-    address: recipientAddress,
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
-    gasBudget: L2_GAS_BUDGET,
+    agent: {
+        type: 'evm',
+        address: recipientAddress,
+    },
 });
+
 const transaction = iscTx.build();
 transaction.setSender(address);
 

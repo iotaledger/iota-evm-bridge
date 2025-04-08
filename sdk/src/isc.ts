@@ -34,29 +34,26 @@ export function placeCoinInBag(
     });
 }
 
+export function agentIdForEVM(address: string): Uint8Array {
+    const agentID = IscAgentID.serialize({
+        EthereumAddressAgentID: {
+            eth: bcs.fixedArray(20, bcs.u8()).fromHex(address),
+        },
+    });
+
+    return agentID.toBytes();
+}
+
 export function createAndSend(
     tx: Transaction,
     { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
     assetsBag: TransactionObjectArgument,
     transfers: Array<[string, number | bigint]>,
-    address: string,
     gasBudget: number | bigint,
+    agentsIDs: Uint8Array[],
 ) {
-    const agentID = IscAgentID.serialize({
-        EthereumAddressAgentID: {
-            eth: bcs.fixedArray(20, bcs.u8()).fromHex(address),
-        },
-    }).toBytes();
-
-    /* Execute iscmove::requests::create_and_send_request. 
-       This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID) 
-        
-        The required arguments are: 
-        * AnchorID, AssetsBagID (created above), 
-        * Contract call arguments (contract hnmae, function hname, an array of bcs encoded args) 
-        * An allowance split into two fields instead of a map. (to make sending/parsing of the request easier, using a map would require creating a new Object) 
-        * On chain Gas budget    
-    */
+    // Execute requests::create_and_send_request.
+    // This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID)
     tx.moveCall({
         target: `${packageId}::request::create_and_send_request`,
         arguments: [
@@ -64,7 +61,7 @@ export function createAndSend(
             tx.object(assetsBag),
             tx.pure(bcs.U32.serialize(coreContractAccounts)),
             tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
-            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([agentID])),
+            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(agentsIDs)),
             tx.pure(bcs.vector(bcs.string()).serialize(transfers.map((transfer) => transfer[0]))),
             tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
             tx.pure(bcs.U64.serialize(gasBudget)),
@@ -117,12 +114,12 @@ export function placeAssetInBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
     asset: TransactionObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_asset`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [assetsBag, asset],
     });
 }
@@ -131,11 +128,11 @@ export function takeAssetFromBag(
     tx: Transaction,
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [assetsBag, assetsBag],
     });
 }
@@ -297,12 +294,12 @@ export function placeAssetForMigration(
     tx: Transaction,
     { packageId }: ChainData,
     anchor: TransactionObjectArgument,
-    coinType: string,
+    assetType: string,
     asset: TransactionObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_asset_for_migration`,
-        typeArguments: [coinType],
+        typeArguments: [assetType],
         arguments: [anchor, asset],
     });
 }

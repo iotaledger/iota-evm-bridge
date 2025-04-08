@@ -52,9 +52,11 @@ iscTx.placeCoinForMigration({ anchor, coin: migrationCoin });
 bag = iscTx.destroyAnchor({ anchor });
 iscTx.createAndSend({
     bag,
-    address: recipientAddress,
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
-    gasBudget: L2_GAS_BUDGET,
+    agent: {
+        type: 'evm',
+        address: recipientAddress,
+    },
 });
 
 const transaction = iscTx.build();
