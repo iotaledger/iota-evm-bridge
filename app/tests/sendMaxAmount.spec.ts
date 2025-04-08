@@ -55,11 +55,14 @@ test.describe('Send MAX amount from L1', () => {
     });
 });
 
+const TWO_MINUTES = 120_000;
+
 test.describe('Send MAX amount from L2', () => {
     let browser: BrowserContext;
     let testPage: Page;
 
     test.beforeAll('setup L2 wallet', async ({ contextL2, l2ExtensionUrl }) => {
+        test.setTimeout(TWO_MINUTES);
         testPage = await contextL2.newPage();
         browser = contextL2;
 
