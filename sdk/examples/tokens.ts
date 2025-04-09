@@ -65,7 +65,7 @@ iscTx.createAndSendToEvm({
     address: recipientAddress,
     accountsContract: L1.accountsContract,
     accountsFunction: L1.accountsTransferAllowanceTo,
-})
+});
 
 const transaction = iscTx.build();
 transaction.setSender(address);

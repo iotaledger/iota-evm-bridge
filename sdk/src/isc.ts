@@ -1,7 +1,7 @@
 import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transactions';
 import { ChainData } from './types';
 import { bcs } from '@iota/iota-sdk/bcs';
-import { IscAgentID } from './bcs';
+import { IscAgentID, IscAssets } from './bcs';
 
 export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
     // Create a new empty AssetsBag. It will be used to attach coin/objects to the request
@@ -48,12 +48,30 @@ export function createAndSendRequest(
     tx: Transaction,
     { packageId, chainId }: ChainData,
     contract: number,
-    contractFunction: number, 
+    contractFunction: number,
+    contractArgs: Uint8Array[],
     assetsBag: TransactionObjectArgument,
     transfers: Array<[string, number | bigint]>,
     gasBudget: number | bigint,
-    args: Uint8Array[],
 ) {
+    // Encodes the allowance.
+    //  coins:      map[coinType(string): balance(u64)]
+    //  objects:    map[objectID(bytes32): objectType(string)]
+    //
+    //  Example:
+    //      {
+    //          coins: {
+    //              "0x02::iota::IOTA": 1074
+    //          },
+    //          objects: {
+    //              fromHex('0x629aeef09ab0874db9b9d9dbf8098ef9e1d4f466ca7569c4ad18d1db4b0e9e7b'): "0xca99629453167d3c4d754ac11d23132a510094addb344cbaea306483a72658c2::anchor::Anchor"
+    //          }
+    //      }
+    const allowance = IscAssets.serialize({
+        coins: new Map(transfers.map(([coinType, amount]) => [coinType, Number(amount)])),
+        objects: new Map(), // Add objects here. Provide their ID as BCS encoded bytes *and* the _object type_ as string.
+    });
+
     // Execute requests::create_and_send_request.
     // This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID)
     tx.moveCall({
@@ -63,9 +81,8 @@ export function createAndSendRequest(
             tx.object(assetsBag),
             tx.pure(bcs.U32.serialize(contract)),
             tx.pure(bcs.U32.serialize(contractFunction)),
-            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(args)),
-            tx.pure(bcs.vector(bcs.string()).serialize(transfers.map((transfer) => transfer[0]))),
-            tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
+            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(contractArgs)),
+            tx.pure(bcs.vector(bcs.u8()).serialize(allowance.toBytes())),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],
     });

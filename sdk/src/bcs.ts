@@ -11,6 +11,11 @@ export const IscmoveAssetsBag = bcs.struct('IscmoveAssetsBag', {
     size: bcs.u64(),
 });
 
+export const IscAssets = bcs.struct('IscAssets', {
+    coins: bcs.map(bcs.string(), bcs.u64()),
+    objects: bcs.map(bcs.fixedArray(32, bcs.u8()), bcs.string()),
+});
+
 export const IscmoveReferent_AssetsBag = bcs.struct('IscmoveReferent_AssetsBag', {
     iD: bcs.fixedArray(32, bcs.u8()),
     value: IscmoveAssetsBag,

@@ -79,14 +79,23 @@ export class IscTransaction {
         gasBudget = L2_GAS_BUDGET,
     }: {
         contractArgs: Uint8Array[];
-        contract: number,
-        contractFunction: number,
+        contract: number;
+        contractFunction: number;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         this.validateFinalizedStatus();
-        isc.createAndSendRequest(this.#transaction, this.#chainData, contract, contractFunction,bag, transfers, gasBudget, contractArgs);
+        isc.createAndSendRequest(
+            this.#transaction,
+            this.#chainData,
+            contract,
+            contractFunction,
+            contractArgs,
+            bag,
+            transfers,
+            gasBudget,
+        );
     }
 
     createAndSendToEvm({
@@ -97,21 +106,21 @@ export class IscTransaction {
         gasBudget = L2_GAS_BUDGET,
         bag,
     }: {
-        address: string,
-        accountsContract: number,
-        accountsFunction: number,
+        address: string;
+        accountsContract: number;
+        accountsFunction: number;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         const agentID = isc.agentIdForEVM(address);
         this.createAndSend({
-            bag, 
+            bag,
             gasBudget,
             contract: accountsContract,
             contractFunction: accountsFunction,
             contractArgs: [agentID],
-            transfers
+            transfers,
         });
     }
 
@@ -192,9 +201,9 @@ export class IscTransaction {
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag, assetType, asset }: { bag: TransactionObjectArgument; assetType: string, asset: TransactionObjectArgument }) {
+    takeAssetFromBag({ bag, assetType }: { bag: TransactionObjectArgument; assetType: string }) {
         this.validateFinalizedStatus();
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType, asset);
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType);
     }
 
     /**
