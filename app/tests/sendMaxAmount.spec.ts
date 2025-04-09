@@ -124,7 +124,7 @@ test.describe('Send MAX amount from L2', () => {
         await expect(addressField).toBeVisible();
         await addressField.fill(addressL1);
 
-        await testPage.waitForTimeout(2500);
+        await testPage.waitForTimeout(5000);
 
         await testPage.getByText('Max').click();
 
