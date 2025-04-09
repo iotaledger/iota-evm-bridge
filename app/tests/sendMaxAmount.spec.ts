@@ -20,6 +20,8 @@ test.describe('Send MAX amount from L1', () => {
     let testPage: Page;
 
     test.beforeAll('setup L1 wallet', async ({ contextL1, l1ExtensionUrl }) => {
+        test.setTimeout(THREE_MINUTES);
+
         testPage = await contextL1.newPage();
         await createL1Wallet(testPage, l1ExtensionUrl);
         browser = contextL1;
@@ -66,6 +68,8 @@ test.describe('Send MAX amount from L2', () => {
     let testPage: Page;
 
     test.beforeAll('setup L2 wallet', async ({ contextL2, l2ExtensionUrl }) => {
+        test.setTimeout(THREE_MINUTES);
+
         testPage = await contextL2.newPage();
         browser = contextL2;
 
