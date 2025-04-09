@@ -68,27 +68,51 @@ export class IscTransaction {
     }
 
     /**
-     * Finally create and send the request.
+     * Finally create and send a request calling the given
      */
     createAndSend({
         bag,
-        agent,
+        contract,
+        contractFunction,
+        contractArgs,
         transfers,
         gasBudget = L2_GAS_BUDGET,
     }: {
-        agent: Agent;
+        contractArgs: Uint8Array[];
+        contract: number,
+        contractFunction: number,
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         this.validateFinalizedStatus();
-        const agentID = (() => {
-            switch (agent.type) {
-                case 'evm':
-                    return isc.agentIdForEVM(agent.address);
-            }
-        })();
-        isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, gasBudget, [agentID]);
+        isc.createAndSendRequest(this.#transaction, this.#chainData, contract, contractFunction,bag, transfers, gasBudget, contractArgs);
+    }
+
+    createAndSendToEvm({
+        address,
+        accountsContract,
+        accountsFunction,
+        transfers,
+        gasBudget = L2_GAS_BUDGET,
+        bag,
+    }: {
+        address: string,
+        accountsContract: number,
+        accountsFunction: number,
+        transfers: Array<[string, number | bigint]>;
+        gasBudget?: number | bigint;
+        bag: TransactionObjectArgument;
+    }) {
+        const agentID = isc.agentIdForEVM(address);
+        this.createAndSend({
+            bag, 
+            gasBudget,
+            contract: accountsContract,
+            contractFunction: accountsFunction,
+            contractArgs: [agentID],
+            transfers
+        });
     }
 
     /**
@@ -168,9 +192,9 @@ export class IscTransaction {
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag, assetType }: { bag: TransactionObjectArgument; assetType: string }) {
+    takeAssetFromBag({ bag, assetType, asset }: { bag: TransactionObjectArgument; assetType: string, asset: TransactionObjectArgument }) {
         this.validateFinalizedStatus();
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType);
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType, asset);
     }
 
     /**

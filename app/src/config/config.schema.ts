@@ -9,12 +9,14 @@ export const envSchema = z.object({
         faucetUrl: z.string().url(),
         chainId: z.string(),
         packageId: z.string(),
-        coreContractAccounts: z
+        accountsContract: z
             .string()
-            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
+            .pipe(z.number()),
         accountsTransferAllowanceTo: z
             .string()
-            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x'),
+            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
+            .pipe(z.number()),
     }),
     L2: z.object({
         chainName: z.string(),

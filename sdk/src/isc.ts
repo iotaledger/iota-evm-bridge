@@ -44,13 +44,15 @@ export function agentIdForEVM(address: string): Uint8Array {
     return agentID.toBytes();
 }
 
-export function createAndSend(
+export function createAndSendRequest(
     tx: Transaction,
-    { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
+    { packageId, chainId }: ChainData,
+    contract: number,
+    contractFunction: number, 
     assetsBag: TransactionObjectArgument,
     transfers: Array<[string, number | bigint]>,
     gasBudget: number | bigint,
-    agentsIDs: Uint8Array[],
+    args: Uint8Array[],
 ) {
     // Execute requests::create_and_send_request.
     // This creates the Request Move object and sends it to the Anchor object of the Chain (ChainID == Anchor Object ID)
@@ -59,9 +61,9 @@ export function createAndSend(
         arguments: [
             tx.pure(bcs.Address.serialize(chainId)),
             tx.object(assetsBag),
-            tx.pure(bcs.U32.serialize(coreContractAccounts)),
-            tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
-            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(agentsIDs)),
+            tx.pure(bcs.U32.serialize(contract)),
+            tx.pure(bcs.U32.serialize(contractFunction)),
+            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(args)),
             tx.pure(bcs.vector(bcs.string()).serialize(transfers.map((transfer) => transfer[0]))),
             tx.pure(bcs.vector(bcs.u64()).serialize(transfers.map((transfer) => transfer[1]))),
             tx.pure(bcs.U64.serialize(gasBudget)),
@@ -129,11 +131,12 @@ export function takeAssetFromBag(
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
     assetType: string,
+    asset: TransactionObjectArgument,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
         typeArguments: [assetType],
-        arguments: [assetsBag, assetsBag],
+        arguments: [assetsBag, asset],
     });
 }
 
@@ -169,7 +172,7 @@ export function startNewChain(
         target: `${packageId}::anchor::start_new_chain`,
         arguments: [
             bcs.vector(bcs.u8()).serialize(metadata),
-            coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null),
+            coin ? coin : bcs.option(bcs.ObjectArg).serialize(null),
         ],
     });
 }

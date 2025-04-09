@@ -12,8 +12,8 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
             chain: {
                 chainId: CONFIG.L1.chainId,
                 packageId: CONFIG.L1.packageId,
-                coreContractAccounts: parseInt(CONFIG.L1.coreContractAccounts, 16),
-                accountsTransferAllowanceTo: parseInt(CONFIG.L1.accountsTransferAllowanceTo, 16),
+                accountsContract: CONFIG.L1.accountsContract,
+                accountsTransferAllowanceTo: CONFIG.L1.accountsTransferAllowanceTo,
             },
         },
     },
