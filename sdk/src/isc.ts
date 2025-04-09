@@ -131,12 +131,11 @@ export function takeAssetFromBag(
     { packageId }: ChainData,
     assetsBag: TransactionObjectArgument,
     assetType: string,
-    asset: TransactionObjectArgument,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
         typeArguments: [assetType],
-        arguments: [assetsBag, asset],
+        arguments: [assetsBag, assetsBag],
     });
 }
 
@@ -172,7 +171,7 @@ export function startNewChain(
         target: `${packageId}::anchor::start_new_chain`,
         arguments: [
             bcs.vector(bcs.u8()).serialize(metadata),
-            coin ? coin : bcs.option(bcs.ObjectArg).serialize(null),
+            coin ? tx.object(coin) : bcs.option(bcs.ObjectArg).serialize(null),
         ],
     });
 }
