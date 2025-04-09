@@ -12,11 +12,11 @@ export const envSchema = z.object({
         accountsContract: z
             .string()
             .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
-            .pipe(z.number()),
+            .transform((x) => Number(x)),
         accountsTransferAllowanceTo: z
             .string()
             .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
-            .pipe(z.number()),
+            .transform((x) => Number(x)),
     }),
     L2: z.object({
         chainName: z.string(),
