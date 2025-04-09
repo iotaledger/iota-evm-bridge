@@ -51,7 +51,7 @@ test.describe('Send MAX amount from L1', () => {
 
         const balance = await checkL2BalanceWithRetries(addressL2);
 
-        expect(balance).toEqual('9.9913032');
+        expect(balance).toEqual('9.991288');
     });
 });
 

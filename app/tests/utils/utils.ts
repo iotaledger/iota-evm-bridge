@@ -116,9 +116,11 @@ export async function fundL2AddressWithIscClient(addressL2: string, amount: numb
     iscTx.placeCoinInBag({ coin, bag });
     iscTx.createAndSend({
         bag,
-        address: addressL2,
         transfers: [[IOTA_TYPE_ARG, amountToSend]],
-        gasBudget: L2_GAS_BUDGET,
+        agent: {
+            type: 'evm',
+            address: addressL2,
+        },
     });
 
     const transaction = iscTx.build();
