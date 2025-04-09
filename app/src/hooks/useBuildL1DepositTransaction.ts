@@ -56,7 +56,7 @@ export function useBuildL1DepositTransaction({
                 transfers: [[IOTA_TYPE_ARG, amountToSend]],
                 address: receivingAddress,
                 accountsContract: variables.chain.accountsContract,
-                accountsFunction: variables.chain.accountsTransferAllowanceTo
+                accountsFunction: variables.chain.accountsTransferAllowanceTo,
             });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);
