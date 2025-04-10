@@ -3,6 +3,7 @@ import * as isc from './isc';
 import { ChainData } from './types';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { L2_GAS_BUDGET } from './constants';
+import type { ObjectArgument } from './isc';
 
 export type Agent = {
     type: 'evm';
@@ -59,7 +60,7 @@ export class IscTransaction {
         coinType = IOTA_TYPE_ARG,
         coin,
     }: {
-        coin: TransactionObjectArgument;
+        coin: ObjectArgument;
         coinType?: string;
         bag: TransactionObjectArgument;
     }) {
@@ -83,7 +84,7 @@ export class IscTransaction {
         contractFunction: number;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
-        bag: TransactionObjectArgument;
+        bag: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         isc.createAndSendRequest(
@@ -111,7 +112,7 @@ export class IscTransaction {
         accountsFunction: number;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
-        bag: TransactionObjectArgument;
+        bag: ObjectArgument;
     }) {
         const agentID = isc.agentIdForEVM(address);
         this.createAndSend({
@@ -136,7 +137,7 @@ export class IscTransaction {
     }: {
         amount: number | bigint;
         coinType?: string;
-        bag: TransactionObjectArgument;
+        bag: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.takeCoinBalanceFromBag(
@@ -157,7 +158,7 @@ export class IscTransaction {
         bag,
         coinType = IOTA_TYPE_ARG,
     }: {
-        bag: TransactionObjectArgument;
+        bag: ObjectArgument;
         coinType?: string;
     }) {
         this.validateFinalizedStatus();
@@ -174,9 +175,9 @@ export class IscTransaction {
         coinType = IOTA_TYPE_ARG,
         balance,
     }: {
-        balance: TransactionObjectArgument;
+        balance: ObjectArgument;
         coinType?: string;
-        bag: TransactionObjectArgument;
+        bag: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         isc.placeCoinBalanceInBag(this.#transaction, this.#chainData, bag, coinType, balance);
@@ -190,8 +191,8 @@ export class IscTransaction {
         asset,
         assetType,
     }: {
-        asset: TransactionObjectArgument;
-        bag: TransactionObjectArgument;
+        asset: ObjectArgument;
+        bag: ObjectArgument;
         assetType: string;
     }) {
         this.validateFinalizedStatus();
@@ -201,15 +202,23 @@ export class IscTransaction {
     /**
      * Take an asset from a bag.
      */
-    takeAssetFromBag({ bag, assetType }: { bag: TransactionObjectArgument; assetType: string }) {
+    takeAssetFromBag({
+        bag,
+        assetType,
+        asset,
+    }: {
+        bag: ObjectArgument;
+        assetType: string;
+        asset: ObjectArgument;
+    }) {
         this.validateFinalizedStatus();
-        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType);
+        isc.takeAssetFromBag(this.#transaction, this.#chainData, bag, assetType, asset);
     }
 
     /**
      * Get the size of the bag.
      */
-    getSizeOfBag({ bag }: { bag: TransactionObjectArgument }) {
+    getSizeOfBag({ bag }: { bag: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.getSizeOfBag(this.#transaction, this.#chainData, bag);
     }
@@ -217,17 +226,17 @@ export class IscTransaction {
     /**
      * Destroy the bag.
      */
-    destroyBag({ bag }: { bag: TransactionObjectArgument }) {
+    destroyBag({ bag }: { bag: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.destroyBag(this.#transaction, this.#chainData, bag);
     }
 
-    startNewChain({ metadata, coin }: { metadata: Uint8Array; coin?: TransactionObjectArgument }) {
+    startNewChain({ metadata, coin }: { metadata: Uint8Array; coin?: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.startNewChain(this.#transaction, this.#chainData, metadata, coin);
     }
 
-    createAnchorWithAssetBag({ bag }: { bag: TransactionObjectArgument }) {
+    createAnchorWithAssetBag({ bag }: { bag: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.createAnchorWithAssetBag(this.#transaction, this.#chainData, bag);
     }
@@ -237,7 +246,7 @@ export class IscTransaction {
         metadata,
         stateIndex,
     }: {
-        anchor: TransactionObjectArgument;
+        anchor: ObjectArgument;
         metadata: Uint8Array;
         stateIndex: number;
     }) {
@@ -251,12 +260,12 @@ export class IscTransaction {
         );
     }
 
-    destroyAnchor({ anchor }: { anchor: TransactionObjectArgument }) {
+    destroyAnchor({ anchor }: { anchor: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.destroyAnchor(this.#transaction, this.#chainData, anchor);
     }
 
-    borrowAssets({ anchor }: { anchor: TransactionObjectArgument }) {
+    borrowAssets({ anchor }: { anchor: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.borrowAssets(this.#transaction, this.#chainData, anchor);
     }
@@ -266,21 +275,15 @@ export class IscTransaction {
         bag,
         borrow,
     }: {
-        anchor: TransactionObjectArgument;
-        bag: TransactionObjectArgument;
-        borrow: TransactionObjectArgument;
+        anchor: ObjectArgument;
+        bag: ObjectArgument;
+        borrow: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.returnAssetsFromBorrow(this.#transaction, this.#chainData, anchor, bag, borrow);
     }
 
-    receiveRequest({
-        anchor,
-        request,
-    }: {
-        anchor: TransactionObjectArgument;
-        request: TransactionObjectArgument;
-    }) {
+    receiveRequest({ anchor, request }: { anchor: ObjectArgument; request: ObjectArgument }) {
         this.validateFinalizedStatus();
         return isc.receiveRequest(this.#transaction, this.#chainData, anchor, request);
     }
@@ -290,9 +293,9 @@ export class IscTransaction {
         newStateMetadata,
         receipts,
     }: {
-        anchor: TransactionObjectArgument;
+        anchor: ObjectArgument;
         newStateMetadata: Uint8Array;
-        receipts: TransactionObjectArgument;
+        receipts: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.transition(
@@ -309,9 +312,9 @@ export class IscTransaction {
         coinType = IOTA_TYPE_ARG,
         coin,
     }: {
-        anchor: TransactionObjectArgument;
+        anchor: ObjectArgument;
         coinType?: string;
-        coin: TransactionObjectArgument;
+        coin: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.placeCoinForMigration(
@@ -328,9 +331,9 @@ export class IscTransaction {
         coinType = IOTA_TYPE_ARG,
         balance,
     }: {
-        anchor: TransactionObjectArgument;
+        anchor: ObjectArgument;
         coinType?: string;
-        balance: TransactionObjectArgument;
+        balance: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.placeCoinBalanceForMigration(
@@ -347,9 +350,9 @@ export class IscTransaction {
         assetType,
         asset,
     }: {
-        anchor: TransactionObjectArgument;
+        anchor: ObjectArgument;
         assetType: string;
-        asset: TransactionObjectArgument;
+        asset: ObjectArgument;
     }) {
         this.validateFinalizedStatus();
         return isc.placeAssetForMigration(
