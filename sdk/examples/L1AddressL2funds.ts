@@ -34,23 +34,17 @@ if (!recipientAddress) {
 const amountToSend = 2000000000n;
 const amountForBag = 1000000000n; // amount for the bag is lower than the amount to send so that the amountForBag funds remain in the anchor on the L1 address
 
-const iscTx = new IscTransaction({
-    chainId: L1.chainId,
-    packageId: L1.packageId,
-    coreContractAccounts: Number(L1.coreContractAccounts),
-    accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
-});
+const iscTx = new IscTransaction(L1);
 
 const bag = iscTx.newBag();
 const bagCoins = iscTx.coinFromAmount({ amount: amountForBag });
 iscTx.placeCoinInBag({ coin: bagCoins, coinType: IOTA_TYPE_ARG, bag });
-iscTx.createAndSend({
+iscTx.createAndSendToEvm({
     bag,
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
-    agent: {
-        type: 'evm',
-        address: recipientAddress,
-    },
+    address: recipientAddress,
+    accountsContract: L1.accountsContract,
+    accountsFunction: L1.accountsTransferAllowanceTo,
 });
 
 const transaction = iscTx.build();

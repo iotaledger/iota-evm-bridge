@@ -44,13 +44,15 @@ export function agentIdForEVM(address: string): Uint8Array {
     return agentID.toBytes();
 }
 
-export function createAndSend(
+export function createAndSendRequest(
     tx: Transaction,
-    { packageId, chainId, accountsTransferAllowanceTo, coreContractAccounts }: ChainData,
+    { packageId, chainId }: ChainData,
+    contract: number,
+    contractFunction: number,
+    contractArgs: Uint8Array[],
     assetsBag: TransactionObjectArgument,
     transfers: Array<[string, number | bigint]>,
     gasBudget: number | bigint,
-    agentsIDs: Uint8Array[],
 ) {
     // Encodes the allowance.
     //  coins:      map[coinType(string): balance(u64)]
@@ -65,7 +67,6 @@ export function createAndSend(
     //              fromHex('0x629aeef09ab0874db9b9d9dbf8098ef9e1d4f466ca7569c4ad18d1db4b0e9e7b'): "0xca99629453167d3c4d754ac11d23132a510094addb344cbaea306483a72658c2::anchor::Anchor"
     //          }
     //      }
-
     const allowance = IscAssets.serialize({
         coins: new Map(transfers.map(([coinType, amount]) => [coinType, Number(amount)])),
         objects: new Map(), // Add objects here. Provide their ID as BCS encoded bytes *and* the _object type_ as string.
@@ -78,9 +79,9 @@ export function createAndSend(
         arguments: [
             tx.pure(bcs.Address.serialize(chainId)),
             tx.object(assetsBag),
-            tx.pure(bcs.U32.serialize(coreContractAccounts)),
-            tx.pure(bcs.U32.serialize(accountsTransferAllowanceTo)),
-            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(agentsIDs)),
+            tx.pure(bcs.U32.serialize(contract)),
+            tx.pure(bcs.U32.serialize(contractFunction)),
+            tx.pure(bcs.vector(bcs.vector(bcs.u8())).serialize(contractArgs)),
             tx.pure(bcs.vector(bcs.u8()).serialize(allowance.toBytes())),
             tx.pure(bcs.U64.serialize(gasBudget)),
         ],

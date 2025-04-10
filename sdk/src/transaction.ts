@@ -68,27 +68,63 @@ export class IscTransaction {
     }
 
     /**
-     * Finally create and send the request.
+     * Finally create and send a request calling the given `contractFunction` with `contractArgs` in `contract`
      */
     createAndSend({
         bag,
-        agent,
+        contract,
+        contractFunction,
+        contractArgs,
         transfers,
         gasBudget = L2_GAS_BUDGET,
     }: {
-        agent: Agent;
+        contractArgs: Uint8Array[];
+        contract: number;
+        contractFunction: number;
         transfers: Array<[string, number | bigint]>;
         gasBudget?: number | bigint;
         bag: TransactionObjectArgument;
     }) {
         this.validateFinalizedStatus();
-        const agentID = (() => {
-            switch (agent.type) {
-                case 'evm':
-                    return isc.agentIdForEVM(agent.address);
-            }
-        })();
-        isc.createAndSend(this.#transaction, this.#chainData, bag, transfers, gasBudget, [agentID]);
+        isc.createAndSendRequest(
+            this.#transaction,
+            this.#chainData,
+            contract,
+            contractFunction,
+            contractArgs,
+            bag,
+            transfers,
+            gasBudget,
+        );
+    }
+
+    /**
+     * Finally create and send a request calling the given `accountsFunction` in `accountsContract`
+     */
+    createAndSendToEvm({
+        address,
+        accountsContract,
+        accountsFunction,
+        transfers,
+        gasBudget = L2_GAS_BUDGET,
+        bag,
+    }: {
+        address: string;
+        accountsContract: number;
+        accountsFunction: number;
+        transfers: Array<[string, number | bigint]>;
+        gasBudget?: number | bigint;
+        bag: TransactionObjectArgument;
+    }) {
+        const agentID = isc.agentIdForEVM(address);
+        this.createAndSend({
+            bag,
+            gasBudget,
+            contract: accountsContract,
+            contractFunction: accountsFunction,
+            contractArgs: [agentID],
+            transfers,
+        });
     }
 
     /**

@@ -36,12 +36,7 @@ const amountToPlace = amountToSend + L2_GAS_BUDGET;
 
 console.log('Sending...');
 
-const iscTx = new IscTransaction({
-    chainId: L1.chainId,
-    packageId: L1.packageId,
-    coreContractAccounts: Number(L1.coreContractAccounts),
-    accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
-});
+const iscTx = new IscTransaction(L1);
 const tx = iscTx.transaction();
 
 const bag = iscTx.newBag();
@@ -61,16 +56,15 @@ iscTx.placeCoinInBag({
     coinType: TOKEN_COIN_TYPE,
 });
 
-iscTx.createAndSend({
+iscTx.createAndSendToEvm({
     bag,
     transfers: [
         [IOTA_TYPE_ARG, amountToSend],
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
-    agent: {
-        type: 'evm',
-        address: recipientAddress,
-    },
+    address: recipientAddress,
+    accountsContract: L1.accountsContract,
+    accountsFunction: L1.accountsTransferAllowanceTo,
 });
 
 const transaction = iscTx.build();
