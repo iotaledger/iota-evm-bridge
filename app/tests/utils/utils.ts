@@ -104,23 +104,17 @@ export async function fundL2AddressWithIscClient(addressL2: string, amount: numb
     const amountToSend = BigInt(amount * 1000000000);
     const amountToPlace = amountToSend + L2_GAS_BUDGET;
 
-    const iscTx = new IscTransaction({
-        chainId: L1.chainId,
-        packageId: L1.packageId,
-        coreContractAccounts: Number(L1.coreContractAccounts),
-        accountsTransferAllowanceTo: Number(L1.accountsTransferAllowanceTo),
-    });
+    const iscTx = new IscTransaction(L1);
 
     const bag = iscTx.newBag();
     const coin = iscTx.coinFromAmount({ amount: amountToPlace });
     iscTx.placeCoinInBag({ coin, bag });
-    iscTx.createAndSend({
+    iscTx.createAndSendToEvm({
         bag,
         transfers: [[IOTA_TYPE_ARG, amountToSend]],
-        agent: {
-            type: 'evm',
-            address: addressL2,
-        },
+        address: addressL2,
+        accountsContract: L1.accountsContract,
+        accountsFunction: L1.accountsTransferAllowanceTo,
     });
 
     const transaction = iscTx.build();
