@@ -69,7 +69,7 @@ export class IscTransaction {
     }
 
     /**
-     * Finally create and send a request calling the given
+     * Finally create and send a request calling the given `contractFunction` with `contractArgs` in `contract`
      */
     createAndSend({
         bag,
@@ -99,6 +99,9 @@ export class IscTransaction {
         );
     }
 
+    /**
+     * Finally create and send a request calling the given `accountsFunction` in `accountsContract`
+     */
     createAndSendToEvm({
         address,
         accountsContract,
