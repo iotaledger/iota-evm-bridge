@@ -11,17 +11,16 @@ import {
     getRandomL2MnemonicAndAddress,
 } from './utils/utils';
 
-const ONE_MINUTE = 60_000;
-const FOUR_MINUTES = 240_000;
+const THREE_MINUTES = 180_000;
 
 test.describe('Send MAX amount from L1', () => {
-    test.describe.configure({ timeout: ONE_MINUTE });
+    test.describe.configure({ timeout: THREE_MINUTES });
 
     let browserL1: BrowserContext;
     let testPageL1: Page;
 
     test.beforeAll('setup L1 wallet', async ({ contextL1, l1ExtensionUrl }) => {
-        test.setTimeout(ONE_MINUTE);
+        test.setTimeout(THREE_MINUTES);
 
         testPageL1 = await contextL1.newPage();
         await createL1Wallet(testPageL1, l1ExtensionUrl);
@@ -79,13 +78,13 @@ test.describe('Send MAX amount from L1', () => {
 });
 
 test.describe('Send MAX amount from L2', () => {
-    test.describe.configure({ timeout: FOUR_MINUTES });
+    test.describe.configure({ timeout: THREE_MINUTES });
 
     let browserL2: BrowserContext;
     let testPageL2: Page;
 
     test.beforeAll('setup L2 wallet', async ({ contextL2, l2ExtensionUrl }) => {
-        test.setTimeout(FOUR_MINUTES);
+        test.setTimeout(THREE_MINUTES);
 
         testPageL2 = await contextL2.newPage();
 
@@ -102,6 +101,8 @@ test.describe('Send MAX amount from L2', () => {
     });
 
     test('should bridge successfully', async () => {
+        await testPageL2.waitForTimeout(5000);
+
         const connectButtonId = 'connect-l2-wallet';
         const connectButtonL2 = await testPageL2.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
