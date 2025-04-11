@@ -11,16 +11,17 @@ import {
     getRandomL2MnemonicAndAddress,
 } from './utils/utils';
 
-const THREE_MINUTES = 180_000;
+const ONE_MINUTE = 60_000;
+const FOUR_MINUTES = 240_000;
 
 test.describe('Send MAX amount from L1', () => {
-    test.describe.configure({ timeout: THREE_MINUTES });
+    test.describe.configure({ timeout: ONE_MINUTE });
 
     let browserL1: BrowserContext;
     let testPageL1: Page;
 
     test.beforeAll('setup L1 wallet', async ({ contextL1, l1ExtensionUrl }) => {
-        test.setTimeout(THREE_MINUTES);
+        test.setTimeout(ONE_MINUTE);
 
         testPageL1 = await contextL1.newPage();
         await createL1Wallet(testPageL1, l1ExtensionUrl);
@@ -78,25 +79,25 @@ test.describe('Send MAX amount from L1', () => {
 });
 
 test.describe('Send MAX amount from L2', () => {
-    test.describe.configure({ timeout: THREE_MINUTES });
+    test.describe.configure({ timeout: FOUR_MINUTES });
 
     let browserL2: BrowserContext;
     let testPageL2: Page;
 
     test.beforeAll('setup L2 wallet', async ({ contextL2, l2ExtensionUrl }) => {
-        test.setTimeout(THREE_MINUTES);
+        test.setTimeout(FOUR_MINUTES);
 
         testPageL2 = await contextL2.newPage();
-        browserL2 = contextL2;
 
         const addressL2 = await createL2Wallet(testPageL2, l2ExtensionUrl);
-        await addNetworkToMetaMask(testPageL2);
 
         await fundL2AddressWithIscClient(addressL2, 9);
+        await addNetworkToMetaMask(testPageL2);
 
         const balance = await checkL2BalanceWithRetries(addressL2);
         expect(balance).toEqual('9.0');
 
+        browserL2 = contextL2;
         await testPageL2.goto('/');
     });
 
@@ -123,7 +124,7 @@ test.describe('Send MAX amount from L2', () => {
 
         await expect(l2WalletConnectedButton).toBeVisible();
         const balanceL2Display = l2WalletConnectedButton.getByText('9 IOTA');
-        expect(balanceL2Display).toBeVisible();
+        await expect(balanceL2Display).toBeVisible();
 
         const toggleBridgeDirectionButton = testPageL2.getByTestId('toggle-bridge-direction');
         await expect(toggleBridgeDirectionButton).toBeVisible();
