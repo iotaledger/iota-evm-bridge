@@ -133,10 +133,11 @@ test.describe('Send MAX amount from L2', () => {
         await expect(amountField).toHaveValue('~ 9');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
+
         const approveTransacionPagePromise = browserL2.waitForEvent('page');
+        await testPageL2.getByText('Bridge Assets').click();
         const approveTransactionPage = await approveTransacionPagePromise;
 
-        await testPageL2.getByText('Bridge Assets').click();
         await approveTransactionPage.getByRole('button', { name: 'Confirm' }).click();
 
         const l1Balance = await checkL1BalanceWithRetries(addressL1);
