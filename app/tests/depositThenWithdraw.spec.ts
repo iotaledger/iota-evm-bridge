@@ -56,6 +56,22 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             throw new Error('L2 address not found');
         }
 
+        const connectButtonId = 'connect-l1-wallet';
+        const connectButtonL1 = await pageWithL1Wallet.waitForSelector(
+            `[data-testid="${connectButtonId}"]`,
+            {
+                state: 'visible',
+            },
+        );
+
+        await connectButtonL1.click();
+        const approveWalletConnectPage = browserL1.waitForEvent('page');
+        await pageWithL1Wallet.getByText('IOTA Wallet').click();
+
+        const walletL1Page = await approveWalletConnectPage;
+        await walletL1Page.getByRole('button', { name: 'Continue' }).click();
+        await walletL1Page.getByRole('button', { name: 'Connect' }).click();
+
         await addL1FundsThroughBridgeUI(pageWithL1Wallet, browserL1);
 
         const toggleManualInput = pageWithL1Wallet.getByTestId('toggle-receiver-address-input');

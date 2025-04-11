@@ -25,10 +25,26 @@ test.describe('Send MAX amount from L1', () => {
         testPageL1 = await contextL1.newPage();
         await createL1Wallet(testPageL1, l1ExtensionUrl);
         browserL1 = contextL1;
+
+        await testPageL1.goto('/');
     });
 
     test('should bridge successfully', async () => {
-        await testPageL1.goto('/');
+        const connectButtonId = 'connect-l1-wallet';
+        const connectButtonL1 = await testPageL1.waitForSelector(
+            `[data-testid="${connectButtonId}"]`,
+            {
+                state: 'visible',
+            },
+        );
+
+        await connectButtonL1.click();
+        const approveWalletConnectPage = browserL1.waitForEvent('page');
+        await testPageL1.getByText('IOTA Wallet').click();
+
+        const walletL1Page = await approveWalletConnectPage;
+        await walletL1Page.getByRole('button', { name: 'Continue' }).click();
+        await walletL1Page.getByRole('button', { name: 'Connect' }).click();
 
         await addL1FundsThroughBridgeUI(testPageL1, browserL1);
 
@@ -80,11 +96,11 @@ test.describe('Send MAX amount from L2', () => {
 
         const balance = await checkL2BalanceWithRetries(addressL2);
         expect(balance).toEqual('9.0');
+
+        await testPageL2.goto('/');
     });
 
     test('should bridge successfully', async () => {
-        await testPageL2.goto('/');
-
         const connectButtonId = 'connect-l2-wallet';
         const connectButtonL2 = await testPageL2.waitForSelector(
             `[data-testid="${connectButtonId}"]`,

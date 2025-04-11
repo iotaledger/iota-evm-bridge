@@ -168,19 +168,6 @@ export async function addNetworkToMetaMask(l2WalletPage: Page) {
 }
 
 export async function addL1FundsThroughBridgeUI(page: Page, browser: BrowserContext) {
-    const connectButtonId = 'connect-l1-wallet';
-    const connectButtonL1 = await page.waitForSelector(`[data-testid="${connectButtonId}"]`, {
-        state: 'visible',
-    });
-
-    await connectButtonL1.click();
-    const approveWalletConnectPage = browser.waitForEvent('page');
-    await page.getByText('IOTA Wallet').click();
-
-    const walletL1Page = await approveWalletConnectPage;
-    await walletL1Page.getByRole('button', { name: 'Continue' }).click();
-    await walletL1Page.getByRole('button', { name: 'Connect' }).click();
-
     // Add funds to L1
     await page.getByTestId('request-l1-funds-button').click();
     await expect(page.getByText('Funds successfully sent.')).toBeVisible();
