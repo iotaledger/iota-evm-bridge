@@ -16,42 +16,42 @@ const THREE_MINUTES = 180_000;
 test.describe('Send MAX amount from L1', () => {
     test.describe.configure({ timeout: THREE_MINUTES });
 
-    let browser: BrowserContext;
-    let testPage: Page;
+    let browserL1: BrowserContext;
+    let testPageL1: Page;
 
     test.beforeAll('setup L1 wallet', async ({ contextL1, l1ExtensionUrl }) => {
         test.setTimeout(THREE_MINUTES);
 
-        testPage = await contextL1.newPage();
-        await createL1Wallet(testPage, l1ExtensionUrl);
-        browser = contextL1;
+        testPageL1 = await contextL1.newPage();
+        await createL1Wallet(testPageL1, l1ExtensionUrl);
+        browserL1 = contextL1;
     });
 
     test('should bridge successfully', async () => {
-        await testPage.goto('/');
+        await testPageL1.goto('/');
 
-        await addL1FundsThroughBridgeUI(testPage, browser);
+        await addL1FundsThroughBridgeUI(testPageL1, browserL1);
 
         const { address: addressL2 } = getRandomL2MnemonicAndAddress();
 
-        const toggleManualInput = testPage.getByTestId('toggle-receiver-address-input');
+        const toggleManualInput = testPageL1.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
         await toggleManualInput.click();
 
-        const addressField = testPage.getByTestId('receive-address');
+        const addressField = testPageL1.getByTestId('receive-address');
         await expect(addressField).toBeVisible();
         addressField.fill(addressL2);
 
-        await testPage.getByText('Max').click();
+        await testPageL1.getByText('Max').click();
 
-        const amountField = testPage.getByTestId('bridge-amount');
+        const amountField = testPageL1.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
         await expect(amountField).toHaveValue('~ 10');
 
-        await expect(testPage.getByText('Bridge Assets')).toBeEnabled();
-        await testPage.getByText('Bridge Assets').click();
+        await expect(testPageL1.getByText('Bridge Assets')).toBeEnabled();
+        await testPageL1.getByText('Bridge Assets').click();
 
-        const approveTransactionPage = await browser.waitForEvent('page');
+        const approveTransactionPage = await browserL1.waitForEvent('page');
         await approveTransactionPage.waitForLoadState();
         await approveTransactionPage.getByRole('button', { name: 'Approve' }).click();
 
@@ -64,17 +64,17 @@ test.describe('Send MAX amount from L1', () => {
 test.describe('Send MAX amount from L2', () => {
     test.describe.configure({ timeout: THREE_MINUTES });
 
-    let browser: BrowserContext;
-    let testPage: Page;
+    let browserL2: BrowserContext;
+    let testPageL2: Page;
 
     test.beforeAll('setup L2 wallet', async ({ contextL2, l2ExtensionUrl }) => {
         test.setTimeout(THREE_MINUTES);
 
-        testPage = await contextL2.newPage();
-        browser = contextL2;
+        testPageL2 = await contextL2.newPage();
+        browserL2 = contextL2;
 
-        const addressL2 = await createL2Wallet(testPage, l2ExtensionUrl);
-        await addNetworkToMetaMask(testPage);
+        const addressL2 = await createL2Wallet(testPageL2, l2ExtensionUrl);
+        await addNetworkToMetaMask(testPageL2);
 
         await fundL2AddressWithIscClient(addressL2, 9);
 
@@ -83,10 +83,10 @@ test.describe('Send MAX amount from L2', () => {
     });
 
     test('should bridge successfully', async () => {
-        await testPage.goto('/');
+        await testPageL2.goto('/');
 
         const connectButtonId = 'connect-l2-wallet';
-        const connectButtonL2 = await testPage.waitForSelector(
+        const connectButtonL2 = await testPageL2.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
             {
                 state: 'visible',
@@ -94,14 +94,14 @@ test.describe('Send MAX amount from L2', () => {
         );
 
         await connectButtonL2.click();
-        const approveWalletL2ConnectDialog = browser.waitForEvent('page');
-        await testPage.getByTestId(/metamask/).click();
+        const approveWalletL2ConnectDialog = browserL2.waitForEvent('page');
+        await testPageL2.getByTestId(/metamask/).click();
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
         await walletL2Modal.waitForLoadState();
         await walletL2Modal.getByRole('button', { name: 'Connect' }).click();
 
-        const l2WalletConnectedButton = testPage.getByRole('button', {
+        const l2WalletConnectedButton = testPageL2.getByRole('button', {
             name: /Dropdown/,
         });
 
@@ -109,33 +109,34 @@ test.describe('Send MAX amount from L2', () => {
         const balanceL2Display = l2WalletConnectedButton.getByText('9 IOTA');
         expect(balanceL2Display).toBeVisible();
 
-        const toggleBridgeDirectionButton = testPage.getByTestId('toggle-bridge-direction');
+        const toggleBridgeDirectionButton = testPageL2.getByTestId('toggle-bridge-direction');
         await expect(toggleBridgeDirectionButton).toBeVisible();
         await toggleBridgeDirectionButton.click();
 
         const keypair = new Ed25519Keypair();
         const addressL1 = keypair.toIotaAddress();
 
-        const toggleManualInput = testPage.getByTestId('toggle-receiver-address-input');
+        const toggleManualInput = testPageL2.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
         await toggleManualInput.click();
 
-        const addressField = testPage.getByTestId('receive-address');
+        const addressField = testPageL2.getByTestId('receive-address');
         await expect(addressField).toBeVisible();
         await addressField.fill(addressL1);
 
-        await testPage.waitForTimeout(5000);
+        await testPageL2.waitForTimeout(5000);
 
-        await testPage.getByText('Max').click();
+        await testPageL2.getByText('Max').click();
 
-        const amountField = testPage.getByTestId('bridge-amount');
+        const amountField = testPageL2.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
         await expect(amountField).toHaveValue('~ 9');
 
-        await expect(testPage.getByText('Bridge Assets')).toBeEnabled();
-        const approveTransacionPagePromise = browser.waitForEvent('page');
-        await testPage.getByText('Bridge Assets').click();
+        await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
+        const approveTransacionPagePromise = browserL2.waitForEvent('page');
         const approveTransactionPage = await approveTransacionPagePromise;
+
+        await testPageL2.getByText('Bridge Assets').click();
         await approveTransactionPage.getByRole('button', { name: 'Confirm' }).click();
 
         const l1Balance = await checkL1BalanceWithRetries(addressL1);
