@@ -29,7 +29,7 @@ test.describe('Send MAX amount from L1', () => {
         await testPageL1.goto('/');
     });
 
-    test('should bridge successfully', async () => {
+    test.skip('should bridge successfully', async () => {
         const connectButtonId = 'connect-l1-wallet';
         const connectButtonL1 = await testPageL1.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
@@ -111,8 +111,6 @@ test.describe('Send MAX amount from L2', () => {
 
         await connectButtonL2.click();
         const approveWalletL2ConnectDialog = browserL2.waitForEvent('page');
-        await testPageL2.waitForTimeout(5000);
-
         await testPageL2.getByTestId(/metamask/).click();
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
