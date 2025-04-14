@@ -7,6 +7,7 @@ import {
     addNetworkToMetaMask,
     checkL1BalanceWithRetries,
     checkL2BalanceWithRetries,
+    closeBrowserTabsExceptLast,
     fundL2AddressWithIscClient,
     getRandomL2MnemonicAndAddress,
 } from './utils/utils';
@@ -96,7 +97,9 @@ test.describe('Send MAX amount from L2', () => {
         const balance = await checkL2BalanceWithRetries(addressL2);
         expect(balance).toEqual('9.0');
 
+        testPageL2 = await contextL2.newPage();
         browserL2 = contextL2;
+        closeBrowserTabsExceptLast(browserL2);
         await testPageL2.goto('/');
     });
 
@@ -118,7 +121,7 @@ test.describe('Send MAX amount from L2', () => {
         console.log('Clicked Bridge Assets button, waiting for transaction approval page...');
         await testPageL2.getByTestId(/metamask/).click();
 
-        const pageUrls = browserL2.pages().map(page => page.url());
+        const pageUrls = browserL2.pages().map((page) => page.url());
         console.log('Open pages:', pageUrls);
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
