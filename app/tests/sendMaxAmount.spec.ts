@@ -68,6 +68,23 @@ test.describe('Send MAX amount from L1', () => {
         await expect(amountField).toBeVisible();
         await expect(amountField).toHaveValue('~ 10');
 
+        // check est. gas fees and your receive
+        await testPageL1.waitForTimeout(1000);
+
+        const gasFeeValue = await testPageL1
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.0066316');
+
+        const youReceiveValue = await testPageL1
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('9.9932684');
+
         await expect(testPageL1.getByText('Bridge Assets')).toBeEnabled();
         await testPageL1.getByText('Bridge Assets').click();
 
@@ -154,6 +171,23 @@ test.describe('Send MAX amount from L2', () => {
         const amountField = testPageL2.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
         await expect(amountField).toHaveValue('~ 9');
+
+        // check est. gas fees and your receive
+        await testPageL2.waitForTimeout(1000);
+
+        const gasFeeValue = await testPageL2
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.000033898');
+
+        const youReceiveValue = await testPageL2
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('8.999866102');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 
