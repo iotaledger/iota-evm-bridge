@@ -69,7 +69,7 @@ test.describe('Send MAX amount from L1', () => {
         await expect(amountField).toHaveValue('~ 10');
 
         // check est. gas fees and your receive
-        await testPageL1.waitForTimeout(1000);
+        await testPageL1.waitForTimeout(2500);
 
         const gasFeeValue = await testPageL1
             .locator('div:has(> span:text("Est. Gas Fees"))')
@@ -173,7 +173,7 @@ test.describe('Send MAX amount from L2', () => {
         await expect(amountField).toHaveValue('~ 9');
 
         // check est. gas fees and your receive
-        await testPageL2.waitForTimeout(1000);
+        await testPageL2.waitForTimeout(2500);
 
         const gasFeeValue = await testPageL2
             .locator('div:has(> span:text("Est. Gas Fees"))')
