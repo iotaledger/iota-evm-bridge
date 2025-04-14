@@ -51,7 +51,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         },
     );
 
-    test.skip('should successfully process an L1 deposit', async () => {
+    test('should successfully process an L1 deposit', async () => {
         if (addressL2 === null) {
             throw new Error('L2 address not found');
         }
@@ -100,7 +100,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await closeBrowserTabsExceptLast(browserL1);
     });
 
-    test.skip('should successfully process an L2 deposit', async () => {
+    test('should successfully process an L2 deposit', async () => {
         if (addressL1 === null) {
             throw new Error('L1 address not found');
         }

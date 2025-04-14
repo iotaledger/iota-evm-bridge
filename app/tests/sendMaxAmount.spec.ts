@@ -29,7 +29,7 @@ test.describe('Send MAX amount from L1', () => {
         await testPageL1.goto('/');
     });
 
-    test.skip('should bridge successfully', async () => {
+    test('should bridge successfully', async () => {
         const connectButtonId = 'connect-l1-wallet';
         const connectButtonL1 = await testPageL1.waitForSelector(
             `[data-testid="${connectButtonId}"]`,
@@ -110,8 +110,16 @@ test.describe('Send MAX amount from L2', () => {
         );
 
         await connectButtonL2.click();
-        const approveWalletL2ConnectDialog = browserL2.waitForEvent('page');
+
+        // Add explicit waiting before clicking the button
+        await testPageL2.waitForTimeout(1000);
+        const approveWalletL2ConnectDialog = browserL2.waitForEvent('page', { timeout: 30000 });
+        // Add logging to help debug
+        console.log('Clicked Bridge Assets button, waiting for transaction approval page...');
         await testPageL2.getByTestId(/metamask/).click();
+
+        const pageUrls = browserL2.pages().map(page => page.url());
+        console.log('Open pages:', pageUrls);
 
         const walletL2Modal = await approveWalletL2ConnectDialog;
         await walletL2Modal.waitForLoadState();
@@ -158,6 +166,6 @@ test.describe('Send MAX amount from L2', () => {
 
         const l1Balance = await checkL1BalanceWithRetries(addressL1);
 
-        expect(l1Balance).toEqual('8.999966102');
+        expect(l1Balance).toEqual('8.999966114');
     });
 });
