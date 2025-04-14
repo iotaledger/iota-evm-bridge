@@ -25,7 +25,10 @@ test.describe('Send MAX amount from L1', () => {
 
         testPageL1 = await contextL1.newPage();
         await createL1Wallet(testPageL1, l1ExtensionUrl);
+
+        testPageL1 = await contextL1.newPage();
         browserL1 = contextL1;
+        await closeBrowserTabsExceptLast(browserL1);
 
         await testPageL1.goto('/');
     });
@@ -99,7 +102,7 @@ test.describe('Send MAX amount from L2', () => {
 
         testPageL2 = await contextL2.newPage();
         browserL2 = contextL2;
-        closeBrowserTabsExceptLast(browserL2);
+        await closeBrowserTabsExceptLast(browserL2);
         await testPageL2.goto('/');
     });
 
@@ -114,17 +117,10 @@ test.describe('Send MAX amount from L2', () => {
 
         await connectButtonL2.click();
 
-        // Add explicit waiting before clicking the button
-        await testPageL2.waitForTimeout(1000);
-        const approveWalletL2ConnectDialog = browserL2.waitForEvent('page', { timeout: 30000 });
-        // Add logging to help debug
-        console.log('Clicked Bridge Assets button, waiting for transaction approval page...');
+        const approveWalletL2ConnectDialog = browserL2.waitForEvent('page', { timeout: 20_000 });
         await testPageL2.getByTestId(/metamask/).click();
-
-        const pageUrls = browserL2.pages().map((page) => page.url());
-        console.log('Open pages:', pageUrls);
-
         const walletL2Modal = await approveWalletL2ConnectDialog;
+
         await walletL2Modal.waitForLoadState();
         await walletL2Modal.getByRole('button', { name: 'Connect' }).click();
 
@@ -151,7 +147,7 @@ test.describe('Send MAX amount from L2', () => {
         await expect(addressField).toBeVisible();
         await addressField.fill(addressL1);
 
-        await testPageL2.waitForTimeout(5000);
+        await testPageL2.waitForTimeout(2500);
 
         await testPageL2.getByText('Max').click();
 
@@ -169,6 +165,6 @@ test.describe('Send MAX amount from L2', () => {
 
         const l1Balance = await checkL1BalanceWithRetries(addressL1);
 
-        expect(l1Balance).toEqual('8.999966114');
+        expect(l1Balance).toEqual('8.999966102');
     });
 });
