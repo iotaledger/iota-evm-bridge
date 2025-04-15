@@ -3,7 +3,7 @@ import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
 import { IotaClient } from '@iota/iota-sdk/client';
-import { beforeAll, expect, test } from 'vitest'
+import { beforeAll, expect, test } from 'vitest';
 import { CONFIG } from './config';
 import { Wallet } from 'ethers';
 import { bcs } from '@iota/iota-sdk/bcs';
@@ -15,7 +15,7 @@ beforeAll(async () => {
     client = new IotaClient({
         url: L1.rpcUrl,
     });
-})
+});
 
 test('Send IOTA', async () => {
     const keypair = new Ed25519Keypair();
@@ -61,9 +61,8 @@ test('Send IOTA', async () => {
 
     const evmClient = new EvmRpcClient(L2.evmRpcUrl);
     const evmBalance = await evmClient.getBalanceBaseToken(recipientAddress);
-    expect(evmBalance.baseTokens).toEqual(amountToSend.toString())
-})
-
+    expect(evmBalance.baseTokens).toEqual(amountToSend.toString());
+});
 
 test('Send Non-IOTA Tokens', async () => {
     const MNEMONIC =
@@ -80,7 +79,6 @@ test('Send Non-IOTA Tokens', async () => {
         recipient: address,
     });
 
-    
     // EVM Address
     const recipientAddress = wallet.address;
     // Amount to send (0.01 IOTAs)
@@ -134,11 +132,13 @@ test('Send Non-IOTA Tokens', async () => {
 
     const evmClient = new EvmRpcClient(L2.evmRpcUrl);
     const evmBalance = await evmClient.getBalanceBaseToken(recipientAddress);
-    expect(evmBalance.baseTokens).toEqual(amountToSend.toString())
-    expect(evmBalance.nativeTokens).toEqual([{
-        coinType: TOKEN_COIN_TYPE,
-        balance: tokenAmountToSend.toString()
-    }])
-})
+    expect(evmBalance.baseTokens).toEqual(amountToSend.toString());
+    expect(evmBalance.nativeTokens).toEqual([
+        {
+            coinType: TOKEN_COIN_TYPE,
+            balance: tokenAmountToSend.toString(),
+        },
+    ]);
+});
 
-const sleep = x => new Promise(r => setTimeout(r, x))
+const sleep = (x) => new Promise((r) => setTimeout(r, x));
