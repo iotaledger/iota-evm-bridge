@@ -47,7 +47,7 @@ iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_TYPE_ARG });
 
 // Place Token
 const tokenCoin = tx.splitCoins(
-    tx.object('0x75dff2c55d8bdba5dba85f2b3e464e2d26d1f6bc8e557c7efc46b63fdb30d322'),
+    tx.object('0x12a0a8ab2ff81339774f31b78ef73ec8394a9f89feae01bbc084a8753e2c00cd'),
     [tx.pure(bcs.U64.serialize(tokenAmountToSend))],
 );
 iscTx.placeCoinInBag({
