@@ -60,7 +60,7 @@ test.describe('Send MAX amount from L1', () => {
 
         const addressField = testPageL1.getByTestId('receive-address');
         await expect(addressField).toBeVisible();
-        addressField.fill(addressL2);
+        await addressField.fill(addressL2);
 
         await testPageL1.getByText('Max').click();
 
