@@ -3,6 +3,8 @@ import { ChainData } from './types';
 import { bcs } from '@iota/iota-sdk/bcs';
 import { IscAgentID, IscAssets } from './bcs';
 
+export type ObjectArgument = string | TransactionObjectArgument;
+
 export function newBag(tx: Transaction, { packageId }: ChainData): TransactionObjectArgument {
     // Create a new empty AssetsBag. It will be used to attach coin/objects to the request
     const assetsBag = tx.moveCall({
@@ -23,14 +25,14 @@ export function coinFromAmount(tx: Transaction, amount: bigint): TransactionObje
 export function placeCoinInBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     coinType: string,
-    coin: TransactionObjectArgument,
+    coin: ObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin`,
         typeArguments: [coinType],
-        arguments: [assetsBag, coin],
+        arguments: [tx.object(assetsBag), tx.object(coin)],
     });
 }
 
@@ -50,7 +52,7 @@ export function createAndSendRequest(
     contract: number,
     contractFunction: number,
     contractArgs: Uint8Array[],
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     transfers: Array<[string, number | bigint]>,
     gasBudget: number | bigint,
 ) {
@@ -91,90 +93,91 @@ export function createAndSendRequest(
 export function takeCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     coinType: string,
     amount: number | bigint,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_coin_balance`,
         typeArguments: [coinType],
-        arguments: [assetsBag, tx.pure(bcs.U64.serialize(amount))],
+        arguments: [tx.object(assetsBag), tx.pure(bcs.U64.serialize(amount))],
     });
 }
 
 export function takeAllCoinBalanceFromBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     coinType: string,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_all_coin_balance`,
         typeArguments: [coinType],
-        arguments: [assetsBag],
+        arguments: [tx.object(assetsBag)],
     });
 }
 
 export function placeCoinBalanceInBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     coinType: string,
-    balance: TransactionObjectArgument,
+    balance: ObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_coin_balance`,
         typeArguments: [coinType],
-        arguments: [assetsBag, balance],
+        arguments: [tx.object(assetsBag), tx.object(balance)],
     });
 }
 
 export function placeAssetInBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     assetType: string,
-    asset: TransactionObjectArgument,
+    asset: ObjectArgument,
 ) {
     tx.moveCall({
         target: `${packageId}::assets_bag::place_asset`,
         typeArguments: [assetType],
-        arguments: [assetsBag, asset],
+        arguments: [tx.object(assetsBag), tx.object(asset)],
     });
 }
 
 export function takeAssetFromBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
     assetType: string,
+    asset: ObjectArgument,
 ) {
     return tx.moveCall({
         target: `${packageId}::assets_bag::take_asset`,
         typeArguments: [assetType],
-        arguments: [assetsBag, assetsBag],
+        arguments: [tx.object(assetsBag), tx.object(asset)],
     });
 }
 
 export function getSizeOfBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::get_size`,
-        arguments: [assetsBag],
+        arguments: [tx.object(assetsBag)],
     });
 }
 
 export function destroyBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::assets_bag::destroy_empty`,
-        arguments: [assetsBag],
+        arguments: [tx.object(assetsBag)],
     });
 }
 
@@ -182,7 +185,7 @@ export function startNewChain(
     tx: Transaction,
     { packageId }: ChainData,
     metadata: Uint8Array,
-    coin?: TransactionObjectArgument,
+    coin?: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::start_new_chain`,
@@ -196,25 +199,25 @@ export function startNewChain(
 export function createAnchorWithAssetBag(
     tx: Transaction,
     { packageId }: ChainData,
-    assetsBag: TransactionObjectArgument,
+    assetsBag: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::create_anchor_with_assets_bag_ref`,
-        arguments: [assetsBag],
+        arguments: [tx.object(assetsBag)],
     });
 }
 
 export function updateAnchorStateForMigraton(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
     metadata: Uint8Array,
     stateIndex: number,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::update_anchor_state_for_migration`,
         arguments: [
-            anchor,
+            tx.object(anchor),
             bcs.vector(bcs.u8()).serialize(metadata),
             bcs.u32().serialize(stateIndex),
         ],
@@ -224,101 +227,105 @@ export function updateAnchorStateForMigraton(
 export function destroyAnchor(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::destroy`,
-        arguments: [anchor],
+        arguments: [tx.object(anchor)],
     });
 }
 
 export function borrowAssets(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::borrow_assets`,
-        arguments: [anchor],
+        arguments: [tx.object(anchor)],
     });
 }
 
 export function returnAssetsFromBorrow(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
-    assetsBag: TransactionObjectArgument,
-    borrow: TransactionObjectArgument,
+    anchor: ObjectArgument,
+    assetsBag: ObjectArgument,
+    borrow: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::return_assets_from_borrow`,
-        arguments: [anchor, assetsBag, borrow],
+        arguments: [tx.object(anchor), tx.object(assetsBag), tx.object(borrow)],
     });
 }
 
 export function receiveRequest(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
-    request: TransactionObjectArgument,
+    anchor: ObjectArgument,
+    request: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::receive_request`,
-        arguments: [anchor, request],
+        arguments: [tx.object(anchor), tx.object(request)],
     });
 }
 
 export function transition(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
     newStateMetadata: Uint8Array,
-    receipts: TransactionObjectArgument,
+    receipts: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::transition`,
-        arguments: [anchor, bcs.vector(bcs.u8()).serialize(newStateMetadata), receipts],
+        arguments: [
+            tx.object(anchor),
+            bcs.vector(bcs.u8()).serialize(newStateMetadata),
+            tx.object(receipts),
+        ],
     });
 }
 
 export function placeCoinForMigration(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
     coinType: string,
-    coin: TransactionObjectArgument,
+    coin: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_for_migration`,
         typeArguments: [coinType],
-        arguments: [anchor, coin],
+        arguments: [tx.object(anchor), tx.object(coin)],
     });
 }
 
 export function placeCoinBalanceForMigration(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
     coinType: string,
-    balance: TransactionObjectArgument,
+    balance: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_coin_balance_for_migration`,
         typeArguments: [coinType],
-        arguments: [anchor, balance],
+        arguments: [tx.object(anchor), tx.object(balance)],
     });
 }
 
 export function placeAssetForMigration(
     tx: Transaction,
     { packageId }: ChainData,
-    anchor: TransactionObjectArgument,
+    anchor: ObjectArgument,
     assetType: string,
-    asset: TransactionObjectArgument,
+    asset: ObjectArgument,
 ): TransactionObjectArgument {
     return tx.moveCall({
         target: `${packageId}::anchor::place_asset_for_migration`,
         typeArguments: [assetType],
-        arguments: [anchor, asset],
+        arguments: [tx.object(anchor), tx.object(asset)],
     });
 }
