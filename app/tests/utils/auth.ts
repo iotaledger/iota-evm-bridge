@@ -4,6 +4,26 @@ import { getRandomL2MnemonicAndAddress } from './utils';
 
 const WALLET_CUSTOMRPC_PLACEHOLDER = 'http://localhost:3000/';
 
+export async function createL1Wallet(page: Page, l1ExtensionUrl: string) {
+    await page.goto(l1ExtensionUrl);
+
+    await page.getByRole('button', { name: /Add Profile/ }).click();
+    await page.getByText('Create New').click();
+
+    await page.getByTestId('password.input').fill('iotae2etests');
+    await page.getByTestId('password.confirmation').fill('iotae2etests');
+    await page.getByText('I read and agree').click();
+    await page.getByRole('button', { name: /Create Wallet/ }).click();
+    await page.getByText('I saved my mnemonic').click();
+    await page.getByRole('button', { name: /Open Wallet/ }).click();
+    await page.getByLabel(/Open settings menu/).click();
+    await page.getByText(/Network/).click();
+    await page.getByText(/Custom RPC/).click();
+    await page.getByPlaceholder(WALLET_CUSTOMRPC_PLACEHOLDER).fill(CONFIG.L1.rpcUrl);
+    await page.getByText(/Save/).click();
+    await page.getByTestId('close-icon').click();
+}
+
 export async function importL1WalletFromMnemonic(
     page: Page,
     l1ExtensionUrl: string,
