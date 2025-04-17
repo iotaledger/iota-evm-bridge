@@ -20,6 +20,7 @@ export function Header(): React.JSX.Element {
                     <div className="hidden md:flex flex-row gap-xs items-center">
                         <ConnectButton
                             data-testid="connect-l1-wallet"
+                            className="text-label-lg h-10"
                             connectText="Connect L1 Wallet"
                             size="md"
                         />
@@ -44,6 +45,7 @@ export function Header(): React.JSX.Element {
                 <div className="flex flex-col gap-md items-end p-lg">
                     <ConnectButton
                         data-testid="connect-l1-wallet"
+                        className="text-label-lg h-10"
                         connectText="Connect L1 Wallet"
                         size="md"
                     />
