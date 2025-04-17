@@ -7,8 +7,8 @@ import {
     checkL2BalanceWithRetries,
     closeBrowserTabsExceptLast,
     getExtensionUrl,
-    addNetworkToMetamask,
     addNetworkToMetaMask,
+    addL1FundsThroughBridgeUI,
 } from './utils/utils';
 
 const THREE_MINUTES = 180_000;
@@ -72,16 +72,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await walletL1Page.getByRole('button', { name: 'Continue' }).click();
         await walletL1Page.getByRole('button', { name: 'Connect' }).click();
 
-        // Add funds to L1
-        await pageWithL1Wallet.getByTestId('request-l1-funds-button').click();
-        await expect(pageWithL1Wallet.getByText('Funds successfully sent.')).toBeVisible();
-
-        // Check the funds arrived (ui)
-        const l1WalletExtension = await browserL1.newPage();
-        const l1ExtensionUrl = await getExtensionUrl(browserL1);
-        await l1WalletExtension.goto(l1ExtensionUrl, { waitUntil: 'commit' });
-        await expect(l1WalletExtension.getByTestId('coin-balance')).toHaveText('10');
-        l1WalletExtension.close();
+        await addL1FundsThroughBridgeUI(pageWithL1Wallet, browserL1);
 
         const toggleManualInput = pageWithL1Wallet.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
@@ -94,6 +85,23 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         const amountField = pageWithL1Wallet.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
         amountField.fill('5');
+
+        // check est. gas fees and your receive
+        await pageWithL1Wallet.waitForTimeout(2500);
+
+        const gasFeeValue = await pageWithL1Wallet
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.0066316');
+
+        const youReceiveValue = await pageWithL1Wallet
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('5');
 
         await expect(pageWithL1Wallet.getByText('Bridge Assets')).toBeEnabled();
         await pageWithL1Wallet.getByText('Bridge Assets').click();
@@ -136,7 +144,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         const amountField = pageWithL2Wallet.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
-        amountField.fill('2');
+        await amountField.fill('2');
 
         const toggleManualInput = pageWithL2Wallet.getByTestId('toggle-receiver-address-input');
         await expect(toggleManualInput).toBeVisible();
@@ -144,11 +152,31 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
 
         const addressField = pageWithL2Wallet.getByTestId('receive-address');
         await expect(addressField).toBeVisible();
-        addressField.fill(addressL1);
+        await addressField.fill(addressL1);
+
+        // check est. gas fees and your receive
+        await pageWithL2Wallet.waitForTimeout(2500);
+
+        const gasFeeValue = await pageWithL2Wallet
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.000038065');
+
+        const youReceiveValue = await pageWithL2Wallet
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('2');
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
+
+        const approveTransactionPagePromise = browserL2.waitForEvent('page');
         await pageWithL2Wallet.getByText('Bridge Assets').click();
-        const approveTransactionPage = await browserL2.waitForEvent('page');
+
+        const approveTransactionPage = await approveTransactionPagePromise;
         await approveTransactionPage.getByRole('button', { name: 'Confirm' }).click();
 
         // Check funds on L1 wallet
