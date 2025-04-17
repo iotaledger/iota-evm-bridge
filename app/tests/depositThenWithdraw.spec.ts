@@ -86,6 +86,23 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await expect(amountField).toBeVisible();
         amountField.fill('5');
 
+        // check est. gas fees and your receive
+        await pageWithL1Wallet.waitForTimeout(2500);
+
+        const gasFeeValue = await pageWithL1Wallet
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.0066316');
+
+        const youReceiveValue = await pageWithL1Wallet
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('5');
+
         await expect(pageWithL1Wallet.getByText('Bridge Assets')).toBeEnabled();
         await pageWithL1Wallet.getByText('Bridge Assets').click();
 
@@ -137,7 +154,22 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await expect(addressField).toBeVisible();
         await addressField.fill(addressL1);
 
+        // check est. gas fees and your receive
         await pageWithL2Wallet.waitForTimeout(2500);
+
+        const gasFeeValue = await pageWithL2Wallet
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValue).toEqual('0.000038065');
+
+        const youReceiveValue = await pageWithL2Wallet
+            .locator('div:has(> span:text("You Receive"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(youReceiveValue).toEqual('2');
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
 
