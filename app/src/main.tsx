@@ -6,12 +6,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
     getDefaultConfig,
-    darkTheme,
-    lightTheme,
+    darkTheme as rainbowDarkTheme,
+    lightTheme as rainbowLightTheme,
     RainbowKitProvider,
     Chain,
 } from '@rainbow-me/rainbowkit';
-import { IotaClientProvider, WalletProvider } from '@iota/dapp-kit';
+import { darkTheme, IotaClientProvider, lightTheme, WalletProvider } from '@iota/dapp-kit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import { ThemeProvider } from './providers/ThemeProvider.tsx';
@@ -35,7 +35,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <EvmRpcClientProvider baseUrl={L2_CHAIN_CONFIG.evmRpcUrl}>
                 <QueryClientProvider client={queryClient}>
                     <IotaClientProvider networks={networkConfig} defaultNetwork="alphanet">
-                        <WalletProvider autoConnect>
+                        <WalletProvider
+                            autoConnect
+                            theme={[
+                                {
+                                    variables: lightTheme,
+                                },
+                                {
+                                    selector: '.dark',
+                                    variables: darkTheme,
+                                },
+                            ]}
+                        >
                             <ThemeProvider appId="IOTA-evm-bridge">
                                 <RainbowKit>
                                     <App />
@@ -52,7 +63,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 function RainbowKit({ children }: React.PropsWithChildren) {
     const { theme: currentTheme } = useTheme();
-    const theme = currentTheme === Theme.Dark ? darkTheme() : lightTheme();
+    const theme = currentTheme === Theme.Dark ? rainbowDarkTheme() : rainbowLightTheme();
 
     return (
         <RainbowKitProvider
