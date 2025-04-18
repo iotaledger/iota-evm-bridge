@@ -1,7 +1,13 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import { useAccount, useChainId, usePublicClient, useWriteContract } from 'wagmi';
+import {
+    useAccount,
+    useChainId,
+    usePublicClient,
+    useWaitForTransactionReceipt,
+    useWriteContract,
+} from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
@@ -10,12 +16,14 @@ import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import BigNumber from 'bignumber.js';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
+import { getBalanceQueryKey } from 'wagmi/query';
 
 export function DepositLayer2() {
+    const queryClient = useQueryClient();
     const layer2Account = useAccount();
     const client = usePublicClient();
     const chainId = useChainId();
@@ -25,7 +33,14 @@ export function DepositLayer2() {
     const { depositAmount, receivingAddress } = watch();
     const isPayingAllBalance = useIsBridgingAllBalance();
 
-    const { data: hash, writeContractAsync, isSuccess, isError, error } = useWriteContract();
+    const { data: hash, writeContractAsync, isSuccess, isError, error } = useWriteContract({});
+    const {
+        isSuccess: isTransactionSuccess,
+        isError: isTransactionError,
+        error: transactionError,
+    } = useWaitForTransactionReceipt({
+        hash: hash,
+    });
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
         queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, depositAmount],
@@ -64,6 +79,25 @@ export function DepositLayer2() {
             }
         }
     }, [isError, error]);
+
+    useEffect(() => {
+        if (isTransactionSuccess) {
+            const blanceQueryKey = getBalanceQueryKey({
+                chainId: chainId,
+                address: layer2Account.address,
+            });
+            queryClient.invalidateQueries({ queryKey: blanceQueryKey });
+        }
+    }, [isTransactionSuccess]);
+
+    useEffect(() => {
+        if (isTransactionError && transactionError) {
+            if (import.meta.env.DEV) {
+                console.error('Error while waiting for transaction', transactionError.message);
+            }
+            toast.error('Something went wrong with deposit transaction.');
+        }
+    }, [isTransactionError, transactionError]);
 
     const { mutate: deposit, isPending: isTransactionLoading } = useMutation({
         mutationKey: [
