@@ -126,6 +126,9 @@ export function DepositForm({
             ? errors[BridgeFormInputName.ReceivingAddress]?.message
             : undefined;
 
+    const caption = formattedAvailableBalance
+        ? `${formattedAvailableBalance} IOTA Available`
+        : '--';
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
@@ -149,6 +152,7 @@ export function DepositForm({
                         shouldTouch: true,
                     });
                 }}
+                caption={caption}
                 maxLength={MAX_DEPOSIT_INPUT_LENGTH}
                 trailingElement={
                     <ButtonPill onClick={handleMaxAmountClick} disabled={isMaxButtonDisabled}>
