@@ -35,9 +35,9 @@ export const CONFIG = getNetwork(getDefaultNetwork());
 
 function getNetwork(network: string) {
     const config = loadConfig();
-    return config[network]
+    return config[network];
 }
 
 export function getDefaultNetwork(): string {
-    return import.meta.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK
+    return import.meta.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK;
 }

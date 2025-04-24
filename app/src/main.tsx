@@ -19,12 +19,17 @@ import { WagmiProvider } from 'wagmi';
 import { useTheme } from './hooks/useTheme.ts';
 import { Theme } from './lib/enums/index.ts';
 import { Toaster } from 'react-hot-toast';
-import { getDefaultNetwork, L2_CHAIN_CONFIG, L2_WAGMI_CONFIG, networkConfig } from './config/index.ts';
+import {
+    getDefaultNetwork,
+    L2_CHAIN_CONFIG,
+    L2_WAGMI_CONFIG,
+    networkConfig,
+} from './config/index.ts';
 import { EvmRpcClientProvider } from './providers/EvmRpcClientProvider.tsx';
 
 const queryClient = new QueryClient();
 
-console.log(networkConfig)
+console.log(networkConfig);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -36,7 +41,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         >
             <EvmRpcClientProvider baseUrl={L2_CHAIN_CONFIG.evmRpcUrl}>
                 <QueryClientProvider client={queryClient}>
-                    <IotaClientProvider networks={networkConfig} defaultNetwork={getDefaultNetwork()}>
+                    <IotaClientProvider
+                        networks={networkConfig}
+                        defaultNetwork={getDefaultNetwork()}
+                    >
                         <WalletProvider
                             autoConnect
                             theme={[

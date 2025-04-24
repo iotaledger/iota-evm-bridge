@@ -47,9 +47,8 @@ const envSchema = z.record(
                 ) as z.ZodType<`0x${string}`>,
             evmRpcUrl: z.string().url(),
         }),
-    })
+    }),
 );
-
 
 type Config = z.infer<typeof envSchema>;
 
@@ -86,7 +85,5 @@ export const CONFIG = getDefaultNetwork();
 function getDefaultNetwork() {
     const config = loadConfig();
     const evmToolkitDefaultNetwork = process.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK as string;
-    return config[evmToolkitDefaultNetwork]
+    return config[evmToolkitDefaultNetwork];
 }
-
-

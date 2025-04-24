@@ -43,7 +43,7 @@ export const envSchema = z.record(
                 ) as z.ZodType<`0x${string}`>,
             evmRpcUrl: z.string().url(),
         }),
-    })
+    }),
 );
 
 export type Config = z.infer<typeof envSchema>;
