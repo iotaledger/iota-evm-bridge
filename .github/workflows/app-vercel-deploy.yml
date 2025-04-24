@@ -55,11 +55,6 @@ jobs:
               id: setup_vercel_flags
               run: |
                   echo "VERCEL_FLAGS=--token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_SCOPE }}" >> $GITHUB_OUTPUT
-                  if [[ "${{ inputs.VERCEL_TARGET }}" == "production" ]]; then
-                      echo "PROD_FLAG=--prod" >> $GITHUB_OUTPUT
-                  else
-                      echo "PROD_FLAG=" >> $GITHUB_OUTPUT
-                  fi
 
             - name: Install Project Dependencies
               run: pnpm install --frozen-lockfile
@@ -68,7 +63,7 @@ jobs:
               run: vercel pull ${{ steps.setup_vercel_flags.outputs.VERCEL_FLAGS }} --yes --environment=${{ env.VERCEL_ENVIRONMENT }}
 
             - name: Build Project
-              run: vercel build ${{ steps.setup_vercel_flags.outputs.VERCEL_FLAGS }} ${{ steps.setup_vercel_flags.outputs.PROD_FLAG }}
+              run: vercel build ${{ steps.setup_vercel_flags.outputs.VERCEL_FLAGS }} --target=${{ env.VERCEL_ENVIRONMENT }}
 
             - name: Deploy to Vercel Action
               uses: marc2332/deploy-to-vercel-action@feat/vercel-target
