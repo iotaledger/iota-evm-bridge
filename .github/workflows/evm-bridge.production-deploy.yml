@@ -20,3 +20,4 @@ jobs:
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
             VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
             EVM_BRIDGE_CONFIG: ${{ secrets.EVM_BRIDGE_CONFIG }}
+            EVM_BRIDGE_DEFAULT_NETWORK: ${{ secrets.EVM_BRIDGE_PROD_DEFAULT_NETWORK }}

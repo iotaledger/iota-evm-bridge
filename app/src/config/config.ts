@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { Config, envSchema } from './config.schema';
 
-function loadEnv(): Config {
+function loadConfig(): Config {
     const rawEvmToolkitConfig = import.meta.env.VITE_EVM_BRIDGE_CONFIG;
 
     let evmToolkitConfig: Record<string, unknown> = {};
@@ -31,4 +31,13 @@ function loadEnv(): Config {
     }
 }
 
-export const CONFIG: Config = loadEnv();
+export const CONFIG = getNetwork(getDefaultNetwork());
+
+function getNetwork(network: string) {
+    const config = loadConfig();
+    return config[network]
+}
+
+export function getDefaultNetwork(): string {
+    return import.meta.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK
+}

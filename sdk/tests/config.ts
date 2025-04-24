@@ -6,51 +6,54 @@ import { config } from 'dotenv';
 
 const HEX_REGEX = /^0x[0-9a-fA-F]+$/;
 
-const envSchema = z.object({
-    L1: z.object({
-        networkName: z.string(),
-        rpcUrl: z.string().url(),
-        faucetUrl: z.string().url(),
-        chainId: z.string(),
-        packageId: z.string(),
-        accountsContract: z
-            .string()
-            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
-            .transform((x) => Number(x)),
-        accountsTransferAllowanceTo: z
-            .string()
-            .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
-            .transform((x) => Number(x)),
-    }),
-    L2: z.object({
-        chainName: z.string(),
-        chainCurrency: z.string(),
-        rpcUrl: z.string().url(),
-        chainId: z.preprocess(
-            (val) => (val !== undefined ? Number(val) : undefined),
-            z.number().int().positive(),
-        ),
-        chainDecimals: z.preprocess(
-            (val) => (val !== undefined ? Number(val) : undefined),
-            z.number().int().positive(),
-        ),
-        chainExplorerName: z.string(),
-        chainExplorerUrl: z.string(),
-        wagmiAppName: z.string(),
-        walletConnectProjectId: z.string(),
-        iscContractAddress: z
-            .string()
-            .regex(
-                HEX_REGEX,
-                'Must be a valid hex string starting with 0x',
-            ) as z.ZodType<`0x${string}`>,
-        evmRpcUrl: z.string().url(),
-    }),
-});
+const envSchema = z.record(
+    z.object({
+        L1: z.object({
+            networkName: z.string(),
+            rpcUrl: z.string().url(),
+            faucetUrl: z.string().url(),
+            chainId: z.string(),
+            packageId: z.string(),
+            accountsContract: z
+                .string()
+                .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
+                .transform((x) => Number(x)),
+            accountsTransferAllowanceTo: z
+                .string()
+                .regex(HEX_REGEX, 'Must be a valid hex string starting with 0x')
+                .transform((x) => Number(x)),
+        }),
+        L2: z.object({
+            chainName: z.string(),
+            chainCurrency: z.string(),
+            rpcUrl: z.string().url(),
+            chainId: z.preprocess(
+                (val) => (val !== undefined ? Number(val) : undefined),
+                z.number().int().positive(),
+            ),
+            chainDecimals: z.preprocess(
+                (val) => (val !== undefined ? Number(val) : undefined),
+                z.number().int().positive(),
+            ),
+            chainExplorerName: z.string(),
+            chainExplorerUrl: z.string(),
+            wagmiAppName: z.string(),
+            walletConnectProjectId: z.string(),
+            iscContractAddress: z
+                .string()
+                .regex(
+                    HEX_REGEX,
+                    'Must be a valid hex string starting with 0x',
+                ) as z.ZodType<`0x${string}`>,
+            evmRpcUrl: z.string().url(),
+        }),
+    })
+);
 
-type EnvConfig = z.infer<typeof envSchema>;
 
-function loadEnv(): EnvConfig {
+type Config = z.infer<typeof envSchema>;
+
+function loadConfig(): Config {
     config();
     const rawEvmToolkitConfig = process.env.VITE_EVM_BRIDGE_CONFIG as string;
 
@@ -78,6 +81,11 @@ function loadEnv(): EnvConfig {
     }
 }
 
-export const CONFIG = loadEnv();
+export const CONFIG = getDefaultNetwork();
 
-export type Config = typeof CONFIG;
+function getDefaultNetwork() {
+    const config = loadConfig();
+    const evmToolkitDefaultNetwork = process.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK as string;
+    return config[evmToolkitDefaultNetwork]
+}
+
