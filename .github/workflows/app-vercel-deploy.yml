@@ -4,6 +4,7 @@ on:
     workflow_call:
         inputs:
             VERCEL_TARGET:
+                type: string
                 required: true
         secrets:
             VERCEL_TOKEN:
