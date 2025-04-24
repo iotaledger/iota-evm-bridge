@@ -13,7 +13,7 @@ jobs:
     deploy-preview:
         uses: ./.github/workflows/app-vercel-deploy.yml
         with:
-            PRODUCTION: false
+            VERCEL_TARGET: preview
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

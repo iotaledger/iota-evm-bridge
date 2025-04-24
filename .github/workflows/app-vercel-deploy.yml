@@ -3,8 +3,7 @@ name: App Vercel Deploy
 on:
     workflow_call:
         inputs:
-            PRODUCTION:
-                type: boolean
+            VERCEL_TARGET:
                 required: true
         secrets:
             VERCEL_TOKEN:
@@ -23,13 +22,13 @@ on:
 env:
     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-    VERCEL_ENVIRONMENT: ${{ inputs.PRODUCTION && 'production' || 'preview' }}
+    VERCEL_ENVIRONMENT: ${{ inputs.VERCEL_TARGET }}
     VITE_EVM_BRIDGE_CONFIG: ${{ secrets.EVM_BRIDGE_CONFIG }}
     VITE_EVM_BRIDGE_DEFAULT_NETWORK: ${{ secrets.EVM_BRIDGE_DEFAULT_NETWORK }}
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    cancel-in-progress: ${{ inputs.PRODUCTION != true }}
+    cancel-in-progress: ${{ inputs.VERCEL_TARGET != 'production' }}
 
 jobs:
     vercel-deploy:
@@ -55,7 +54,7 @@ jobs:
               id: setup_vercel_flags
               run: |
                   echo "VERCEL_FLAGS=--token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_SCOPE }}" >> $GITHUB_OUTPUT
-                  if [[ "${{ inputs.PRODUCTION }}" == "true" ]]; then
+                  if [[ "${{ inputs.VERCEL_TARGET }}" == "production" ]]; then
                       echo "PROD_FLAG=--prod" >> $GITHUB_OUTPUT
                   else
                       echo "PROD_FLAG=" >> $GITHUB_OUTPUT
@@ -71,13 +70,13 @@ jobs:
               run: vercel build ${{ steps.setup_vercel_flags.outputs.VERCEL_FLAGS }} ${{ steps.setup_vercel_flags.outputs.PROD_FLAG }}
 
             - name: Deploy to Vercel Action
-              uses: BetaHuhn/deploy-to-vercel-action@v1
+              uses: marc2332/deploy-to-vercel-action@feat/vercel-target
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-                  PRODUCTION: ${{ inputs.PRODUCTION }}
                   PREBUILT: true
                   DELETE_EXISTING_COMMENT: false
+                  VERCEL_TARGET: ${{ inputs.VERCEL_TARGET }}
