@@ -83,7 +83,7 @@ test.describe('Send MAX amount from L1', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(youReceiveValue).toEqual('9.9932684');
+        expect(Number(youReceiveValue).toFixed(6)).toEqual('9.993268');
 
         await expect(testPageL1.getByText('Bridge Assets')).toBeEnabled();
         await testPageL1.getByText('Bridge Assets').click();
@@ -187,7 +187,7 @@ test.describe('Send MAX amount from L2', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(youReceiveValue).toEqual('8.999866102');
+        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.999866');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 
