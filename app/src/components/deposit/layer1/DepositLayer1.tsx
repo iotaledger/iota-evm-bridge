@@ -72,12 +72,12 @@ export function DepositLayer1() {
                         });
                 },
                 onError: (err) => {
-                    if (import.meta.env.DEV) {
-                        console.error('Failed submitting transaction:', err.message);
-                    }
-
-                    if (err.message.startsWith(L1_USER_REJECTED_TX_ERROR_TEXT)) {
-                        toast.error('Transaction rejected by user.');
+                    if (err.message) {
+                        if (err.message.startsWith(L1_USER_REJECTED_TX_ERROR_TEXT)) {
+                            toast.error('Transaction rejected by user.');
+                        } else {
+                            toast.error(err.message);
+                        }
                     } else {
                         toast.error('Something went wrong while submitting deposit.');
                     }
