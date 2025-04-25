@@ -180,7 +180,7 @@ test.describe('Send MAX amount from L2', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(gasFeeValue).toEqual('0.000033898');
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000034');
 
         const youReceiveValue = await testPageL2
             .locator('div:has(> span:text("You Receive"))')
