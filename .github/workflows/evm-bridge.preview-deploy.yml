@@ -1,4 +1,4 @@
-name: Preview Deploy for the EVM Toolkit Rebased
+name: Preview Deploy for the IOTA EVM Bridge
 
 on:
     workflow_dispatch:

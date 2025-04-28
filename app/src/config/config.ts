@@ -5,20 +5,20 @@ import { z } from 'zod';
 import { Config, envSchema } from './config.schema';
 
 function loadConfig(): Config {
-    const rawEvmToolkitConfig = import.meta.env.VITE_EVM_BRIDGE_CONFIG;
+    const rawEvmBridgeConfig = import.meta.env.VITE_EVM_BRIDGE_CONFIG;
 
-    let evmToolkitConfig: Record<string, unknown> = {};
+    let evmBridgeConfig: Record<string, unknown> = {};
 
     try {
-        evmToolkitConfig = JSON.parse(rawEvmToolkitConfig);
+        evmBridgeConfig = JSON.parse(rawEvmBridgeConfig);
     } catch (error) {
         throw new Error(
-            `Failed to parse EVM Toolkit config JSON env var! ${(error as Error)?.message}`,
+            `Failed to parse IOTA EVM Bridge config JSON env var! ${(error as Error)?.message}`,
         );
     }
 
     try {
-        return envSchema.parse(evmToolkitConfig);
+        return envSchema.parse(evmBridgeConfig);
     } catch (error) {
         if (error instanceof z.ZodError) {
             const missingVars = error.issues

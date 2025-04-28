@@ -1,1 +1,1 @@
-export * from './IOTAEVMToolkit';
+export * from './IOTAEVMBridge';

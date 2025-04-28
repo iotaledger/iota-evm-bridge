@@ -8,24 +8,24 @@ dotenv.config({
 });
 
 export function loadConfig(): Config {
-    const rawEvmToolkitConfig = process.env.VITE_EVM_BRIDGE_CONFIG;
+    const rawEvmBridgeConfig = process.env.VITE_EVM_BRIDGE_CONFIG;
 
-    if (rawEvmToolkitConfig === undefined) {
-        throw new Error('Missing EVM Toolkit config JSON env var!');
+    if (rawEvmBridgeConfig === undefined) {
+        throw new Error('Missing IOTA EVM Bridge config JSON env var!');
     }
 
-    let evmToolkitConfig: Record<string, unknown> = {};
+    let evmBridgeConfig: Record<string, unknown> = {};
 
     try {
-        evmToolkitConfig = JSON.parse(rawEvmToolkitConfig);
+        evmBridgeConfig = JSON.parse(rawEvmBridgeConfig);
     } catch (error) {
         throw new Error(
-            `Failed to parse EVM Toolkit config JSON env var! ${(error as Error)?.message}`,
+            `Failed to parse IOTA EVM Bridge config JSON env var! ${(error as Error)?.message}`,
         );
     }
 
     try {
-        return envSchema.parse(evmToolkitConfig);
+        return envSchema.parse(evmBridgeConfig);
     } catch (error) {
         if (error instanceof z.ZodError) {
             const missingVars = error.issues
