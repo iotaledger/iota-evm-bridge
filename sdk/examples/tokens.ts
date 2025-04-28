@@ -1,15 +1,16 @@
-import { IscTransaction, L2_GAS_BUDGET } from '../src/index';
+import { EvmRpcClient, IscTransaction, L2_GAS_BUDGET } from '../src/index';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { CONFIG } from './config';
 import { bcs } from '@iota/iota-sdk/bcs';
 
-const { L1 } = CONFIG;
+const { L1, L2 } = CONFIG;
 
 const client = new IotaClient({
     url: L1.rpcUrl,
 });
+const evmRpcClient = new EvmRpcClient(L2.evmRpcUrl);
 
 const MNEMONIC =
     'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst';
@@ -83,7 +84,6 @@ await client.waitForTransaction({
 
 console.log('Sent!');
 
-const data = await fetch(
-    `https://api.evm.lb-0.h.iota-rebased-alphanet.iota.cafe/v1/chain/core/accounts/account/${recipientAddress}/balance`,
-).then((r) => r.json());
-console.log(data);
+const l1BalanceInL2 = await evmRpcClient.getBalanceBaseToken(address);
+
+console.log(`L2 balance of the L1 address ${address}: ${JSON.stringify(l1BalanceInL2)}`);
