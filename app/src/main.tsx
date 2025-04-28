@@ -29,8 +29,6 @@ import { EvmRpcClientProvider } from './providers/EvmRpcClientProvider.tsx';
 
 const queryClient = new QueryClient();
 
-console.log(networkConfig);
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <WagmiProvider
