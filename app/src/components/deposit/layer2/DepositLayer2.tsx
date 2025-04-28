@@ -50,7 +50,7 @@ export function DepositLayer2() {
                 const gas = await client?.estimateContractGas({
                     address: iscContractAddress,
                     abi: iscAbi,
-                    functionName: 'send',
+                    functionName: 'transferToL1',
                     args: params,
                     account: layer2Account.address,
                 });
@@ -116,11 +116,11 @@ export function DepositLayer2() {
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
 
-            const params = buildDepositL2Parameters(receivingAddress, depositTotal, gasEstimation);
+            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
-                functionName: 'send',
+                functionName: 'transferToL1',
                 args: params,
                 chainId: chainId,
             });
