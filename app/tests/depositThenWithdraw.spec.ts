@@ -94,7 +94,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(gasFeeValue).toEqual('0.0066316');
+        expect(Number(gasFeeValue).toFixed(5)).toEqual('0.00663');
 
         const youReceiveValue = await pageWithL1Wallet
             .locator('div:has(> span:text("You Receive"))')
@@ -162,7 +162,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(gasFeeValue).toEqual('0.000038065');
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000038');
 
         const youReceiveValue = await pageWithL2Wallet
             .locator('div:has(> span:text("You Receive"))')

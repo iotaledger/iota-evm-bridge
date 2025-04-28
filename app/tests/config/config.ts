@@ -38,4 +38,13 @@ export function loadConfig(): Config {
     }
 }
 
-export const CONFIG = loadConfig();
+export const CONFIG = getNetwork(getDefaultNetwork());
+
+function getNetwork(network: string) {
+    const config = loadConfig();
+    return config[network];
+}
+
+export function getDefaultNetwork(): string {
+    return process.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK as string;
+}

@@ -14,7 +14,7 @@ const client = new IotaClient({
 const MNEMONIC =
     'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst';
 const TOKEN_COIN_TYPE =
-    '0xe02c05fe78a112a045b9ab25794ad19fc8895155fa8ac9c057cd6a0f5a1f3c5a::box_coin::BOX_COIN';
+    '0xe1e88f4962b3ea96cfad19aee42f666b04bbce4dc4327c3cd63f1b8ff16e13b2::tool_coin::TOOL_COIN';
 
 const keypair = Ed25519Keypair.deriveKeypair(MNEMONIC);
 const address = keypair.toIotaAddress();
@@ -47,7 +47,7 @@ iscTx.placeCoinInBag({ coin: iotaCoin, bag, coinType: IOTA_TYPE_ARG });
 
 // Place Token
 const tokenCoin = tx.splitCoins(
-    tx.object('0x12a0a8ab2ff81339774f31b78ef73ec8394a9f89feae01bbc084a8753e2c00cd'),
+    tx.object('0xf7662ffd9cb079d8e75ab4805ba78fdb0e0fb78cf49aa0fa01ecb7ebdf15d04e'),
     [tx.pure(bcs.U64.serialize(tokenAmountToSend))],
 );
 iscTx.placeCoinInBag({
