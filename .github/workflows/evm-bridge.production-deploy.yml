@@ -1,4 +1,4 @@
-name: Production Deploy for the EVM Toolkit Rebased
+name: Production Deploy for the IOTA EVM Bridge
 
 on:
     workflow_dispatch:

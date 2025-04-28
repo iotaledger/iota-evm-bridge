@@ -1,4 +1,4 @@
-name: Preview Deploy for the EVM Toolkit Rebased
+name: Staging Deploy for the IOTA EVM Bridge
 
 on:
     push:
@@ -13,7 +13,7 @@ jobs:
     deploy-testnet-staging:
         uses: ./.github/workflows/app-vercel-deploy.yml
         with:
-            VERCEL_TARGET: staging
+            VERCEL_TARGET: testnet-staging
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

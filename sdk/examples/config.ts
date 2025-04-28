@@ -54,20 +54,20 @@ type Config = z.infer<typeof envSchema>;
 
 function loadConfig(): Config {
     config();
-    const rawEvmToolkitConfig = process.env.VITE_EVM_BRIDGE_CONFIG as string;
+    const rawEvmBridgeConfig = process.env.VITE_EVM_BRIDGE_CONFIG as string;
 
-    let evmToolkitConfig: Record<string, unknown> = {};
+    let evmBridgeConfig: Record<string, unknown> = {};
 
     try {
-        evmToolkitConfig = JSON.parse(rawEvmToolkitConfig);
+        evmBridgeConfig = JSON.parse(rawEvmBridgeConfig);
     } catch (error) {
         throw new Error(
-            `Failed to parse EVM Toolkit config JSON env var! ${(error as Error)?.message}`,
+            `Failed to parse IOTA EVM Bridge config JSON env var! ${(error as Error)?.message}`,
         );
     }
 
     try {
-        return envSchema.parse(evmToolkitConfig);
+        return envSchema.parse(evmBridgeConfig);
     } catch (error) {
         if (error instanceof z.ZodError) {
             const missingVars = error.issues
@@ -84,6 +84,6 @@ export const CONFIG = getDefaultNetwork();
 
 function getDefaultNetwork() {
     const config = loadConfig();
-    const evmToolkitDefaultNetwork = process.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK as string;
-    return config[evmToolkitDefaultNetwork];
+    const evmBridgeDefaultNetwork = process.env.VITE_EVM_BRIDGE_DEFAULT_NETWORK as string;
+    return config[evmBridgeDefaultNetwork];
 }
