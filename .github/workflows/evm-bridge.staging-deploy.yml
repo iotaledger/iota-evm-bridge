@@ -13,7 +13,7 @@ jobs:
     deploy-testnet-staging:
         uses: ./.github/workflows/app-vercel-deploy.yml
         with:
-            VERCEL_TARGET: testnet-staging
+            VERCEL_TARGET: staging-testnet
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
