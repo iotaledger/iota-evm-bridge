@@ -31,18 +31,7 @@ interface DepositFormProps {
     deposit: () => void;
     isGasEstimationLoading?: boolean;
     isTransactionLoading: boolean;
-    gasEstimation:
-        | {
-              type: 'loading';
-          }
-        | {
-              type: 'loaded';
-              gas: string;
-          }
-        | {
-              // L2 -> L1 dont need gas estimation
-              type: 'unused';
-          };
+    gasEstimation?: string | null;
 }
 export function DepositForm({
     deposit,
@@ -101,12 +90,14 @@ export function DepositForm({
         deposit();
     }, [deposit, setValue]);
 
+    console.log(gasEstimation);
+
     const receivingAmountDisplay = (() => {
-        if (!depositAmountValue || gasEstimation.type === 'loading') {
+        if (!depositAmountValue || !gasEstimation) {
             return PLACEHOLDER_VALUE_DISPLAY;
-        } else if (isPayingAllBalance && gasEstimation.type == 'loaded') {
+        } else if (isPayingAllBalance) {
             const receivingAmount = new BigNumber(depositAmountValue)
-                .minus(gasEstimation.gas)
+                .minus(gasEstimation)
                 .minus(formatIOTAFromNanos(L2_GAS_BUDGET));
             return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         } else {
@@ -207,11 +198,7 @@ export function DepositForm({
                     fullwidth
                     keyText="Est. Gas Fees"
                     supportingLabel="IOTA"
-                    value={
-                        gasEstimation.type === 'loaded'
-                            ? gasEstimation.gas
-                            : PLACEHOLDER_VALUE_DISPLAY
-                    }
+                    value={gasEstimation ?? PLACEHOLDER_VALUE_DISPLAY}
                 />
                 <KeyValueInfo
                     fullwidth

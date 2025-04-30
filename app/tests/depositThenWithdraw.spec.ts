@@ -157,6 +157,13 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         // check est. gas fees and your receive
         await pageWithL2Wallet.waitForTimeout(2500);
 
+        const gasFeeValue = await pageWithL2Wallet
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000038');
+
         const youReceiveValue = await pageWithL2Wallet
             .locator('div:has(> span:text("You Receive"))')
             .locator('xpath=../div/span')

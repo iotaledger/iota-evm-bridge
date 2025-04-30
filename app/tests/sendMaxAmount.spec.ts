@@ -175,6 +175,13 @@ test.describe('Send MAX amount from L2', () => {
         // check est. gas fees and your receive
         await testPageL2.waitForTimeout(2500);
 
+        const gasFeeValue = await testPageL2
+            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000034');
+
         const youReceiveValue = await testPageL2
             .locator('div:has(> span:text("You Receive"))')
             .locator('xpath=../div/span')
