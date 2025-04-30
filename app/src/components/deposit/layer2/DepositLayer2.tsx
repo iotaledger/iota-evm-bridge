@@ -97,5 +97,11 @@ export function DepositLayer2() {
         },
     });
 
-    return <DepositForm deposit={deposit} isTransactionLoading={isTransactionLoading} />;
+    return (
+        <DepositForm
+            deposit={deposit}
+            isTransactionLoading={isTransactionLoading}
+            gasEstimation={{ type: 'unused' }}
+        />
+    );
 }

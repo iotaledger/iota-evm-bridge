@@ -91,7 +91,16 @@ export function DepositLayer1() {
             deposit={deposit}
             isGasEstimationLoading={isBuildingTransaction}
             isTransactionLoading={isTransactionLoading}
-            gasEstimation={formattedGasEstimation}
+            gasEstimation={
+                formattedGasEstimation
+                    ? {
+                          type: 'loaded',
+                          gas: formattedGasEstimation,
+                      }
+                    : {
+                          type: 'loading',
+                      }
+            }
         />
     );
 }
