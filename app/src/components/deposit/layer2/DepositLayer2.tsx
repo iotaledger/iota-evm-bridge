@@ -13,13 +13,13 @@ import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
 import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
-import { formatGwei } from 'viem';
 
 export function DepositLayer2() {
     const queryClient = useQueryClient();

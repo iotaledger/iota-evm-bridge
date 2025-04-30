@@ -90,8 +90,6 @@ export function DepositForm({
         deposit();
     }, [deposit, setValue]);
 
-    console.log(gasEstimation);
-
     const receivingAmountDisplay = (() => {
         if (!depositAmountValue || !gasEstimation) {
             return PLACEHOLDER_VALUE_DISPLAY;
