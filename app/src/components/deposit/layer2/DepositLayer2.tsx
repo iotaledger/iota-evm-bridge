@@ -20,6 +20,7 @@ import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
+import BigNumber from 'bignumber.js';
 
 export function DepositLayer2() {
     const queryClient = useQueryClient();
@@ -117,7 +118,12 @@ export function DepositLayer2() {
                 throw Error('Transaction is missing');
             }
 
-            const params = buildDepositL2Parameters(receivingAddress, depositAmount);
+            const depositTotal =
+                isPayingAllBalance && gasEstimation
+                    ? new BigNumber(depositAmount).minus(gasEstimation).toString()
+                    : depositAmount;
+
+            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,

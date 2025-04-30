@@ -29,7 +29,7 @@ import { L2_GAS_BUDGET } from 'isc-client';
 
 interface DepositFormProps {
     deposit: () => void;
-    isGasEstimationLoading?: boolean;
+    isGasEstimationLoading: boolean;
     isTransactionLoading: boolean;
     gasEstimation?: string | null;
 }
