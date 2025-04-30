@@ -15,12 +15,12 @@ import { buildDepositL2Parameters } from '../../../lib/utils';
 import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
-import BigNumber from 'bignumber.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
+import BigNumber from 'bignumber.js';
 
 export function DepositLayer2() {
     const queryClient = useQueryClient();
@@ -43,14 +43,19 @@ export function DepositLayer2() {
     });
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, depositAmount],
+        queryKey: [
+            'l2-deposit-transaction-gas-estimate',
+            receivingAddress,
+            depositAmount,
+            iscContractAddress,
+        ],
         async queryFn() {
             if (receivingAddress && depositAmount && iscContractAddress) {
                 const params = buildDepositL2Parameters(receivingAddress, depositAmount);
                 const gas = await client?.estimateContractGas({
                     address: iscContractAddress,
                     abi: iscAbi,
-                    functionName: 'send',
+                    functionName: 'transferToL1',
                     args: params,
                     account: layer2Account.address,
                 });
@@ -83,7 +88,7 @@ export function DepositLayer2() {
     useEffect(() => {
         if (isTransactionSuccess) {
             const blanceQueryKey = getBalanceQueryKey({
-                chainId: chainId,
+                chainId,
                 address: layer2Account.address,
             });
             queryClient.invalidateQueries({ queryKey: blanceQueryKey });
@@ -105,24 +110,26 @@ export function DepositLayer2() {
             receivingAddress,
             depositAmount,
             isPayingAllBalance,
-            gasEstimation,
+            iscContractAddress,
+            chainId,
         ],
         async mutationFn() {
             if (!receivingAddress || !depositAmount || !iscContractAddress) {
                 throw Error('Transaction is missing');
             }
+
             const depositTotal =
                 isPayingAllBalance && gasEstimation
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
 
-            const params = buildDepositL2Parameters(receivingAddress, depositTotal, gasEstimation);
+            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
-                functionName: 'send',
+                functionName: 'transferToL1',
                 args: params,
-                chainId: chainId,
+                chainId,
             });
         },
     });

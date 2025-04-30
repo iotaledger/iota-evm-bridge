@@ -17,7 +17,7 @@ export function createBridgeFormSchema(
                 .trim()
                 .refine(
                     (value) => {
-                        return new BigNumber(value).isGreaterThanOrEqualTo(1);
+                        return new BigNumber(value).isGreaterThanOrEqualTo(0.01);
                     },
                     {
                         message: 'Invalid amount',
