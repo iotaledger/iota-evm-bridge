@@ -1,22 +1,14 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-    useAccount,
-    useChainId,
-    usePublicClient,
-    useWaitForTransactionReceipt,
-    useWriteContract,
-} from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
 import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
-import BigNumber from 'bignumber.js';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
@@ -25,7 +17,6 @@ import { getBalanceQueryKey } from 'wagmi/query';
 export function DepositLayer2() {
     const queryClient = useQueryClient();
     const layer2Account = useAccount();
-    const client = usePublicClient();
     const chainId = useChainId();
     const iscContractAddress = (layer2Account?.chain as L2Chain)?.iscContractAddress;
 
@@ -40,24 +31,6 @@ export function DepositLayer2() {
         error: transactionError,
     } = useWaitForTransactionReceipt({
         hash: hash,
-    });
-
-    const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, depositAmount],
-        async queryFn() {
-            if (receivingAddress && depositAmount && iscContractAddress) {
-                const params = buildDepositL2Parameters(receivingAddress, depositAmount);
-                const gas = await client?.estimateContractGas({
-                    address: iscContractAddress,
-                    abi: iscAbi,
-                    functionName: 'transferToL1',
-                    args: params,
-                    account: layer2Account.address,
-                });
-                return gas ? formatGwei(gas) : null;
-            }
-            return null;
-        },
     });
 
     useEffect(() => {
@@ -83,7 +56,7 @@ export function DepositLayer2() {
     useEffect(() => {
         if (isTransactionSuccess) {
             const blanceQueryKey = getBalanceQueryKey({
-                chainId: chainId,
+                chainId,
                 address: layer2Account.address,
             });
             queryClient.invalidateQueries({ queryKey: blanceQueryKey });
@@ -105,34 +78,24 @@ export function DepositLayer2() {
             receivingAddress,
             depositAmount,
             isPayingAllBalance,
-            gasEstimation,
+            iscContractAddress,
+            chainId,
         ],
         async mutationFn() {
             if (!receivingAddress || !depositAmount || !iscContractAddress) {
                 throw Error('Transaction is missing');
             }
-            const depositTotal =
-                isPayingAllBalance && gasEstimation
-                    ? new BigNumber(depositAmount).minus(gasEstimation).toString()
-                    : depositAmount;
 
-            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
+            const params = buildDepositL2Parameters(receivingAddress, depositAmount);
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
                 functionName: 'transferToL1',
                 args: params,
-                chainId: chainId,
+                chainId,
             });
         },
     });
 
-    return (
-        <DepositForm
-            deposit={deposit}
-            isGasEstimationLoading={isGasEstimationLoading}
-            isTransactionLoading={isTransactionLoading}
-            gasEstimation={gasEstimation}
-        />
-    );
+    return <DepositForm deposit={deposit} isTransactionLoading={isTransactionLoading} />;
 }

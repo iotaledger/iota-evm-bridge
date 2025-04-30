@@ -1,10 +1,7 @@
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { parseAmount } from './parseAmount';
 
-export function buildDepositL2Parameters(
-    receiverAddress: string,
-    baseTokensToWithdraw: string,
-) {
+export function buildDepositL2Parameters(receiverAddress: string, baseTokensToWithdraw: string) {
     const convertedBaseToken = Number(parseAmount(baseTokensToWithdraw, IOTA_DECIMALS));
     const parameters = [
         receiverAddress,
