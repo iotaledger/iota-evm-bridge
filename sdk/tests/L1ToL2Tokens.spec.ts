@@ -69,7 +69,7 @@ test('Send Non-IOTA Tokens', async () => {
     const MNEMONIC =
         'mom program scrap easily doctor seed slender secret mad flat foam hospital cherry seek river you obscure column blood reflect arch pencil cat burst';
     const TOKEN_COIN_TYPE =
-        '0xe1e88f4962b3ea96cfad19aee42f666b04bbce4dc4327c3cd63f1b8ff16e13b2::tool_coin::TOOL_COIN';
+        '0x46c6f1abe5ffd0d96ed1d8c173f88b98874fab52cbf61402bb74d3b553c44ba6::tool_coin::TOOL_COIN';
 
     const keypair = Ed25519Keypair.deriveKeypair(MNEMONIC);
     const address = keypair.toIotaAddress();
@@ -97,7 +97,7 @@ test('Send Non-IOTA Tokens', async () => {
 
     // Place Token
     const tokenCoin = tx.splitCoins(
-        tx.object('0xf7662ffd9cb079d8e75ab4805ba78fdb0e0fb78cf49aa0fa01ecb7ebdf15d04e'),
+        tx.object('0x6080a43e591b916f471e05c3c47914738d3ae5cf4b2fc1419031a7fb8b09f16c'),
         [tx.pure(bcs.U64.serialize(tokenAmountToSend))],
     );
     iscTx.placeCoinInBag({
