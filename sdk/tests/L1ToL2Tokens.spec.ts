@@ -12,6 +12,8 @@ import { requestFunds } from './utils';
 const { L1, L2 } = CONFIG;
 let client: IotaClient;
 
+console.log(L1.rpcUrl);
+
 beforeAll(async () => {
     client = new IotaClient({
         url: L1.rpcUrl,
