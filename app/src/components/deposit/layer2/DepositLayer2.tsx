@@ -41,12 +41,6 @@ export function DepositLayer2() {
         hash: hash,
     });
 
-    useEffect(() => {
-        if (isSuccess && hash) {
-            toast('Deposit submitted!');
-        }
-    }, [isSuccess, hash]);
-
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
         queryKey: [
             'l2-deposit-transaction-gas-estimate',
@@ -69,6 +63,12 @@ export function DepositLayer2() {
             return null;
         },
     });
+
+    useEffect(() => {
+        if (isSuccess && hash) {
+            toast('Deposit submitted!');
+        }
+    }, [isSuccess, hash]);
 
     useEffect(() => {
         if (isError && error) {
