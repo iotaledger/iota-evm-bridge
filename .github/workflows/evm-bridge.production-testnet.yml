@@ -1,23 +1,17 @@
-name: Staging Deploy for the IOTA EVM Bridge
+name: Production Deploy for the IOTA EVM Bridge with Testnet
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-            - '.github/workflows/**'
-            - 'app/**'
-            - 'sdk/**'
+    workflow_dispatch:
 
 jobs:
     deploy-testnet-staging:
         uses: ./.github/workflows/app-vercel-deploy.yml
         with:
-            VERCEL_TARGET: staging-testnet
+            VERCEL_TARGET: production-testnet
         secrets:
             VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
             VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
             EVM_BRIDGE_CONFIG: ${{ secrets.EVM_BRIDGE_CONFIG }}
-            EVM_BRIDGE_DEFAULT_NETWORK: ${{ secrets.EVM_BRIDGE_PREVIEW_DEFAULT_NETWORK }}
+            EVM_BRIDGE_DEFAULT_NETWORK: ${{ secrets.EVM_BRIDGE_PROD_TESTNET_DEFAULT_NETWORK }}
