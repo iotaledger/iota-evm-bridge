@@ -14,11 +14,12 @@ export function FaucetButton() {
     const variables = useNetworkVariables();
 
     const recipient = currentAccount?.address;
+    const isFaucetEnabled = !!variables.faucet;
 
     const { mutateAsync: requestFaucet, isPending } = useMutation({
         mutationKey: ['faucet-funds', recipient],
         async mutationFn() {
-            if (recipient) {
+            if (recipient && isFaucetEnabled) {
                 await requestIotaFromFaucetV0({
                     host: variables.faucet,
                     recipient,
@@ -32,6 +33,10 @@ export function FaucetButton() {
             toast.error('Something went wrong while requesting funds.');
         },
     });
+
+    if(!isFaucetEnabled) {
+        return null;
+    }
 
     return (
         <Button
