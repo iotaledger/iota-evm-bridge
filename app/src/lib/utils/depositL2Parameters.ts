@@ -8,7 +8,7 @@ export function buildDepositL2Parameters(receiverAddress: string, baseTokensToWi
         {
             coins: [
                 {
-                    coinType: '0x2::iota::IOTA',
+                    coinType: '0x0000000000000000000000000000000000000000000000000000000000000002::iota::IOTA',
                     amount: convertedBaseToken,
                 },
                 // Put additional native tokens here with the proper coin type and value

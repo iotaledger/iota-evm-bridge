@@ -59,7 +59,17 @@ export function DepositLayer2() {
                     args: params,
                     account: layer2Account.address,
                 });
-                return gas ? formatGwei(gas) : null;
+                
+                let gasPrice = await client?.getGasPrice();
+
+                if (!gasPrice) {
+                    gasPrice = 10n;
+                } else {
+                    gasPrice = BigInt(formatGwei(gasPrice));
+                }
+
+                // Not sure if we should just return null here, a TX would fail in this case. Maybe rather estimate again?
+                return gas ? formatGwei(BigInt(gas*gasPrice)) : null;
             }
             return null;
         },
@@ -118,12 +128,9 @@ export function DepositLayer2() {
                 throw Error('Transaction is missing');
             }
 
-            const depositTotal =
-                isPayingAllBalance && gasEstimation
-                    ? new BigNumber(depositAmount).minus(gasEstimation).toString()
-                    : depositAmount;
-
+            const depositTotal = new BigNumber(depositAmount).minus(gasEstimation!).toString()
             const params = buildDepositL2Parameters(receivingAddress, depositTotal);
+
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
