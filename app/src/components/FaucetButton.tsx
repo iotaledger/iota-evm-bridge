@@ -34,7 +34,7 @@ export function FaucetButton() {
         },
     });
 
-    if(!isFaucetEnabled) {
+    if (!isFaucetEnabled) {
         return null;
     }
 
