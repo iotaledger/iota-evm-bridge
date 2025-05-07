@@ -98,7 +98,9 @@ export function DepositForm({
             .minus(isPayingAllBalance && gasEstimation ? gasEstimation : 0)
             .minus(
                 isFromLayer1
-                    ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
+                    ? isPayingAllBalance
+                        ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
+                        : '0'
                     : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
             );
         return receivingAmount.isLessThanOrEqualTo(0)
