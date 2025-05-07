@@ -47,32 +47,37 @@ export function DepositLayer2() {
     });
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, iscContractAddress],
+        queryKey: [
+            'l2-deposit-transaction-gas-estimate',
+            receivingAddress,
+            iscContractAddress,
+            depositAmount,
+        ],
         async queryFn() {
-            if (receivingAddress && iscContractAddress) {
-                const params = buildDepositL2Parameters(
-                    receivingAddress,
-                    MINIMUM_SEND_AMOUNT.toString(),
-                );
-                const gas = await client?.estimateContractGas({
-                    address: iscContractAddress,
-                    abi: iscAbi,
-                    functionName: 'transferToL1',
-                    args: params,
-                    account: layer2Account.address,
-                });
-
-                let gasPrice = await client?.getGasPrice();
-
-                if (!gasPrice) {
-                    gasPrice = 10n;
-                } else {
-                    gasPrice = BigInt(formatGwei(gasPrice));
-                }
-
-                return gas ? formatGwei(BigInt(gas * gasPrice)) : null;
+            if (!receivingAddress || !iscContractAddress) {
+                return null;
             }
-            return null;
+            const params = buildDepositL2Parameters(
+                receivingAddress,
+                MINIMUM_SEND_AMOUNT.toString(),
+            );
+            const gas = await client?.estimateContractGas({
+                address: iscContractAddress,
+                abi: iscAbi,
+                functionName: 'transferToL1',
+                args: params,
+                account: layer2Account.address,
+            });
+
+            let gasPrice = await client?.getGasPrice();
+
+            if (!gasPrice) {
+                gasPrice = 10n;
+            } else {
+                gasPrice = BigInt(formatGwei(gasPrice));
+            }
+
+            return gas ? formatGwei(BigInt(gas * gasPrice)) : null;
         },
         refetchInterval: 2000,
     });

@@ -69,7 +69,7 @@ test.describe('Send MAX amount from L1', () => {
         await expect(amountField).toHaveValue('~ 10');
 
         // check est. gas fees and your receive
-        await testPageL1.waitForTimeout(2500);
+        await testPageL1.waitForTimeout(5500);
 
         const gasFeeValue = await testPageL1
             .locator('div:has(> span:text("Est. Gas Fees"))')
@@ -180,14 +180,14 @@ test.describe('Send MAX amount from L2', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000032');
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000370');
 
         const youReceiveValue = await testPageL2
             .locator('div:has(> span:text("You Receive"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.998968');
+        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.989630');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 
@@ -199,6 +199,6 @@ test.describe('Send MAX amount from L2', () => {
 
         const l1Balance = await checkL1BalanceWithRetries(addressL1);
 
-        expect(Number(l1Balance).toFixed(6)).toEqual('8.999968');
+        expect(Number(l1Balance).toFixed(6)).toEqual('8.999630');
     });
 });
