@@ -27,20 +27,16 @@ export function DepositLayer1() {
 
     const [gasEstimation, setGasEstimation] = useState<string>(L1_BASE_GAS_BUDGET.toString());
 
-    const {
-        data: transactionData,
-        isPending: isBuildingTransaction,
-        error: aaa,
-    } = useBuildL1DepositTransaction({
-        receivingAddress,
-        amount: depositAmount,
-        gasEstimation,
-    });
+    const { data: transactionData, isPending: isBuildingTransaction } =
+        useBuildL1DepositTransaction({
+            receivingAddress,
+            amount: depositAmount,
+            gasEstimation,
+        });
     const gasSummary = transactionData?.gasSummary;
     const formattedGasEstimation = gasSummary?.totalGas
         ? formatIOTAFromNanos(BigInt(gasSummary.totalGas))
         : undefined;
-    console.log('error', aaa);
 
     useEffect(() => {
         const gasBudget = transactionData?.gasSummary?.budget;
