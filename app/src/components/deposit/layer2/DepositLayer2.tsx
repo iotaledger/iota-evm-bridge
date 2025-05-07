@@ -135,7 +135,10 @@ export function DepositLayer2() {
                 throw Error('Transaction is missing');
             }
 
-            const depositTotal = new BigNumber(depositAmount).minus(gasEstimation!).toString();
+            const depositTotal =
+                isPayingAllBalance && gasEstimation
+                    ? new BigNumber(depositAmount).minus(gasEstimation).toString()
+                    : depositAmount;
             const params = buildDepositL2Parameters(receivingAddress, depositTotal);
 
             await writeContractAsync({
