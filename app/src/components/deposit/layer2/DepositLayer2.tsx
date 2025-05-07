@@ -12,7 +12,11 @@ import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
-import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import {
+    iscAbi,
+    L2_USER_REJECTED_TX_ERROR_TEXT,
+    MINIMUM_SEND_AMOUNT,
+} from '../../../lib/constants';
 import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -51,7 +55,10 @@ export function DepositLayer2() {
         ],
         async queryFn() {
             if (receivingAddress && depositAmount && iscContractAddress) {
-                const params = buildDepositL2Parameters(receivingAddress, depositAmount);
+                const params = buildDepositL2Parameters(
+                    receivingAddress,
+                    MINIMUM_SEND_AMOUNT.toString(),
+                );
                 const gas = await client?.estimateContractGas({
                     address: iscContractAddress,
                     abi: iscAbi,
@@ -59,7 +66,7 @@ export function DepositLayer2() {
                     args: params,
                     account: layer2Account.address,
                 });
-                
+
                 let gasPrice = await client?.getGasPrice();
 
                 if (!gasPrice) {
@@ -68,11 +75,11 @@ export function DepositLayer2() {
                     gasPrice = BigInt(formatGwei(gasPrice));
                 }
 
-                // Not sure if we should just return null here, a TX would fail in this case. Maybe rather estimate again?
-                return gas ? formatGwei(BigInt(gas*gasPrice)) : null;
+                return gas ? formatGwei(BigInt(gas * gasPrice)) : null;
             }
             return null;
         },
+        refetchInterval: 2000,
     });
 
     useEffect(() => {
@@ -128,7 +135,7 @@ export function DepositLayer2() {
                 throw Error('Transaction is missing');
             }
 
-            const depositTotal = new BigNumber(depositAmount).minus(gasEstimation!).toString()
+            const depositTotal = new BigNumber(depositAmount).minus(gasEstimation!).toString();
             const params = buildDepositL2Parameters(receivingAddress, depositTotal);
 
             await writeContractAsync({

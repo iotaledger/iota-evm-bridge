@@ -25,7 +25,7 @@ import { Loader, SwapAccount } from '@iota/apps-ui-icons';
 import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 import { formatIOTAFromNanos } from '../../lib/utils';
-import { L2_GAS_BUDGET } from 'isc-client';
+import { L1_FROM_L2_GAS_BUDGET, L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 
 interface DepositFormProps {
     deposit: () => void;
@@ -96,10 +96,19 @@ export function DepositForm({
         } else if (isPayingAllBalance) {
             const receivingAmount = new BigNumber(depositAmountValue)
                 .minus(gasEstimation)
-                .minus(formatIOTAFromNanos(L2_GAS_BUDGET));
+                .minus(
+                    isFromLayer1
+                        ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
+                        : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
+                );
             return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         } else {
-            return depositAmountValue;
+            const receivingAmount = new BigNumber(depositAmountValue).minus(
+                isFromLayer1
+                    ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
+                    : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
+            );
+            return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
         }
     })();
 

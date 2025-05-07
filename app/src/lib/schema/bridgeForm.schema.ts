@@ -4,6 +4,7 @@ import { parseAmount } from '../utils';
 import { isAddress, parseEther } from 'viem';
 import { isValidIotaAddress } from '@iota/iota-sdk/utils';
 import BigNumber from 'bignumber.js';
+import { MINIMUM_SEND_AMOUNT } from '../constants';
 
 export function createBridgeFormSchema(
     totalAccountBalance: bigint,
@@ -17,7 +18,7 @@ export function createBridgeFormSchema(
                 .trim()
                 .refine(
                     (value) => {
-                        return new BigNumber(value).isGreaterThanOrEqualTo(0.01);
+                        return new BigNumber(value).isGreaterThanOrEqualTo(MINIMUM_SEND_AMOUNT);
                     },
                     {
                         message: 'Invalid amount',
