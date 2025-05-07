@@ -93,23 +93,17 @@ export function DepositForm({
     const receivingAmountDisplay = (() => {
         if (!depositAmountValue || !gasEstimation) {
             return PLACEHOLDER_VALUE_DISPLAY;
-        } else if (isPayingAllBalance) {
-            const receivingAmount = new BigNumber(depositAmountValue)
-                .minus(gasEstimation)
-                .minus(
-                    isFromLayer1
-                        ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
-                        : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
-                );
-            return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
-        } else {
-            const receivingAmount = new BigNumber(depositAmountValue).minus(
+        }
+        const receivingAmount = new BigNumber(depositAmountValue)
+            .minus(isPayingAllBalance && gasEstimation ? gasEstimation : 0)
+            .minus(
                 isFromLayer1
                     ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
                     : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
             );
-            return receivingAmount.isLessThanOrEqualTo(0) ? null : receivingAmount.toString();
-        }
+        return receivingAmount.isLessThanOrEqualTo(0)
+            ? PLACEHOLDER_VALUE_DISPLAY
+            : receivingAmount.toString();
     })();
 
     const fromAddress = isFromLayer1 ? layer1Account?.address : layer2Account?.address;

@@ -47,14 +47,9 @@ export function DepositLayer2() {
     });
 
     const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: [
-            'l2-deposit-transaction-gas-estimate',
-            receivingAddress,
-            depositAmount,
-            iscContractAddress,
-        ],
+        queryKey: ['l2-deposit-transaction-gas-estimate', receivingAddress, iscContractAddress],
         async queryFn() {
-            if (receivingAddress && depositAmount && iscContractAddress) {
+            if (receivingAddress && iscContractAddress) {
                 const params = buildDepositL2Parameters(
                     receivingAddress,
                     MINIMUM_SEND_AMOUNT.toString(),
