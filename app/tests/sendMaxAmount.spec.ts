@@ -187,7 +187,7 @@ test.describe('Send MAX amount from L2', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.989630');
+        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.999630');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 

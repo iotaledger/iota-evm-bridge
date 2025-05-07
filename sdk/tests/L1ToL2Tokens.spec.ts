@@ -75,7 +75,7 @@ test('Send Non-IOTA Tokens', async () => {
     const address = keypair.toIotaAddress();
     const wallet = Wallet.createRandom();
 
-    await requestFunds(client, L1.faucetUrl, address);
+    await requestFunds(client, L1.faucetUrl!, address);
 
     // EVM Address
     const recipientAddress = wallet.address;
