@@ -25,7 +25,7 @@ import { Loader, SwapAccount } from '@iota/apps-ui-icons';
 import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
 import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
 import { formatIOTAFromNanos } from '../../lib/utils';
-import { L1_FROM_L2_GAS_BUDGET, L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 
 interface DepositFormProps {
     deposit: () => void;
@@ -100,8 +100,8 @@ export function DepositForm({
                 isFromLayer1
                     ? isPayingAllBalance
                         ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
-                        : '0'
-                    : formatIOTAFromNanos(L1_FROM_L2_GAS_BUDGET),
+                        : '0' // The L2 gas is already included in non-max transfers for L1 -> L2
+                    : '0', // User doesn't pay for L1 gas in L2 -> L1 transfers
             );
         return receivingAmount.isLessThanOrEqualTo(0)
             ? PLACEHOLDER_VALUE_DISPLAY
