@@ -101,7 +101,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(youReceiveValue).toEqual('5');
+        expect(youReceiveValue).toEqual('4.999');
 
         await expect(pageWithL1Wallet.getByText('Bridge Assets')).toBeEnabled();
         await pageWithL1Wallet.getByText('Bridge Assets').click();
@@ -162,14 +162,14 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000036');
+        expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000370');
 
         const youReceiveValue = await pageWithL2Wallet
             .locator('div:has(> span:text("You Receive"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(youReceiveValue).toEqual('2');
+        expect(youReceiveValue).toEqual('1.99');
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
 

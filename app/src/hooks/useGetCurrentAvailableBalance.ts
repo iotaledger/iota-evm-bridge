@@ -19,6 +19,9 @@ export function useGetCurrentAvailableBalance(): {
     );
     const { data: layer2Balance, isLoading: isLoadingL2 } = useBalanceL2({
         address: layer2Account?.address,
+        query: {
+            refetchInterval: 2000,
+        },
     });
 
     if ((isFromLayer1 && isLoadingL1) || (!isFromLayer1 && isLoadingL2)) {

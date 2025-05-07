@@ -7,7 +7,7 @@ export const envSchema = z.record(
         L1: z.object({
             networkName: z.string(),
             rpcUrl: z.string().url(),
-            faucetUrl: z.string().url(),
+            faucetUrl: z.string().url().optional(),
             chainId: z.string(),
             packageId: z.string(),
             accountsContract: z

@@ -1,4 +1,4 @@
-import { EvmRpcClient, IscTransaction, L2_GAS_BUDGET } from '../src/index';
+import { EvmRpcClient, IscTransaction, L2_FROM_L1_GAS_BUDGET } from '../src/index';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
@@ -33,7 +33,7 @@ const amountToSend = BigInt(1 * 1_000_000);
 // Amount to send (1 Boxfish)
 const tokenAmountToSend = BigInt(1);
 // We also need to place a little more in the bag to cover the L2 gas
-const amountToPlace = amountToSend + L2_GAS_BUDGET;
+const amountToPlace = amountToSend + L2_FROM_L1_GAS_BUDGET;
 
 console.log('Sending...');
 

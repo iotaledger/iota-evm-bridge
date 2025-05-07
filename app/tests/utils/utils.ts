@@ -1,7 +1,7 @@
 import { ethers, Wallet, HDNodeWallet, JsonRpcProvider } from 'ethers';
 import { BrowserContext, Page } from '@playwright/test';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
-import { IscTransaction, L2_GAS_BUDGET } from 'isc-client';
+import { IscTransaction, L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
@@ -97,12 +97,12 @@ export async function fundL2AddressWithIscClient(addressL2: string, amount: numb
     const address = keypair.toIotaAddress();
 
     await requestIotaFromFaucetV0({
-        host: L1.faucetUrl,
+        host: L1.faucetUrl!,
         recipient: address,
     });
 
     const amountToSend = BigInt(amount * 1000000000);
-    const amountToPlace = amountToSend + L2_GAS_BUDGET;
+    const amountToPlace = amountToSend + L2_FROM_L1_GAS_BUDGET;
 
     const iscTx = new IscTransaction(L1);
 

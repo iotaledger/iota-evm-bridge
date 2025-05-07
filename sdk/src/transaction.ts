@@ -2,7 +2,7 @@ import { Transaction, TransactionObjectArgument } from '@iota/iota-sdk/transacti
 import * as isc from './isc';
 import { ChainData } from './types';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
-import { L2_GAS_BUDGET } from './constants';
+import { L2_FROM_L1_GAS_BUDGET } from './constants';
 import type { ObjectArgument } from './isc';
 
 export type Agent = {
@@ -77,7 +77,7 @@ export class IscTransaction {
         contractFunction,
         contractArgs,
         transfers,
-        gasBudget = L2_GAS_BUDGET,
+        gasBudget = L2_FROM_L1_GAS_BUDGET,
     }: {
         contractArgs: Uint8Array[];
         contract: number;
@@ -107,7 +107,7 @@ export class IscTransaction {
         accountsContract,
         accountsFunction,
         transfers,
-        gasBudget = L2_GAS_BUDGET,
+        gasBudget = L2_FROM_L1_GAS_BUDGET,
         bag,
     }: {
         address: string;

@@ -12,7 +12,11 @@ import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
-import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import {
+    iscAbi,
+    L2_USER_REJECTED_TX_ERROR_TEXT,
+    MINIMUM_SEND_AMOUNT,
+} from '../../../lib/constants';
 import { formatGwei } from 'viem';
 import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -46,23 +50,36 @@ export function DepositLayer2() {
         queryKey: [
             'l2-deposit-transaction-gas-estimate',
             receivingAddress,
-            depositAmount,
             iscContractAddress,
+            depositAmount,
         ],
         async queryFn() {
-            if (receivingAddress && depositAmount && iscContractAddress) {
-                const params = buildDepositL2Parameters(receivingAddress, depositAmount);
-                const gas = await client?.estimateContractGas({
-                    address: iscContractAddress,
-                    abi: iscAbi,
-                    functionName: 'transferToL1',
-                    args: params,
-                    account: layer2Account.address,
-                });
-                return gas ? formatGwei(gas) : null;
+            if (!receivingAddress || !iscContractAddress) {
+                return null;
             }
-            return null;
+            const params = buildDepositL2Parameters(
+                receivingAddress,
+                MINIMUM_SEND_AMOUNT.toString(),
+            );
+            const gas = await client?.estimateContractGas({
+                address: iscContractAddress,
+                abi: iscAbi,
+                functionName: 'transferToL1',
+                args: params,
+                account: layer2Account.address,
+            });
+
+            let gasPrice = await client?.getGasPrice();
+
+            if (!gasPrice) {
+                gasPrice = 10n;
+            } else {
+                gasPrice = BigInt(formatGwei(gasPrice));
+            }
+
+            return gas ? formatGwei(BigInt(gas * gasPrice)) : null;
         },
+        refetchInterval: 2000,
     });
 
     useEffect(() => {
@@ -122,8 +139,8 @@ export function DepositLayer2() {
                 isPayingAllBalance && gasEstimation
                     ? new BigNumber(depositAmount).minus(gasEstimation).toString()
                     : depositAmount;
-
             const params = buildDepositL2Parameters(receivingAddress, depositTotal);
+
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,

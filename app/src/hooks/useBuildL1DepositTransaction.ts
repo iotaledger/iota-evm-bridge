@@ -7,7 +7,7 @@ import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
-import { L2_GAS_BUDGET } from 'isc-client';
+import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
@@ -43,9 +43,9 @@ export function useBuildL1DepositTransaction({
 
             const amountToSend =
                 isBridgingAllBalance && gasEstimation
-                    ? requestedAmount - BigInt(gasEstimation) - L2_GAS_BUDGET
+                    ? requestedAmount - BigInt(gasEstimation) - L2_FROM_L1_GAS_BUDGET
                     : requestedAmount;
-            const amountToPlace = amountToSend + L2_GAS_BUDGET;
+            const amountToPlace = amountToSend + L2_FROM_L1_GAS_BUDGET;
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
@@ -80,5 +80,6 @@ export function useBuildL1DepositTransaction({
                 gasSummary: getGasSummary(txDryRun),
             };
         },
+        refetchInterval: 2000,
     });
 }
