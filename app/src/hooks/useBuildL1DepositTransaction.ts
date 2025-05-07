@@ -80,5 +80,6 @@ export function useBuildL1DepositTransaction({
                 gasSummary: getGasSummary(txDryRun),
             };
         },
+        refetchInterval: 2000,
     });
 }

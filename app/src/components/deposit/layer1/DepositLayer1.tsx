@@ -11,7 +11,7 @@ import { formatIOTAFromNanos } from '../../../lib/utils';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import { L1_BASE_GAS_BUDGET } from 'isc-client';
 import { useL2BalanceBaseToken } from '../../../hooks/useL2BalanceBaseToken';
 
 export function DepositLayer1() {
@@ -25,18 +25,22 @@ export function DepositLayer1() {
     const { data: l1BalanceInL2 } = useL2BalanceBaseToken(address);
     console.log('l1BalanceInL2:', l1BalanceInL2);
 
-    const [gasEstimation, setGasEstimation] = useState<string>(L2_FROM_L1_GAS_BUDGET.toString());
+    const [gasEstimation, setGasEstimation] = useState<string>(L1_BASE_GAS_BUDGET.toString());
 
-    const { data: transactionData, isPending: isBuildingTransaction } =
-        useBuildL1DepositTransaction({
-            receivingAddress,
-            amount: depositAmount,
-            gasEstimation,
-        });
+    const {
+        data: transactionData,
+        isPending: isBuildingTransaction,
+        error: aaa,
+    } = useBuildL1DepositTransaction({
+        receivingAddress,
+        amount: depositAmount,
+        gasEstimation,
+    });
     const gasSummary = transactionData?.gasSummary;
     const formattedGasEstimation = gasSummary?.totalGas
         ? formatIOTAFromNanos(BigInt(gasSummary.totalGas))
         : undefined;
+    console.log('error', aaa);
 
     useEffect(() => {
         const gasBudget = transactionData?.gasSummary?.budget;
