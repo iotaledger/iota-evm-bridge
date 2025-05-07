@@ -25,5 +25,8 @@
     "globalEnv": [
         "VITE_EVM_BRIDGE_CONFIG",
         "VITE_EVM_BRIDGE_DEFAULT_NETWORK"
+    ],
+    "globalDependencies": [
+        "app/.env"
     ]
 }
