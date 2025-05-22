@@ -1,0 +1,45 @@
+import { useQuery } from '@tanstack/react-query';
+import { buildDepositL2Parameters } from '../lib/utils';
+import { L2Chain } from '../config';
+import { useAccount, usePublicClient } from 'wagmi';
+import { iscAbi } from '../lib/constants';
+import { formatGwei } from 'viem';
+
+interface useL2GasEstimateProps {
+    address: string;
+    amount: string;
+}
+
+export function useL2GasEstimate({ address, amount }: useL2GasEstimateProps) {
+    const layer2Account = useAccount();
+    const iscContractAddress = (layer2Account?.chain as L2Chain)?.iscContractAddress;
+    const client = usePublicClient();
+
+    return useQuery({
+        queryKey: ['l2-deposit-transaction-gas-estimate', address, iscContractAddress, amount],
+        async queryFn() {
+            if (!address || !iscContractAddress) {
+                return null;
+            }
+            const params = buildDepositL2Parameters(address, amount);
+            const gas = await client?.estimateContractGas({
+                address: iscContractAddress,
+                abi: iscAbi,
+                functionName: 'transferToL1',
+                args: params,
+                account: layer2Account.address,
+            });
+
+            let gasPrice = await client?.getGasPrice();
+
+            if (!gasPrice) {
+                gasPrice = 10n;
+            } else {
+                gasPrice = BigInt(formatGwei(gasPrice));
+            }
+
+            return gas ? gas * gasPrice : null;
+        },
+        refetchInterval: 2000,
+    });
+}
