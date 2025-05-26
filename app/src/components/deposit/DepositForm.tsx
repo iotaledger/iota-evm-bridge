@@ -45,6 +45,7 @@ export function DepositForm({
 
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
+    const setReceivingAddress = useBridgeStore((state) => state.setReceivingAddress);
 
     const { isLoading: isLoadingBalance, formattedAvailableBalance } =
         useGetCurrentAvailableBalance();
@@ -60,10 +61,15 @@ export function DepositForm({
         watch,
     } = formMethods;
     const values = watch();
-    const depositAmountValue = values.depositAmount;
-    const isPayingAllBalance = new BigNumber(depositAmountValue).isEqualTo(
+
+    const { depositAmount, receivingAddress } = values;
+    const isPayingAllBalance = new BigNumber(depositAmount).isEqualTo(
         new BigNumber(formattedAvailableBalance),
     );
+
+    useEffect(() => {
+        setReceivingAddress(receivingAddress);
+    }, [receivingAddress]);
 
     useEffect(() => {
         const isFormIncomplete = Object.values(getValues()).some(
@@ -106,15 +112,14 @@ export function DepositForm({
         isPayingAllBalance === true;
 
     const depositAmountErrorMessage =
-        depositAmountValue !== '' ? errors[BridgeFormInputName.DepositAmount]?.message : undefined;
+        depositAmount !== '' ? errors[BridgeFormInputName.DepositAmount]?.message : undefined;
     const receivingAddressErrorMessage =
-        values.receivingAddress !== ''
-            ? errors[BridgeFormInputName.ReceivingAddress]?.message
-            : undefined;
+        receivingAddress !== '' ? errors[BridgeFormInputName.ReceivingAddress]?.message : undefined;
 
-    const caption = formattedAvailableBalance
-        ? `${formattedAvailableBalance} IOTA Available`
-        : '--';
+    const caption =
+        formattedAvailableBalance && !isLoadingBalance
+            ? `${formattedAvailableBalance} IOTA Available`
+            : '--';
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
@@ -128,7 +133,7 @@ export function DepositForm({
                 label="Amount"
                 type={InputType.NumericFormat}
                 prefix={isPayingAllBalance ? '~ ' : undefined}
-                value={values.depositAmount}
+                value={depositAmount}
                 errorMessage={depositAmountErrorMessage}
                 {...registerDepositAmount}
                 data-testid="bridge-amount"
@@ -196,7 +201,7 @@ export function DepositForm({
                     fullwidth
                     keyText={`${isPayingAllBalance ? 'Est. ' : ''} You Receive`}
                     supportingLabel="IOTA"
-                    value={depositAmountValue ? depositAmountValue : PLACEHOLDER_VALUE_DISPLAY}
+                    value={depositAmount ? depositAmount : PLACEHOLDER_VALUE_DISPLAY}
                 />
             </div>
 
@@ -213,7 +218,7 @@ export function DepositForm({
                     isLoadingBalance
                 }
                 icon={
-                    depositAmountValue && isTransactionLoading ? (
+                    depositAmount && isTransactionLoading ? (
                         <Loader className="animate-spin" />
                     ) : undefined
                 }

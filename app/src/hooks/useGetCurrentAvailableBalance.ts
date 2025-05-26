@@ -17,16 +17,22 @@ export function useGetCurrentAvailableBalance(): {
 } {
     const layer1Account = useCurrentAccount();
     const layer2Account = useAccount();
+    const receivingAddress = useBridgeStore((state) => state.receivingAddress);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-
+    const isDepositAddressManualInput = useBridgeStore(
+        (state) => state.isDepositAddressManualInput,
+    );
     const { data: layer1BalanceData, isLoading: isLoadingL1 } = useBalanceL1(
         layer1Account?.address || '',
     );
     const layer1TotalBalance = layer1BalanceData?.totalBalance
         ? BigInt(layer1BalanceData?.totalBalance)
         : 0n;
+
+    const layer2Address =
+        isDepositAddressManualInput && isFromLayer1 ? receivingAddress : layer2Account?.address;
     const { data: maxAmountDataL1 } = useBuildL1DepositTransaction({
-        receivingAddress: layer2Account?.address,
+        receivingAddress: layer2Address,
         amount: layer1TotalBalance - L1_BASE_GAS_BUDGET,
     });
     const gasEstimationIOTA = BigInt(maxAmountDataL1?.gasSummary?.budget || 0);
@@ -38,7 +44,7 @@ export function useGetCurrentAvailableBalance(): {
         : layer1TotalBalance;
 
     const { data: layer2BalanceData, isLoading: isLoadingL2 } = useBalanceL2({
-        address: layer2Account?.address,
+        address: layer2Address as `0x${string}`,
         query: {
             refetchInterval: 2000,
         },
@@ -54,7 +60,12 @@ export function useGetCurrentAvailableBalance(): {
             ? layer2TotalBalance - gasEstimationEVM
             : layer2TotalBalance;
 
-    if ((isFromLayer1 && isLoadingL1) || (!isFromLayer1 && isLoadingL2)) {
+    if (
+        (isFromLayer1 && isLoadingL1) ||
+        (!isFromLayer1 && isLoadingL2) ||
+        !layer2Address ||
+        !layer1Account
+    ) {
         return { availableBalance: BigInt(0), isLoading: true, formattedAvailableBalance: '0' };
     }
 
