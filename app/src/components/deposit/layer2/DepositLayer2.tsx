@@ -7,7 +7,6 @@ import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
 import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
-import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
@@ -24,7 +23,6 @@ export function DepositLayer2() {
 
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount, receivingAddress } = watch();
-    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const { data: hash, writeContractAsync, isSuccess, isError, error } = useWriteContract({});
     const {
@@ -84,7 +82,6 @@ export function DepositLayer2() {
             'l2-deposit-transaction',
             receivingAddress,
             depositAmount,
-            isPayingAllBalance,
             iscContractAddress,
             chainId,
         ],
