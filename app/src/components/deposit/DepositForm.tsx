@@ -48,7 +48,6 @@ export function DepositForm({
 
     const { isLoading: isLoadingBalance, formattedAvailableBalance } =
         useGetCurrentAvailableBalance();
-    console.log('formattedAvailableBalance:', formattedAvailableBalance);
     const formMethods = useFormContext<DepositFormData>();
 
     const {
@@ -212,7 +211,6 @@ export function DepositForm({
                     isTransactionLoading ||
                     isGasEstimationLoading ||
                     isLoadingBalance
-                    // !!(isPayingAllBalance && !gasEstimation)
                 }
                 icon={
                     depositAmountValue && isTransactionLoading ? (

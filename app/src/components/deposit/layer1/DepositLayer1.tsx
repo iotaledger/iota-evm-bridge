@@ -31,12 +31,11 @@ export function DepositLayer1() {
             amount: parseAmount(depositAmount, IOTA_DECIMALS) ?? BigInt(0),
             refetchInterval: 2000,
         });
-    console.log('transactionData:', transactionData);
     const gasSummary = transactionData?.gasSummary;
     const formattedGasEstimation = gasSummary?.totalGas
         ? formatIOTAFromNanos(BigInt(gasSummary.totalGas))
         : undefined;
-    console.log('formattedGasEstimation:', formattedGasEstimation);
+
     const deposit = async () => {
         if (!transactionData?.transaction) {
             throw Error('Transaction is missing');

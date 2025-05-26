@@ -3,7 +3,6 @@ import { buildDepositL2Parameters } from '../lib/utils';
 import { L2Chain } from '../config';
 import { useAccount, usePublicClient } from 'wagmi';
 import { iscAbi } from '../lib/constants';
-import { formatGwei } from 'viem';
 
 interface useL2GasEstimateProps {
     address: string;
@@ -18,7 +17,7 @@ export function useL2GasEstimate({ address, amount }: useL2GasEstimateProps) {
     return useQuery({
         queryKey: ['l2-deposit-transaction-gas-estimate', address, iscContractAddress, amount],
         async queryFn() {
-            if (!address || !iscContractAddress) {
+            if (!address || !amount || !iscContractAddress) {
                 return null;
             }
             const params = buildDepositL2Parameters(address, amount);
@@ -31,13 +30,9 @@ export function useL2GasEstimate({ address, amount }: useL2GasEstimateProps) {
             });
 
             let gasPrice = await client?.getGasPrice();
-
             if (!gasPrice) {
-                gasPrice = 10n;
-            } else {
-                gasPrice = BigInt(formatGwei(gasPrice));
+                gasPrice = 10000000000n;
             }
-
             return gas ? gas * gasPrice : null;
         },
         refetchInterval: 2000,

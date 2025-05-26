@@ -14,7 +14,7 @@ import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
 import { useL2GasEstimate } from '../../../hooks/useL2GasEstimate';
-import { formatGwei } from 'viem';
+import { formatEther } from 'viem';
 
 export function DepositLayer2() {
     const queryClient = useQueryClient();
@@ -39,7 +39,7 @@ export function DepositLayer2() {
         address: receivingAddress,
         amount: depositAmount,
     });
-    console.log('DepositLayer2 gasEstimationEVM:', gasEstimationEVM);
+
     useEffect(() => {
         if (isSuccess && hash) {
             toast('Deposit submitted!');
@@ -79,11 +79,7 @@ export function DepositLayer2() {
         }
     }, [isTransactionError, transactionError]);
 
-    const {
-        mutate: deposit,
-        isPending: isTransactionLoading,
-        error: depositError,
-    } = useMutation({
+    const { mutate: deposit, isPending: isTransactionLoading } = useMutation({
         mutationKey: [
             'l2-deposit-transaction',
             receivingAddress,
@@ -107,13 +103,12 @@ export function DepositLayer2() {
         },
     });
 
-    console.log('DepositLayer2 deposti erorr:', depositError);
     return (
         <DepositForm
             deposit={deposit}
             isGasEstimationLoading={isGasEstimationLoading}
             isTransactionLoading={isTransactionLoading}
-            gasEstimationEVM={formatGwei(gasEstimationEVM || 0n)}
+            gasEstimationEVM={formatEther(gasEstimationEVM || 0n)}
         />
     );
 }

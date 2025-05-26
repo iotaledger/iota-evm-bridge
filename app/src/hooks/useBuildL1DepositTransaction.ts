@@ -11,40 +11,24 @@ interface BuildL1DepositTransaction {
     amount: bigint; // Amount in nanos
     receivingAddress?: string;
     refetchInterval?: number;
-    // gasEstimation?: string;
 }
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
     amount,
     refetchInterval,
-    // gasEstimation,
 }: BuildL1DepositTransaction) {
     const currentAccount = useCurrentAccount();
     const client = useIotaClient();
     const variables = useNetworkVariables();
     const senderAddress = currentAccount?.address as string;
-    // const isBridgingAllBalance = useIsBridgingAllBalance();
-    console.log('amount:', amount);
     return useQuery({
-        queryKey: [
-            'l1-deposit-transaction',
-            receivingAddress,
-            amount.toString(),
-            senderAddress,
-            // gasEstimation,
-            // isBridgingAllBalance,
-        ],
+        queryKey: ['l1-deposit-transaction', receivingAddress, amount.toString(), senderAddress],
         queryFn: async () => {
-            // const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
             if (!receivingAddress) {
                 throw Error('Invalid input: receivingAddress is missing');
             }
 
-            // const amountToSend =
-            //     isBridgingAllBalance && gasEstimation
-            //         ? requestedAmount - BigInt(gasEstimation) - L2_FROM_L1_GAS_BUDGET
-            //         : requestedAmount;
             const amountToPlace = amount + L2_FROM_L1_GAS_BUDGET;
 
             const iscTx = new IscTransaction(variables.chain);
