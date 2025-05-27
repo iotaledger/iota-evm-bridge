@@ -146,7 +146,7 @@ export async function closeBrowserTabsExceptLast(browserContext: BrowserContext)
 export async function closeMetaMaskModalIfExists(
     page: Page,
     modalSelector: string,
-    buttonSelector: string
+    buttonSelector: string,
 ): Promise<void> {
     await page.waitForTimeout(500);
     const modal = page.locator(modalSelector);
@@ -173,7 +173,7 @@ export async function addNetworkToMetaMask(l2WalletPage: Page) {
     await closeMetaMaskModalIfExists(
         l2WalletPage,
         '.mm-box.mm-modal-content',
-        'button[aria-label="Close"]'
+        'button[aria-label="Close"]',
     );
     await l2WalletPage.click('[data-testid="network-display"]');
     await l2WalletPage.getByText('Add a custom network').click();
