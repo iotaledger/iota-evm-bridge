@@ -90,11 +90,18 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await pageWithL1Wallet.waitForTimeout(2500);
 
         const gasFeeValue = await pageWithL1Wallet
-            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('div:has(> span:text("Est. IOTA Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
         expect(Number(gasFeeValue).toFixed(5)).toEqual('0.00663');
+
+        const gasFeeValueEVM = await pageWithL1Wallet
+            .locator('div:has(> span:text("Est. IOTA EVM Gas Fees"))')
+            .locator('xpath=../div/span')
+            .nth(1)
+            .textContent();
+        expect(gasFeeValueEVM).toEqual('0.001');
 
         const youReceiveValue = await pageWithL1Wallet
             .locator('div:has(> span:text("You Receive"))')
@@ -158,7 +165,7 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
         await pageWithL2Wallet.waitForTimeout(2500);
 
         const gasFeeValue = await pageWithL2Wallet
-            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('div:has(> span:text("Est. IOTA EVM Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();

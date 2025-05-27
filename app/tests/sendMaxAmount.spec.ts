@@ -179,13 +179,13 @@ test.describe('Send MAX amount from L2', () => {
 
         const amountField = testPageL2.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
-        await expect(amountField).toHaveValue('~ 9');
+        await expect(amountField).toHaveValue(/~ 8\.9996[0-9]*/);
 
         // check est. gas fees and your receive
         await testPageL2.waitForTimeout(2500);
 
         const gasFeeValue = await testPageL2
-            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('div:has(> span:text("Est. IOTA EVM Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();

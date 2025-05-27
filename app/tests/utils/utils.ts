@@ -137,6 +137,27 @@ export async function closeBrowserTabsExceptLast(browserContext: BrowserContext)
     }
 }
 
+/**
+ * Utility function to close a modal if it exists and is visible.
+ * @param page - The Playwright page instance.
+ * @param modalSelector - The selector for the modal container.
+ * @param selector - The modal close button selector (e.g., aria-label="Close").
+ */
+export async function closeMetaMaskModalIfExists(
+    page: Page,
+    modalSelector: string,
+    buttonSelector: string
+): Promise<void> {
+    await page.waitForTimeout(500);
+    const modal = page.locator(modalSelector);
+    if (await modal.isVisible()) {
+        const closeButton = modal.locator(buttonSelector);
+        if (await closeButton.isVisible()) {
+            await closeButton.click();
+        }
+    }
+}
+
 export async function getExtensionUrl(browserContext: BrowserContext): Promise<string> {
     let [background] = browserContext.serviceWorkers();
 
@@ -149,6 +170,11 @@ export async function getExtensionUrl(browserContext: BrowserContext): Promise<s
 }
 
 export async function addNetworkToMetaMask(l2WalletPage: Page) {
+    await closeMetaMaskModalIfExists(
+        l2WalletPage,
+        '.mm-box.mm-modal-content',
+        'button[aria-label="Close"]'
+    );
     await l2WalletPage.click('[data-testid="network-display"]');
     await l2WalletPage.getByText('Add a custom network').click();
 

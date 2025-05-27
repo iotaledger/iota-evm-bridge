@@ -10,6 +10,9 @@ import { useL2GasEstimate } from './useL2GasEstimate';
 import { MINIMUM_SEND_AMOUNT } from '../lib/constants';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 
+const GENERIC_EVM_ADDRESS = '0x1111111111111111111111111111111111111111';
+const GENERIC_IOTA_ADDRESS = '0x1111111111111111111111111111111111111111111111111111111111111111';
+
 export function useGetCurrentAvailableBalance(): {
     availableBalance: bigint;
     isLoading: boolean;
@@ -22,23 +25,26 @@ export function useGetCurrentAvailableBalance(): {
     const isDepositAddressManualInput = useBridgeStore(
         (state) => state.isDepositAddressManualInput,
     );
+    const layer1Address =
+        isDepositAddressManualInput && !isFromLayer1 ? receivingAddress : layer1Account?.address;
+    const layer2Address =
+        isDepositAddressManualInput && isFromLayer1 ? receivingAddress : layer2Account?.address;
+
     const { data: layer1BalanceData, isLoading: isLoadingL1 } = useBalanceL1(
-        layer1Account?.address || '',
+        layer1Address as `0x${string}`,
     );
     const layer1TotalBalance = layer1BalanceData?.totalBalance
         ? BigInt(layer1BalanceData?.totalBalance)
         : 0n;
 
-    const layer2Address =
-        isDepositAddressManualInput && isFromLayer1 ? receivingAddress : layer2Account?.address;
-    const { data: maxAmountDataL1 } = useBuildL1DepositTransaction({
-        receivingAddress: layer2Address,
-        amount: layer1TotalBalance - L1_BASE_GAS_BUDGET,
-    });
+    const { data: maxAmountDataL1, isLoading: isLoadingL1Transaction } =
+        useBuildL1DepositTransaction({
+            receivingAddress: layer2Address ?? GENERIC_EVM_ADDRESS,
+            amount: layer1TotalBalance - L1_BASE_GAS_BUDGET,
+        });
     const gasEstimationIOTA = BigInt(maxAmountDataL1?.gasSummary?.budget || 0);
     const isAvalableAmountLargerThanMinimumSendAmount =
-        layer1TotalBalance >
-        (parseAmount(MINIMUM_SEND_AMOUNT.toString(), IOTA_DECIMALS) ?? BigInt(0));
+        layer1TotalBalance > (parseAmount(MINIMUM_SEND_AMOUNT.toString(), IOTA_DECIMALS) ?? 0n);
     const layer1AvailableBalance = isAvalableAmountLargerThanMinimumSendAmount
         ? layer1TotalBalance - gasEstimationIOTA - L2_FROM_L1_GAS_BUDGET
         : layer1TotalBalance;
@@ -50,21 +56,18 @@ export function useGetCurrentAvailableBalance(): {
         },
     });
     const layer2TotalBalance = layer2BalanceData?.value ?? 0n;
-    const { data: gasEstimationData } = useL2GasEstimate({
-        address: layer1Account?.address || '',
+    const { data: gasEstimationDataEVM, isLoading: isLoadingGasEstimationEVM } = useL2GasEstimate({
+        address: layer1Address ?? GENERIC_IOTA_ADDRESS,
         amount: MINIMUM_SEND_AMOUNT.toString(),
     });
-    const gasEstimationEVM = gasEstimationData ? gasEstimationData : 0n;
+    const gasEstimationEVM = gasEstimationDataEVM ?? 0n;
     const layer2AvailableBalance =
         layer2TotalBalance >= gasEstimationEVM
             ? layer2TotalBalance - gasEstimationEVM
             : layer2TotalBalance;
-
     if (
-        (isFromLayer1 && isLoadingL1) ||
-        (!isFromLayer1 && isLoadingL2) ||
-        !layer2Address ||
-        !layer1Account
+        (isFromLayer1 && (isLoadingL1 || isLoadingL1Transaction)) ||
+        (!isFromLayer1 && (isLoadingL2 || isLoadingGasEstimationEVM))
     ) {
         return { availableBalance: BigInt(0), isLoading: true, formattedAvailableBalance: '0' };
     }
