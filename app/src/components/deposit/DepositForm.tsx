@@ -45,10 +45,7 @@ export function DepositForm({
 
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const setReceivingAddress = useBridgeStore((state) => state.setReceivingAddress);
 
-    const { isLoading: isLoadingBalance, formattedAvailableBalance } =
-        useGetCurrentAvailableBalance();
     const formMethods = useFormContext<DepositFormData>();
 
     const {
@@ -63,13 +60,12 @@ export function DepositForm({
     const values = watch();
 
     const { depositAmount, receivingAddress } = values;
+    const { isLoading: isLoadingBalance, formattedAvailableBalance } =
+        useGetCurrentAvailableBalance({ receivingAddress });
+
     const isPayingAllBalance = new BigNumber(depositAmount).isEqualTo(
         new BigNumber(formattedAvailableBalance),
     );
-
-    useEffect(() => {
-        setReceivingAddress(receivingAddress);
-    }, [receivingAddress]);
 
     useEffect(() => {
         const isFormIncomplete = Object.values(getValues()).some(
@@ -116,10 +112,9 @@ export function DepositForm({
     const receivingAddressErrorMessage =
         receivingAddress !== '' ? errors[BridgeFormInputName.ReceivingAddress]?.message : undefined;
 
-    const caption =
-        formattedAvailableBalance && !isLoadingBalance
-            ? `${formattedAvailableBalance} IOTA Available`
-            : '--';
+    const caption = formattedAvailableBalance
+        ? `${formattedAvailableBalance} IOTA Available`
+        : '--';
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
@@ -196,12 +191,6 @@ export function DepositForm({
                     keyText="Est. IOTA EVM Gas fees"
                     supportingLabel="IOTA"
                     value={gasEstimationEVM ?? PLACEHOLDER_VALUE_DISPLAY}
-                />
-                <KeyValueInfo
-                    fullwidth
-                    keyText={`${isPayingAllBalance ? 'Est. ' : ''} You Receive`}
-                    supportingLabel="IOTA"
-                    value={depositAmount ? depositAmount : PLACEHOLDER_VALUE_DISPLAY}
                 />
             </div>
 

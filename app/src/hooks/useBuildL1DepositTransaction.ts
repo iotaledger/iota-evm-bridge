@@ -7,9 +7,9 @@ import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
 import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 
-interface BuildL1DepositTransaction {
+interface useBuildL1DepositTransactionProps {
     amount: bigint; // Amount in nanos
-    receivingAddress?: string;
+    receivingAddress: string;
     refetchInterval?: number;
 }
 
@@ -17,7 +17,7 @@ export function useBuildL1DepositTransaction({
     receivingAddress,
     amount,
     refetchInterval,
-}: BuildL1DepositTransaction) {
+}: useBuildL1DepositTransactionProps) {
     const currentAccount = useCurrentAccount();
     const client = useIotaClient();
     const variables = useNetworkVariables();
@@ -64,6 +64,6 @@ export function useBuildL1DepositTransaction({
                 gasSummary: getGasSummary(txDryRun),
             };
         },
-        refetchInterval: refetchInterval,
+        refetchInterval,
     });
 }
