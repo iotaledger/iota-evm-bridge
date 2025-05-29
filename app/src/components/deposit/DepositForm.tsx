@@ -22,7 +22,8 @@ import { useBridgeStore } from '../../lib/stores';
 import { BridgeFormInputName } from '../../lib/enums';
 import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
 import { Loader, SwapAccount } from '@iota/apps-ui-icons';
-import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
+import { useLayer1Balance } from '../../hooks/useLayer1Balance';
+import { useLayer2Balance } from '../../hooks/useLayer2Balance';
 
 interface DepositFormProps {
     deposit: () => void;
@@ -46,6 +47,20 @@ export function DepositForm({
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
 
+    const {
+        formattedAvailableBalance: formattedAvailableBalanceL1,
+        isLoading: isLoadingBalanceL1,
+    } = useLayer1Balance();
+    const {
+        formattedAvailableBalance: formattedAvailableBalanceL2,
+        isLoading: isLoadingBalanceL2,
+    } = useLayer2Balance();
+
+    const formattedAvailableBalance = isFromLayer1
+        ? formattedAvailableBalanceL1
+        : formattedAvailableBalanceL2;
+    const isLoadingBalance = isFromLayer1 ? isLoadingBalanceL1 : isLoadingBalanceL2;
+
     const formMethods = useFormContext<DepositFormData>();
 
     const {
@@ -60,8 +75,6 @@ export function DepositForm({
     const values = watch();
 
     const { depositAmount, receivingAddress } = values;
-    const { isLoading: isLoadingBalance, formattedAvailableBalance } =
-        useGetCurrentAvailableBalance({ receivingAddress });
 
     const isPayingAllBalance = new BigNumber(depositAmount).isEqualTo(
         new BigNumber(formattedAvailableBalance),
@@ -112,9 +125,10 @@ export function DepositForm({
     const receivingAddressErrorMessage =
         receivingAddress !== '' ? errors[BridgeFormInputName.ReceivingAddress]?.message : undefined;
 
-    const caption = formattedAvailableBalance
-        ? `${formattedAvailableBalance} IOTA Available`
-        : '--';
+    const caption =
+        formattedAvailableBalance && !isLoadingBalance
+            ? `${formattedAvailableBalance} IOTA Available`
+            : '--';
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
