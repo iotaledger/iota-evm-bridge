@@ -10,7 +10,6 @@ import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailabl
 
 export function Bridge() {
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-
     const { availableBalance } = useGetCurrentAvailableBalance();
 
     const formSchema = useMemo(

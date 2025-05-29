@@ -41,7 +41,6 @@ export function useGetCurrentAvailableBalance({
         ? BigInt(layer1BalanceData?.totalBalance)
         : 0n;
 
-    // Build the Layer 1 deposit transaction to estimate gas costs
     const { data: maxAmountDataL1, isLoading: isLoadingL1Transaction } =
         useBuildL1DepositTransaction({
             receivingAddress: layer2Address ?? GENERIC_EVM_ADDRESS,
@@ -67,7 +66,6 @@ export function useGetCurrentAvailableBalance({
     });
     const layer2TotalBalance = layer2BalanceData?.value ?? 0n;
 
-    // Estimate Layer 2 gas costs
     const { data: gasEstimationDataEVM, isLoading: isLoadingGasEstimationEVM } = useL2GasEstimate({
         address: layer1Address ?? GENERIC_IOTA_ADDRESS,
         amount: MINIMUM_SEND_AMOUNT.toString(),
@@ -80,29 +78,18 @@ export function useGetCurrentAvailableBalance({
             ? layer2TotalBalance - gasEstimationEVM
             : layer2TotalBalance;
 
-    // if (
-    //     (isFromLayer1 && (isLoadingL1 || isLoadingL1Transaction)) ||
-    //     (!isFromLayer1 && (isLoadingL2 || isLoadingGasEstimationEVM))
-    // ) {
-    //     return { availableBalance: BigInt(0), isLoading: true, formattedAvailableBalance: '0' };
-    // }
-
-    // Determine the available balance based on the bridge direction
     const availableBalance = isFromLayer1 ? layer1AvailableBalance : layer2AvailableBalance;
 
-    // Determine the loading state based on the bridge direction
     const isLoading = isFromLayer1
         ? isLoadingL1 || isLoadingL1Transaction
         : isLoadingL2 || isLoadingGasEstimationEVM;
 
-    // Format the available balance for display
     const formattedAvailableBalance = isFromLayer1
         ? formatIOTAFromNanos(availableBalance)
         : formatEther(availableBalance);
     return {
         availableBalance,
         isLoading,
-        // isLoading: isFromLayer1 ? isLoadingL1 : isLoadingL2,
         formattedAvailableBalance,
     };
 }

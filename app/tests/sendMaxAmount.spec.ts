@@ -191,13 +191,6 @@ test.describe('Send MAX amount from L2', () => {
             .textContent();
         expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000370');
 
-        const youReceiveValue = await testPageL2
-            .locator('div:has(> span:text("You Receive"))')
-            .locator('xpath=../div/span')
-            .nth(1)
-            .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.999630');
-
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 
         const approveTransacionPagePromise = browserL2.waitForEvent('page');

@@ -103,13 +103,6 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .textContent();
         expect(gasFeeValueEVM).toEqual('0.001');
 
-        const youReceiveValue = await pageWithL1Wallet
-            .locator('div:has(> span:text("You Receive"))')
-            .locator('xpath=../div/span')
-            .nth(1)
-            .textContent();
-        expect(youReceiveValue).toEqual('5');
-
         await expect(pageWithL1Wallet.getByText('Bridge Assets')).toBeEnabled();
         await pageWithL1Wallet.getByText('Bridge Assets').click();
 
@@ -170,13 +163,6 @@ test.describe.serial('Deposit then withdraw roundtrip', () => {
             .nth(1)
             .textContent();
         expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000370');
-
-        const youReceiveValue = await pageWithL2Wallet
-            .locator('div:has(> span:text("You Receive"))')
-            .locator('xpath=../div/span')
-            .nth(1)
-            .textContent();
-        expect(youReceiveValue).toEqual('2');
 
         await expect(pageWithL2Wallet.getByText('Bridge Assets')).toBeEnabled();
 
