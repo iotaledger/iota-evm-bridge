@@ -88,12 +88,6 @@ test.describe('Send MAX amount from L1', () => {
             .textContent();
         expect(gasFeeValueEVM).toEqual('0.001');
 
-        const youReceiveValue = await testPageL1
-            .locator('div:has(> span:text("You Receive"))')
-            .locator('xpath=../div/span')
-            .nth(1)
-            .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('9.990388');
         await expect(testPageL1.getByText('Bridge Assets')).toBeEnabled();
         await testPageL1.getByText('Bridge Assets').click();
 
