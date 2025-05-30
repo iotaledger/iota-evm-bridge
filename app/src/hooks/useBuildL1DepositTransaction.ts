@@ -1,51 +1,35 @@
 import { Transaction } from '@iota/iota-sdk/transactions';
 import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
-import { getGasSummary, parseAmount } from '../lib/utils';
+import { getGasSummary } from '../lib/utils';
 import { IscTransaction } from 'isc-client';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
-import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
-import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
 import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
 
-interface BuildL1DepositTransaction {
+interface UseBuildL1DepositTransactionProps {
+    amount: bigint; // Amount in nanos
     receivingAddress: string;
-    amount: string;
-    gasEstimation?: string;
+    refetchInterval?: number;
 }
 
 export function useBuildL1DepositTransaction({
     receivingAddress,
     amount,
-    gasEstimation,
-}: BuildL1DepositTransaction) {
+    refetchInterval,
+}: UseBuildL1DepositTransactionProps) {
     const currentAccount = useCurrentAccount();
     const client = useIotaClient();
     const variables = useNetworkVariables();
     const senderAddress = currentAccount?.address as string;
-    const isBridgingAllBalance = useIsBridgingAllBalance();
-
     return useQuery({
-        queryKey: [
-            'l1-deposit-transaction',
-            receivingAddress,
-            amount,
-            senderAddress,
-            gasEstimation,
-            isBridgingAllBalance,
-        ],
+        queryKey: ['l1-deposit-transaction', receivingAddress, amount.toString(), senderAddress],
         queryFn: async () => {
-            const requestedAmount = parseAmount(amount, IOTA_DECIMALS);
-            if (!requestedAmount) {
-                throw Error('Amount is too high');
+            if (!receivingAddress) {
+                throw Error('Invalid input: receivingAddress is missing');
             }
 
-            const amountToSend =
-                isBridgingAllBalance && gasEstimation
-                    ? requestedAmount - BigInt(gasEstimation) - L2_FROM_L1_GAS_BUDGET
-                    : requestedAmount;
-            const amountToPlace = amountToSend + L2_FROM_L1_GAS_BUDGET;
+            const amountToPlace = amount + L2_FROM_L1_GAS_BUDGET;
 
             const iscTx = new IscTransaction(variables.chain);
             const bag = iscTx.newBag();
@@ -53,7 +37,7 @@ export function useBuildL1DepositTransaction({
             iscTx.placeCoinInBag({ coin, bag });
             iscTx.createAndSendToEvm({
                 bag,
-                transfers: [[IOTA_TYPE_ARG, amountToSend]],
+                transfers: [[IOTA_TYPE_ARG, amount]],
                 address: receivingAddress,
                 accountsContract: variables.chain.accountsContract,
                 accountsFunction: variables.chain.accountsTransferAllowanceTo,
@@ -72,7 +56,7 @@ export function useBuildL1DepositTransaction({
                 txDryRun,
             };
         },
-        enabled: !!receivingAddress && !!amount && !!senderAddress,
+        enabled: !!receivingAddress && !!amount && !!senderAddress && amount > 0n,
         gcTime: 0,
         select: ({ txBytes, txDryRun }) => {
             return {
@@ -80,6 +64,6 @@ export function useBuildL1DepositTransaction({
                 gasSummary: getGasSummary(txDryRun),
             };
         },
-        refetchInterval: 2000,
+        refetchInterval,
     });
 }
