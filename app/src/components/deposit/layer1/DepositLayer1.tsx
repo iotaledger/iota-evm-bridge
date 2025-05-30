@@ -11,7 +11,7 @@ import { formatIOTAFromNanos, parseAmount } from '../../../lib/utils';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
-import { useL2BalanceBaseToken } from '../../../hooks/useL2BalanceBaseToken';
+import { useBalanceBaseTokenL2 } from '../../../hooks/useBalanceBaseTokenL2';
 import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 
 export function DepositLayer1() {
@@ -22,7 +22,7 @@ export function DepositLayer1() {
     const { depositAmount, receivingAddress } = watch();
 
     const address = useCurrentAccount()?.address as string;
-    const { data: l1BalanceInL2 } = useL2BalanceBaseToken(address);
+    const { data: l1BalanceInL2 } = useBalanceBaseTokenL2(address);
     console.log('l1BalanceInL2:', l1BalanceInL2);
 
     const { data: transactionData, isPending: isBuildingTransaction } =

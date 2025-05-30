@@ -22,8 +22,8 @@ import { useBridgeStore } from '../../lib/stores';
 import { BridgeFormInputName } from '../../lib/enums';
 import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
 import { Loader, SwapAccount } from '@iota/apps-ui-icons';
-import { useLayer1Balance } from '../../hooks/useLayer1Balance';
-import { useLayer2Balance } from '../../hooks/useLayer2Balance';
+import { useAvailableBalanceL1 } from '../../hooks/useAvailableBalanceL1';
+import { useAvailableBalanceL2 } from '../../hooks/useAvailableBalanceL2';
 
 interface DepositFormProps {
     deposit: () => void;
@@ -50,11 +50,11 @@ export function DepositForm({
     const {
         formattedAvailableBalance: formattedAvailableBalanceL1,
         isLoading: isLoadingBalanceL1,
-    } = useLayer1Balance();
+    } = useAvailableBalanceL1();
     const {
         formattedAvailableBalance: formattedAvailableBalanceL2,
         isLoading: isLoadingBalanceL2,
-    } = useLayer2Balance();
+    } = useAvailableBalanceL2();
 
     const formattedAvailableBalance = isFromLayer1
         ? formattedAvailableBalanceL1

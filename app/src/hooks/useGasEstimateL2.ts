@@ -4,12 +4,12 @@ import { L2Chain } from '../config';
 import { useAccount, usePublicClient } from 'wagmi';
 import { iscAbi } from '../lib/constants';
 
-interface useL2GasEstimateProps {
+interface UseL2GasEstimateProps {
     address: string;
     amount: string;
 }
 
-export function useL2GasEstimate({ address, amount }: useL2GasEstimateProps) {
+export function useGasEstimateL2({ address, amount }: UseL2GasEstimateProps) {
     const layer2Account = useAccount();
     const iscContractAddress = (layer2Account?.chain as L2Chain)?.iscContractAddress;
     const client = usePublicClient();

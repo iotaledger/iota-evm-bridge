@@ -8,7 +8,7 @@ import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 
 const GENERIC_EVM_ADDRESS = '0x1111111111111111111111111111111111111111';
 
-export function useLayer1Balance(): {
+export function useAvailableBalanceL1(): {
     availableBalance: bigint;
     isLoading: boolean;
     formattedAvailableBalance: string;

@@ -12,7 +12,7 @@ import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
-import { useL2GasEstimate } from '../../../hooks/useL2GasEstimate';
+import { useGasEstimateL2 } from '../../../hooks/useGasEstimateL2';
 import { formatEther } from 'viem';
 
 export function DepositLayer2() {
@@ -33,7 +33,7 @@ export function DepositLayer2() {
         hash: hash,
     });
 
-    const { data: gasEstimationEVM, isPending: isGasEstimationLoading } = useL2GasEstimate({
+    const { data: gasEstimationEVM, isPending: isGasEstimationLoading } = useGasEstimateL2({
         address: receivingAddress,
         amount: depositAmount,
     });

@@ -1,11 +1,11 @@
 import { useAccount, useBalance as useBalanceL2 } from 'wagmi';
-import { useL2GasEstimate } from './useL2GasEstimate';
+import { useGasEstimateL2 } from './useGasEstimateL2';
 import { MINIMUM_SEND_AMOUNT } from '../lib/constants';
 import { formatEther } from 'viem';
 
 const GENERIC_IOTA_ADDRESS = '0x1111111111111111111111111111111111111111111111111111111111111111';
 
-export function useLayer2Balance(): {
+export function useAvailableBalanceL2(): {
     availableBalance: bigint;
     isLoading: boolean;
     formattedAvailableBalance: string;
@@ -22,7 +22,7 @@ export function useLayer2Balance(): {
 
     const layer2TotalBalance = layer2BalanceData?.value || 0n;
 
-    const { data: gasEstimationData, isPending: isGasEstimationLoading } = useL2GasEstimate({
+    const { data: gasEstimationData, isPending: isGasEstimationLoading } = useGasEstimateL2({
         address: GENERIC_IOTA_ADDRESS,
         amount: MINIMUM_SEND_AMOUNT.toString(),
     });
