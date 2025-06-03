@@ -19,6 +19,7 @@ export function FaucetButton() {
     const { mutateAsync: requestFaucet, isPending } = useMutation({
         mutationKey: ['faucet-funds', recipient],
         async mutationFn() {
+            toast('Requesting funds from faucet...');
             if (recipient && isFaucetEnabled) {
                 await requestIotaFromFaucetV0({
                     host: variables.faucet,

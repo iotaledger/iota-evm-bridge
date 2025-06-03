@@ -8,8 +8,14 @@ export type ToasterProps = {
 export function Toaster() {
     function getSnackbarType(type: ToastType): SnackbarType {
         switch (type) {
+            case 'success':
+                return SnackbarType.Success;
             case 'error':
                 return SnackbarType.Error;
+            case 'warning':
+                return SnackbarType.Warning;
+            case 'loading':
+                return SnackbarType.Default;
             default:
                 return SnackbarType.Default;
         }
