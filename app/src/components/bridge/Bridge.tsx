@@ -6,11 +6,15 @@ import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { createBridgeFormSchema, DepositFormData } from '../../lib/schema/bridgeForm.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBridgeStore } from '../../lib/stores';
-import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
+import { useAvailableBalanceL1 } from '../../hooks/useAvailableBalanceL1';
+import { useAvailableBalanceL2 } from '../../hooks/useAvailableBalanceL2';
 
 export function Bridge() {
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const { availableBalance } = useGetCurrentAvailableBalance();
+    const { availableBalance: availableBalanceL1 } = useAvailableBalanceL1();
+    const { availableBalance: availableBalanceL2 } = useAvailableBalanceL2();
+
+    const availableBalance = isFromLayer1 ? availableBalanceL1 : availableBalanceL2;
 
     const formSchema = useMemo(
         () => createBridgeFormSchema(availableBalance, IOTA_DECIMALS, isFromLayer1),

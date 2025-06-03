@@ -62,28 +62,31 @@ test.describe('Send MAX amount from L1', () => {
         await expect(addressField).toBeVisible();
         await addressField.fill(addressL2);
 
+        // wait for available
+        await testPageL1.waitForTimeout(2500);
+
         await testPageL1.getByText('Max').click();
 
         const amountField = testPageL1.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
-        await expect(amountField).toHaveValue('~ 10');
+        await expect(amountField).toHaveValue('~ 9.990388');
 
         // check est. gas fees and your receive
         await testPageL1.waitForTimeout(2500);
 
         const gasFeeValue = await testPageL1
-            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('div:has(> span:text("Est. IOTA Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
         expect(Number(gasFeeValue).toFixed(5)).toEqual('0.00663');
 
-        const youReceiveValue = await testPageL1
-            .locator('div:has(> span:text("You Receive"))')
+        const gasFeeValueEVM = await testPageL1
+            .locator('div:has(> span:text("Est. IOTA EVM Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('9.992368');
+        expect(gasFeeValueEVM).toEqual('0.001');
 
         await expect(testPageL1.getByText('Bridge Assets')).toBeEnabled();
         await testPageL1.getByText('Bridge Assets').click();
@@ -170,24 +173,17 @@ test.describe('Send MAX amount from L2', () => {
 
         const amountField = testPageL2.getByTestId('bridge-amount');
         await expect(amountField).toBeVisible();
-        await expect(amountField).toHaveValue('~ 9');
+        await expect(amountField).toHaveValue(/~ 8\.9996[0-9]*/);
 
         // check est. gas fees and your receive
         await testPageL2.waitForTimeout(2500);
 
         const gasFeeValue = await testPageL2
-            .locator('div:has(> span:text("Est. Gas Fees"))')
+            .locator('div:has(> span:text("Est. IOTA EVM Gas Fees"))')
             .locator('xpath=../div/span')
             .nth(1)
             .textContent();
         expect(Number(gasFeeValue).toFixed(6)).toEqual('0.000370');
-
-        const youReceiveValue = await testPageL2
-            .locator('div:has(> span:text("You Receive"))')
-            .locator('xpath=../div/span')
-            .nth(1)
-            .textContent();
-        expect(Number(youReceiveValue).toFixed(6)).toEqual('8.999630');
 
         await expect(testPageL2.getByText('Bridge Assets')).toBeEnabled();
 

@@ -7,12 +7,12 @@ import toast from 'react-hot-toast';
 
 import { L1_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
 import { useBuildL1DepositTransaction } from '../../../hooks/useBuildL1DepositTransaction';
-import { formatIOTAFromNanos } from '../../../lib/utils';
-import { useEffect, useState } from 'react';
+import { formatIOTAFromNanos, parseAmount } from '../../../lib/utils';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
-import { L1_BASE_GAS_BUDGET } from 'isc-client';
-import { useL2BalanceBaseToken } from '../../../hooks/useL2BalanceBaseToken';
+import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import { useBalanceBaseTokenL2 } from '../../../hooks/useBalanceBaseTokenL2';
+import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 
 export function DepositLayer1() {
     const client = useIotaClient();
@@ -22,28 +22,19 @@ export function DepositLayer1() {
     const { depositAmount, receivingAddress } = watch();
 
     const address = useCurrentAccount()?.address as string;
-    const { data: l1BalanceInL2 } = useL2BalanceBaseToken(address);
+    const { data: l1BalanceInL2 } = useBalanceBaseTokenL2(address);
     console.log('l1BalanceInL2:', l1BalanceInL2);
-
-    const [gasEstimation, setGasEstimation] = useState<string>(L1_BASE_GAS_BUDGET.toString());
 
     const { data: transactionData, isPending: isBuildingTransaction } =
         useBuildL1DepositTransaction({
             receivingAddress,
-            amount: depositAmount,
-            gasEstimation,
+            amount: parseAmount(depositAmount, IOTA_DECIMALS) ?? BigInt(0),
+            refetchInterval: 2000,
         });
     const gasSummary = transactionData?.gasSummary;
     const formattedGasEstimation = gasSummary?.totalGas
         ? formatIOTAFromNanos(BigInt(gasSummary.totalGas))
         : undefined;
-
-    useEffect(() => {
-        const gasBudget = transactionData?.gasSummary?.budget;
-        if (gasBudget) {
-            setGasEstimation(gasBudget);
-        }
-    }, [transactionData?.gasSummary?.budget, setGasEstimation]);
 
     const deposit = async () => {
         if (!transactionData?.transaction) {
@@ -92,6 +83,7 @@ export function DepositLayer1() {
             isGasEstimationLoading={isBuildingTransaction}
             isTransactionLoading={isTransactionLoading}
             gasEstimation={formattedGasEstimation}
+            gasEstimationEVM={formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)}
         />
     );
 }

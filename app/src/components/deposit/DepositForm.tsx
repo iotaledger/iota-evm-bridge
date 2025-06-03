@@ -22,20 +22,20 @@ import { useBridgeStore } from '../../lib/stores';
 import { BridgeFormInputName } from '../../lib/enums';
 import { MAX_DEPOSIT_INPUT_LENGTH, PLACEHOLDER_VALUE_DISPLAY } from '../../lib/constants';
 import { Loader, SwapAccount } from '@iota/apps-ui-icons';
-import { useGetCurrentAvailableBalance } from '../../hooks/useGetCurrentAvailableBalance';
-import { useIsBridgingAllBalance } from '../../hooks/useIsBridgingAllBalance';
-import { formatIOTAFromNanos } from '../../lib/utils';
-import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import { useAvailableBalanceL1 } from '../../hooks/useAvailableBalanceL1';
+import { useAvailableBalanceL2 } from '../../hooks/useAvailableBalanceL2';
 
 interface DepositFormProps {
     deposit: () => void;
     isGasEstimationLoading: boolean;
     isTransactionLoading: boolean;
     gasEstimation?: string | null;
+    gasEstimationEVM?: string | null;
 }
 export function DepositForm({
     deposit,
     gasEstimation,
+    gasEstimationEVM,
     isTransactionLoading,
     isGasEstimationLoading,
 }: DepositFormProps) {
@@ -46,13 +46,20 @@ export function DepositForm({
 
     const toggleBridgeDirection = useBridgeStore((state) => state.toggleBridgeDirection);
     const isFromLayer1 = useBridgeStore((state) => state.isFromLayer1);
-    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const {
-        availableBalance,
-        isLoading: isLoadingBalance,
-        formattedAvailableBalance,
-    } = useGetCurrentAvailableBalance();
+        formattedAvailableBalance: formattedAvailableBalanceL1,
+        isLoading: isLoadingBalanceL1,
+    } = useAvailableBalanceL1();
+    const {
+        formattedAvailableBalance: formattedAvailableBalanceL2,
+        isLoading: isLoadingBalanceL2,
+    } = useAvailableBalanceL2();
+
+    const formattedAvailableBalance = isFromLayer1
+        ? formattedAvailableBalanceL1
+        : formattedAvailableBalanceL2;
+    const isLoadingBalance = isFromLayer1 ? isLoadingBalanceL1 : isLoadingBalanceL2;
 
     const formMethods = useFormContext<DepositFormData>();
 
@@ -66,7 +73,12 @@ export function DepositForm({
         watch,
     } = formMethods;
     const values = watch();
-    const depositAmountValue = values.depositAmount;
+
+    const { depositAmount, receivingAddress } = values;
+
+    const isPayingAllBalance = new BigNumber(depositAmount).isEqualTo(
+        new BigNumber(formattedAvailableBalance),
+    );
 
     useEffect(() => {
         const isFormIncomplete = Object.values(getValues()).some(
@@ -90,30 +102,12 @@ export function DepositForm({
         deposit();
     }, [deposit, setValue]);
 
-    const receivingAmountDisplay = (() => {
-        if (!depositAmountValue || !gasEstimation) {
-            return PLACEHOLDER_VALUE_DISPLAY;
-        }
-        const receivingAmount = new BigNumber(depositAmountValue)
-            .minus(isPayingAllBalance && gasEstimation ? gasEstimation : 0)
-            .minus(
-                isFromLayer1
-                    ? isPayingAllBalance
-                        ? formatIOTAFromNanos(L2_FROM_L1_GAS_BUDGET)
-                        : '0' // The L2 gas is already included in non-max transfers for L1 -> L2
-                    : '0', // User doesn't pay for L1 gas in L2 -> L1 transfers
-            );
-        return receivingAmount.isLessThanOrEqualTo(0)
-            ? PLACEHOLDER_VALUE_DISPLAY
-            : receivingAmount.toString();
-    })();
-
     const fromAddress = isFromLayer1 ? layer1Account?.address : layer2Account?.address;
 
     const FROM_LABEL = `From ${isFromLayer1 ? 'IOTA' : 'IOTA EVM'}`;
 
     function handleMaxAmountClick() {
-        if (!availableBalance) {
+        if (!formattedAvailableBalance) {
             return;
         }
         setValue(BridgeFormInputName.DepositAmount, formattedAvailableBalance, {
@@ -122,18 +116,19 @@ export function DepositForm({
     }
 
     const isMaxButtonDisabled =
-        (isFromLayer1 && !isLayer1WalletConnected) || (!isFromLayer1 && !isLayer2WalletConnected);
+        (isFromLayer1 && !isLayer1WalletConnected) ||
+        (!isFromLayer1 && !isLayer2WalletConnected) ||
+        isPayingAllBalance === true;
 
     const depositAmountErrorMessage =
-        depositAmountValue !== '' ? errors[BridgeFormInputName.DepositAmount]?.message : undefined;
+        depositAmount !== '' ? errors[BridgeFormInputName.DepositAmount]?.message : undefined;
     const receivingAddressErrorMessage =
-        values.receivingAddress !== ''
-            ? errors[BridgeFormInputName.ReceivingAddress]?.message
-            : undefined;
+        receivingAddress !== '' ? errors[BridgeFormInputName.ReceivingAddress]?.message : undefined;
 
-    const caption = formattedAvailableBalance
-        ? `${formattedAvailableBalance} IOTA Available`
-        : '--';
+    const caption =
+        formattedAvailableBalance && !isLoadingBalance
+            ? `${formattedAvailableBalance} IOTA Available`
+            : '--';
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onBlur: _onBlur,
@@ -147,7 +142,7 @@ export function DepositForm({
                 label="Amount"
                 type={InputType.NumericFormat}
                 prefix={isPayingAllBalance ? '~ ' : undefined}
-                value={values.depositAmount}
+                value={depositAmount}
                 errorMessage={depositAmountErrorMessage}
                 {...registerDepositAmount}
                 data-testid="bridge-amount"
@@ -197,17 +192,19 @@ export function DepositForm({
             </div>
 
             <div className="flex flex-col p-md">
+                {isFromLayer1 && (
+                    <KeyValueInfo
+                        fullwidth
+                        keyText="Est. IOTA Gas Fees"
+                        supportingLabel="IOTA"
+                        value={gasEstimation ?? PLACEHOLDER_VALUE_DISPLAY}
+                    />
+                )}
                 <KeyValueInfo
                     fullwidth
-                    keyText="Est. Gas Fees"
+                    keyText="Est. IOTA EVM Gas fees"
                     supportingLabel="IOTA"
-                    value={gasEstimation ?? PLACEHOLDER_VALUE_DISPLAY}
-                />
-                <KeyValueInfo
-                    fullwidth
-                    keyText={`${isPayingAllBalance ? 'Est. ' : ''} You Receive`}
-                    supportingLabel="IOTA"
-                    value={receivingAmountDisplay}
+                    value={gasEstimationEVM ?? PLACEHOLDER_VALUE_DISPLAY}
                 />
             </div>
 
@@ -221,10 +218,10 @@ export function DepositForm({
                     !!Object.values(values).some((value) => value === '') ||
                     isTransactionLoading ||
                     isGasEstimationLoading ||
-                    !!(isPayingAllBalance && !gasEstimation)
+                    isLoadingBalance
                 }
                 icon={
-                    depositAmountValue && isTransactionLoading ? (
+                    depositAmount && isTransactionLoading ? (
                         <Loader className="animate-spin" />
                     ) : undefined
                 }

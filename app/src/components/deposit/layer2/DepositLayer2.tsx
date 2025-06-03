@@ -1,41 +1,28 @@
 // Copyright (c) 2024 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-    useAccount,
-    useChainId,
-    usePublicClient,
-    useWaitForTransactionReceipt,
-    useWriteContract,
-} from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { useEffect } from 'react';
 import { DepositForm } from '../DepositForm';
 import toast from 'react-hot-toast';
 import { buildDepositL2Parameters } from '../../../lib/utils';
-import {
-    iscAbi,
-    L2_USER_REJECTED_TX_ERROR_TEXT,
-    MINIMUM_SEND_AMOUNT,
-} from '../../../lib/constants';
-import { formatGwei } from 'viem';
-import { useIsBridgingAllBalance } from '../../../hooks/useIsBridgingAllBalance';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { iscAbi, L2_USER_REJECTED_TX_ERROR_TEXT } from '../../../lib/constants';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { DepositFormData } from '../../../lib/schema/bridgeForm.schema';
 import { L2Chain } from '../../../config';
 import { getBalanceQueryKey } from 'wagmi/query';
-import BigNumber from 'bignumber.js';
+import { useGasEstimateL2 } from '../../../hooks/useGasEstimateL2';
+import { formatEther } from 'viem';
 
 export function DepositLayer2() {
     const queryClient = useQueryClient();
     const layer2Account = useAccount();
-    const client = usePublicClient();
     const chainId = useChainId();
     const iscContractAddress = (layer2Account?.chain as L2Chain)?.iscContractAddress;
 
     const { watch } = useFormContext<DepositFormData>();
     const { depositAmount, receivingAddress } = watch();
-    const isPayingAllBalance = useIsBridgingAllBalance();
 
     const { data: hash, writeContractAsync, isSuccess, isError, error } = useWriteContract({});
     const {
@@ -46,40 +33,9 @@ export function DepositLayer2() {
         hash: hash,
     });
 
-    const { data: gasEstimation, isPending: isGasEstimationLoading } = useQuery({
-        queryKey: [
-            'l2-deposit-transaction-gas-estimate',
-            receivingAddress,
-            iscContractAddress,
-            depositAmount,
-        ],
-        async queryFn() {
-            if (!receivingAddress || !iscContractAddress) {
-                return null;
-            }
-            const params = buildDepositL2Parameters(
-                receivingAddress,
-                MINIMUM_SEND_AMOUNT.toString(),
-            );
-            const gas = await client?.estimateContractGas({
-                address: iscContractAddress,
-                abi: iscAbi,
-                functionName: 'transferToL1',
-                args: params,
-                account: layer2Account.address,
-            });
-
-            let gasPrice = await client?.getGasPrice();
-
-            if (!gasPrice) {
-                gasPrice = 10n;
-            } else {
-                gasPrice = BigInt(formatGwei(gasPrice));
-            }
-
-            return gas ? formatGwei(BigInt(gas * gasPrice)) : null;
-        },
-        refetchInterval: 2000,
+    const { data: gasEstimationEVM, isPending: isGasEstimationLoading } = useGasEstimateL2({
+        address: receivingAddress,
+        amount: depositAmount,
     });
 
     useEffect(() => {
@@ -126,7 +82,6 @@ export function DepositLayer2() {
             'l2-deposit-transaction',
             receivingAddress,
             depositAmount,
-            isPayingAllBalance,
             iscContractAddress,
             chainId,
         ],
@@ -134,13 +89,7 @@ export function DepositLayer2() {
             if (!receivingAddress || !depositAmount || !iscContractAddress) {
                 throw Error('Transaction is missing');
             }
-
-            const depositTotal =
-                isPayingAllBalance && gasEstimation
-                    ? new BigNumber(depositAmount).minus(gasEstimation).toString()
-                    : depositAmount;
-            const params = buildDepositL2Parameters(receivingAddress, depositTotal);
-
+            const params = buildDepositL2Parameters(receivingAddress, depositAmount);
             await writeContractAsync({
                 abi: iscAbi,
                 address: iscContractAddress,
@@ -156,7 +105,7 @@ export function DepositLayer2() {
             deposit={deposit}
             isGasEstimationLoading={isGasEstimationLoading}
             isTransactionLoading={isTransactionLoading}
-            gasEstimation={gasEstimation}
+            gasEstimationEVM={formatEther(gasEstimationEVM || 0n)}
         />
     );
 }
