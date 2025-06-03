@@ -29,7 +29,8 @@
     "dependencies": {
         "@iota/bcs": "^0.2.1",
         "@iota/dapp-kit": "0.3.3",
-        "@iota/iota-sdk": "0.4.1"
+        "@iota/iota-sdk": "0.4.1",
+        "@noble/hashes": "^1.8.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
