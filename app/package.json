@@ -21,7 +21,7 @@
     "dependencies": {
         "@hookform/resolvers": "^4.1.0",
         "@iota/apps-ui-icons": "^0.2.1",
-        "@iota/apps-ui-kit": "^0.2.1",
+        "@iota/apps-ui-kit": "^0.5.1",
         "@iota/bcs": "^0.2.1",
         "@iota/dapp-kit": "0.3.3",
         "@iota/iota-sdk": "0.4.1",
