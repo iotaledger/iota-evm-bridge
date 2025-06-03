@@ -1,4 +1,10 @@
-import { CoreContractAccounts, EvmRpcClient, getHname, IscTransaction, L2_FROM_L1_GAS_BUDGET } from '../src/index';
+import {
+    CoreContractAccounts,
+    EvmRpcClient,
+    getHname,
+    IscTransaction,
+    L2_FROM_L1_GAS_BUDGET,
+} from '../src/index';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
