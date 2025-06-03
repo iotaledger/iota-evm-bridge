@@ -2,12 +2,11 @@ import { Transaction } from '@iota/iota-sdk/transactions';
 import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { getGasSummary, parseAmount } from '../lib/utils';
-import { IscTransaction } from 'isc-client';
-import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
-import { IOTA_DECIMALS } from '@iota/iota-sdk/utils';
+import { CoreContractAccounts, IscTransaction } from 'isc-client';
+import { IOTA_TYPE_ARG, IOTA_DECIMALS } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
 import { useIsBridgingAllBalance } from './useIsBridgingAllBalance';
-import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import { L2_FROM_L1_GAS_BUDGET, getHname } from 'isc-client';
 
 interface BuildL1DepositTransaction {
     receivingAddress: string;
@@ -55,8 +54,8 @@ export function useBuildL1DepositTransaction({
                 bag,
                 transfers: [[IOTA_TYPE_ARG, amountToSend]],
                 address: receivingAddress,
-                accountsContract: variables.chain.accountsContract,
-                accountsFunction: variables.chain.accountsTransferAllowanceTo,
+                accountsContract: getHname(CoreContractAccounts.AccountsContract),
+                accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
             });
             const transaction = iscTx.build();
             transaction.setSender(senderAddress);

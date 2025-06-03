@@ -1,3 +1,5 @@
+export * from './enums';
+export * from './utils';
 export * from './bcs';
 export * from './constants';
 export * from './transaction';

@@ -1,4 +1,10 @@
-import { EvmRpcClient, IscTransaction, L2_FROM_L1_GAS_BUDGET } from '../src/index';
+import {
+    CoreContractAccounts,
+    EvmRpcClient,
+    getHname,
+    IscTransaction,
+    L2_FROM_L1_GAS_BUDGET,
+} from '../src/index';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { IotaClient } from '@iota/iota-sdk/client';
@@ -64,8 +70,8 @@ iscTx.createAndSendToEvm({
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
     address: recipientAddress,
-    accountsContract: L1.accountsContract,
-    accountsFunction: L1.accountsTransferAllowanceTo,
+    accountsContract: getHname(CoreContractAccounts.AccountsContract),
+    accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
 });
 
 const transaction = iscTx.build();
