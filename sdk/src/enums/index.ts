@@ -1,1 +1,1 @@
-export * from './coreContractAccounts.enum';
+export * from './contracts.enums';

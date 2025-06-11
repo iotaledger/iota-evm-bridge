@@ -1,5 +1,5 @@
 import {
-    CoreContractAccounts,
+    AccountsContractMethod,
     EvmRpcClient,
     getHname,
     IscTransaction,
@@ -70,8 +70,8 @@ iscTx.createAndSendToEvm({
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
     address: recipientAddress,
-    accountsContract: getHname(CoreContractAccounts.AccountsContract),
-    accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
+    accountsContract: getHname(AccountsContractMethod.AccountsContract),
+    accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
 });
 
 const transaction = iscTx.build();

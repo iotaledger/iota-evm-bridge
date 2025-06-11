@@ -1,5 +1,5 @@
 import {
-    CoreContractAccounts,
+    AccountsContractMethod,
     EvmRpcClient,
     getHname,
     IscTransaction,
@@ -51,8 +51,8 @@ test('Send IOTA', async () => {
         bag,
         transfers: [[IOTA_TYPE_ARG, amountToSend]],
         address: recipientAddress,
-        accountsContract: getHname(CoreContractAccounts.AccountsContract),
-        accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
+        accountsContract: getHname(AccountsContractMethod.AccountsContract),
+        accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
     });
 
     const transaction = iscTx.build();
@@ -119,8 +119,8 @@ test('Send Non-IOTA Tokens', async () => {
             [TOKEN_COIN_TYPE, tokenAmountToSend],
         ],
         address: recipientAddress,
-        accountsContract: getHname(CoreContractAccounts.AccountsContract),
-        accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
+        accountsContract: getHname(AccountsContractMethod.AccountsContract),
+        accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
     });
 
     const transaction = iscTx.build();

@@ -1,5 +1,5 @@
 import {
-    CoreContractAccounts,
+    AccountsContractMethod,
     getHname,
     IscTransaction,
     L2_FROM_L1_GAS_BUDGET,
@@ -44,8 +44,8 @@ iscTx.createAndSendToEvm({
     bag,
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
     address: recipientAddress,
-    accountsContract: getHname(CoreContractAccounts.AccountsContract),
-    accountsFunction: getHname(CoreContractAccounts.TransferAllowanceTo),
+    accountsContract: getHname(AccountsContractMethod.AccountsContract),
+    accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
 });
 
 const transaction = iscTx.build();
