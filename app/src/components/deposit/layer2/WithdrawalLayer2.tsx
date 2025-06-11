@@ -15,7 +15,7 @@ import { getBalanceQueryKey } from 'wagmi/query';
 import { useGasEstimateL2 } from '../../../hooks/useGasEstimateL2';
 import { formatEther } from 'viem';
 
-export function DepositLayer2() {
+export function WithdrawalLayer2() {
     const queryClient = useQueryClient();
     const layer2Account = useAccount();
     const chainId = useChainId();
@@ -40,7 +40,7 @@ export function DepositLayer2() {
 
     useEffect(() => {
         if (isSuccess && hash) {
-            toast('Deposit submitted!');
+            toast('Withdraw submitted!');
         }
     }, [isSuccess, hash]);
 
