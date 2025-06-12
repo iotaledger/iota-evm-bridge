@@ -18,7 +18,6 @@ import { ThemeProvider } from './providers/ThemeProvider.tsx';
 import { WagmiProvider } from 'wagmi';
 import { useTheme } from './hooks/useTheme.ts';
 import { Theme } from './lib/enums/index.ts';
-import { Toaster } from 'react-hot-toast';
 import {
     getDefaultNetwork,
     L2_CHAIN_CONFIG,
@@ -26,6 +25,7 @@ import {
     networkConfig,
 } from './config/index.ts';
 import { EvmRpcClientProvider } from './providers/EvmRpcClientProvider.tsx';
+import { Toaster } from './components/index.ts';
 
 const queryClient = new QueryClient();
 
