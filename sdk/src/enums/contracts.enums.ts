@@ -1,3 +1,4 @@
+//
 export enum CoreContract {
     Root = 'root',
     Accounts = 'accounts',
