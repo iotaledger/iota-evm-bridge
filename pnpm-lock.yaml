@@ -27,8 +27,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       '@iota/apps-ui-kit':
-        specifier: ^0.2.1
-        version: 0.2.1(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)
+        specifier: ^0.5.1
+        version: 0.5.1(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)
       '@iota/bcs':
         specifier: ^0.2.1
         version: 0.2.1
@@ -682,8 +682,11 @@ packages:
   '@iota/apps-ui-icons@0.2.1':
     resolution: {integrity: sha512-O94tOR1e42VqpjKQHD1OTXMsm5/r1z8YePb9H6p93+btw+ZMu9PBD+XwRgsHboCAnRv3oZ5S7vhgeL11kS+rRg==}
 
-  '@iota/apps-ui-kit@0.2.1':
-    resolution: {integrity: sha512-AQV7HNpsV4RjG7QFNM6K/2k/phifPhmF4NA7AfkOZ6d6wZcxBPY1xMe9r9mp71w+jX2gpndVBh1Oj3Lah3p4WA==}
+  '@iota/apps-ui-icons@0.3.0':
+    resolution: {integrity: sha512-VpTREdN88AoM3s+k9x4EIPDhS3s5Tj8esVl2Dd/kP+U1ejibDSMfc2ttCV0lTI0mfWFu5SDmgBqbQEXI1EgOkA==}
+
+  '@iota/apps-ui-kit@0.5.1':
+    resolution: {integrity: sha512-diKsx42rdqNmU2Cc/utZmc7R8jygzW3Yvi9mGMD6ZN5lO/AG48f+OZettqNdY/XeygMQPRKZGLTSO5EVnrpoxA==}
 
   '@iota/bcs@0.2.1':
     resolution: {integrity: sha512-T+iv5gZhUZP7BiDY7+Ir4MA2rYmyGNZA2b+nxjv219Fp8klFt+l38OWA+1RgJXrCmzuZ+M4hbMAeHhHziURX6Q==}
@@ -4603,10 +4606,12 @@ snapshots:
 
   '@iota/apps-ui-icons@0.2.1': {}
 
-  '@iota/apps-ui-kit@0.2.1(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)':
+  '@iota/apps-ui-icons@0.3.0': {}
+
+  '@iota/apps-ui-kit@0.5.1(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)':
     dependencies:
       '@fontsource/inter': 5.2.5
-      '@iota/apps-ui-icons': 0.2.1
+      '@iota/apps-ui-icons': 0.3.0
       '@radix-ui/react-dialog': 1.1.6(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-visually-hidden': 1.1.2(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       classnames: 2.5.1

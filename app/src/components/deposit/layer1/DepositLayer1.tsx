@@ -51,26 +51,29 @@ export function DepositLayer1() {
             },
             {
                 onSuccess: (tx) => {
-                    toast('Deposit submitted!');
+                    toast('Deposit transaction submitted!');
                     client
                         .waitForTransaction({
                             digest: tx.digest,
                         })
                         .catch((err) => {
                             if (import.meta.env.DEV) {
-                                console.error('Error while waiting for transaction', err.message);
+                                console.error(
+                                    'Error while waiting for deposit transaction',
+                                    err.message,
+                                );
                             }
                         });
                 },
                 onError: (err) => {
                     if (err.message) {
                         if (err.message.startsWith(L1_USER_REJECTED_TX_ERROR_TEXT)) {
-                            toast.error('Transaction rejected by user.');
+                            toast.error('Transaction canceled by user.');
                         } else {
                             toast.error(err.message);
                         }
                     } else {
-                        toast.error('Something went wrong while submitting deposit.');
+                        toast.error('Unable to complete deposit transaction.');
                     }
                 },
             },
