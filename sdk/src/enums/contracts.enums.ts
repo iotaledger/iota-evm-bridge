@@ -8,6 +8,7 @@ export enum CoreContract {
     evm = 'evm',
 }
 
+//
 export enum RootContractMethod {
     FindContract = 'findContract',
     GetContractRecords = 'getContractRecords',
