@@ -12,8 +12,6 @@ export function Toaster() {
                 return SnackbarType.Success;
             case 'error':
                 return SnackbarType.Error;
-            case 'loading':
-                return SnackbarType.Default;
             default:
                 return SnackbarType.Default;
         }
