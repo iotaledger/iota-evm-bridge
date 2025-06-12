@@ -1,7 +1,13 @@
 import { ethers, Wallet, HDNodeWallet, JsonRpcProvider } from 'ethers';
 import { BrowserContext, Page } from '@playwright/test';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
-import { AccountsContractMethod, CoreContract, getHname, IscTransaction, L2_FROM_L1_GAS_BUDGET } from 'isc-client';
+import {
+    AccountsContractMethod,
+    CoreContract,
+    getHname,
+    IscTransaction,
+    L2_FROM_L1_GAS_BUDGET,
+} from 'isc-client';
 import { IotaClient } from '@iota/iota-sdk/client';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
