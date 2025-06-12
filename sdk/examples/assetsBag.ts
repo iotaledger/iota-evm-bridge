@@ -1,4 +1,10 @@
-import { IscTransaction, L2_FROM_L1_GAS_BUDGET } from '../src/index';
+import {
+    AccountsContractMethod,
+    CoreContract,
+    getHname,
+    IscTransaction,
+    L2_FROM_L1_GAS_BUDGET,
+} from '../src/index';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { requestIotaFromFaucetV0 } from '@iota/iota-sdk/faucet';
@@ -39,8 +45,8 @@ iscTx.createAndSendToEvm({
     bag,
     transfers: [[IOTA_TYPE_ARG, amountToSend]],
     address: recipientAddress,
-    accountsContract: L1.accountsContract,
-    accountsFunction: L1.accountsTransferAllowanceTo,
+    accountsContract: getHname(CoreContract.Accounts),
+    accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
 });
 
 const transaction = iscTx.build();
