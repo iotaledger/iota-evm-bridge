@@ -1,5 +1,6 @@
 import {
     AccountsContractMethod,
+    CoreContract,
     EvmRpcClient,
     getHname,
     IscTransaction,
@@ -70,7 +71,7 @@ iscTx.createAndSendToEvm({
         [TOKEN_COIN_TYPE, tokenAmountToSend],
     ],
     address: recipientAddress,
-    accountsContract: getHname(AccountsContractMethod.AccountsContract),
+    accountsContract: getHname(CoreContract.Accounts),
     accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
 });
 

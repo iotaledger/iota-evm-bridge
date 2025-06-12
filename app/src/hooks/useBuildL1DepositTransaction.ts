@@ -2,7 +2,7 @@ import { Transaction } from '@iota/iota-sdk/transactions';
 import { useCurrentAccount, useIotaClient } from '@iota/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { getGasSummary } from '../lib/utils';
-import { AccountsContractMethod, getHname, IscTransaction } from 'isc-client';
+import { AccountsContractMethod, CoreContract, getHname, IscTransaction } from 'isc-client';
 import { IOTA_TYPE_ARG } from '@iota/iota-sdk/utils';
 import { useNetworkVariables } from '../config';
 import { L2_FROM_L1_GAS_BUDGET } from 'isc-client';
@@ -39,7 +39,7 @@ export function useBuildL1DepositTransaction({
                 bag,
                 transfers: [[IOTA_TYPE_ARG, amount]],
                 address: receivingAddress,
-                accountsContract: getHname(AccountsContractMethod.AccountsContract),
+                accountsContract: getHname(CoreContract.Accounts),
                 accountsFunction: getHname(AccountsContractMethod.TransferAllowanceTo),
             });
             const transaction = iscTx.build();

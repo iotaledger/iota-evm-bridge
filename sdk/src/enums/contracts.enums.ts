@@ -13,7 +13,6 @@ export enum RootContractMethod {
 }
 
 export enum AccountsContractMethod {
-    AccountsContract = 'accounts',
     Deposit = 'deposit',
     Withdraw = 'withdraw',
     TransferAllowanceTo = 'transferAllowanceTo',
