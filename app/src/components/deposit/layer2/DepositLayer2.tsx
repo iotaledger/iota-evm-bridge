@@ -40,7 +40,7 @@ export function DepositLayer2() {
 
     useEffect(() => {
         if (isSuccess && hash) {
-            toast('Deposit submitted!');
+            toast('Withdraw transaction submitted!');
         }
     }, [isSuccess, hash]);
 
@@ -51,15 +51,16 @@ export function DepositLayer2() {
             }
 
             if (error.message.startsWith(L2_USER_REJECTED_TX_ERROR_TEXT)) {
-                toast.error('Transaction rejected by user.');
+                toast.error('Transaction canceled by user.');
             } else {
-                toast.error('Something went wrong while submitting deposit.');
+                toast.error('Something went wrong while submitting withdraw transaction.');
             }
         }
     }, [isError, error]);
 
     useEffect(() => {
         if (isTransactionSuccess) {
+            toast.success('Withdraw transaction confirmed! Your funds have been transferred.');
             const blanceQueryKey = getBalanceQueryKey({
                 chainId,
                 address: layer2Account.address,
@@ -73,7 +74,7 @@ export function DepositLayer2() {
             if (import.meta.env.DEV) {
                 console.error('Error while waiting for transaction', transactionError.message);
             }
-            toast.error('Something went wrong with deposit transaction.');
+            toast.error('Unable to complete withdraw transaction.');
         }
     }, [isTransactionError, transactionError]);
 
