@@ -1,3 +1,8 @@
+| :warning: WARNING                                                                                                                      |
+| :------------------------------------------------------------------------------------------------------------------------------------- |
+| This repository has been deprecated. |
+| Please use https://github.com/iotaledger/iota/tree/develop/apps/evm-bridge instead                                                     |
+
 # IOTA EVM Bridge
 
 
